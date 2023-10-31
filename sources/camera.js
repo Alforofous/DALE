@@ -1,7 +1,7 @@
-export function updateCamera(camera, keysPressed, clock)
+export function updateCamera(camera, keysPressed, mouseMovement, clock)
 {
     const deltaTime = clock.getDelta();
-    const speed = 0.5 * deltaTime;
+    const speed = 10.0 * deltaTime;
 
     if (keysPressed['w']) {
         camera.position.z -= speed;
@@ -21,4 +21,7 @@ export function updateCamera(camera, keysPressed, clock)
     if (keysPressed['e']) {
         camera.position.y += speed;
     }
+
+    camera.rotation.y -= mouseMovement.x * 0.002;
+    camera.rotation.x -= mouseMovement.y * 0.002;
 }
