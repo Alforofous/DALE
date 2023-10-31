@@ -57,8 +57,8 @@ let clock = new THREE.Clock();
 clock.start();
 let keysPressed = {};
 
-let mouseMovement = { x: 0, y: 0 };
-let lastMousePosition = { x: 0, y: 0 };
+import { Mouse } from './mouse.js';
+mouse = new Mouse();
 
 function onUpdate()
 {
@@ -66,10 +66,9 @@ function onUpdate()
 
 	renderer.render(scene, camera);
 
+	let mouseMovement = mouse.deltaMove;
 	if (isCapturingMouse)
-	{
 		mouseMovement = { x: 0, y: 0 };
-	}
 	updateCamera(camera, keysPressed, mouseMovement, clock);
 
 	const position = camera.position;
@@ -77,17 +76,7 @@ function onUpdate()
 
 	const delta = clock.getDelta();
 	deltaDiv.innerHTML = `Delta: ${delta.toFixed(5)}`;
-
-	mouseMovement.x = 0;
-	mouseMovement.y = 0;
 }
-
-document.addEventListener('mousemove', function (event) {
-	mouseMovement.x = event.clientX - lastMousePosition.x;
-	mouseMovement.y = event.clientY - lastMousePosition.y;
-	lastMousePosition.x = event.clientX;
-	lastMousePosition.y = event.clientY;
-});
 
 cameraPositionDiv.style.zIndex = '1';
 deltaDiv.style.zIndex = '1';
