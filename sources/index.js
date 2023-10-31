@@ -1,4 +1,4 @@
-import * as THREE from 'https://cdn.skypack.dev/three';
+import * as THREE from '../libraries/three.module.js';
 
 const scene = new THREE.Scene();
 
