@@ -40,9 +40,9 @@ class Model
 			{
 				gltf.scene.traverse((child) => {
 					if (child.isMesh) {
-						child.material = new THREE.MeshLambertMaterial({
-							color: 0x00ff00,
-							transparent: true,
+						child.material = new THREE.MeshPhysicalMaterial({
+							color: 0x008585,
+							transparent: false,
 							opacity: 0.5,
 						});
 					}

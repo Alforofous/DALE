@@ -5,13 +5,13 @@ class Camera extends PerspectiveCamera
 {
 	constructor()
 	{
-		super(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 1000);
-		this.position.z = 5;
+		super(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 10000);
+		this.position.z = 50;
+		this.position.y = 700;
 	}
 
-	update(keysPressed, clock)
+	update(keysPressed, deltaTime)
 	{
-		const deltaTime = clock.getDelta();
 		let speed = 10.0 * deltaTime;
 		if (keysPressed['Shift'])
 		{
@@ -50,19 +50,19 @@ class Camera extends PerspectiveCamera
 
 		if (keysPressed['w'])
 		{
-			this.position.add(direction.multiplyScalar(speed));
+			this.position.add(direction.clone().multiplyScalar(speed));
 		}
 		if (keysPressed['a'])
 		{
-			this.position.add(right.multiplyScalar(-speed));
+			this.position.add(right.clone().multiplyScalar(-speed));
 		}
 		if (keysPressed['s'])
 		{
-			this.position.add(direction.multiplyScalar(-speed));
+			this.position.add(direction.clone().multiplyScalar(-speed));
 		}
 		if (keysPressed['d'])
 		{
-			this.position.add(right.multiplyScalar(speed));
+			this.position.add(right.clone().multiplyScalar(speed));
 		}
 		if (keysPressed['q'])
 		{

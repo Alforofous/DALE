@@ -1,54 +1,25 @@
+import * as THREE from 'three';
+
 class UI
 {
 	constructor()
 	{
-		this.cameraPositionTextBox = document.createElement('div');
-		this.cameraPositionTextBox.style.zIndex = '1';
-
-		this.cameraPositionTextBox.style.position = 'absolute';
-		this.cameraPositionTextBox.style.top = '0';
-		this.cameraPositionTextBox.style.left = '0';
-		this.cameraPositionTextBox.style.color = 'white';
-		this.cameraPositionTextBox.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-		this.cameraPositionTextBox.style.padding = '5px';
-		document.body.appendChild(this.cameraPositionTextBox);
-
-		this.cameraLookAtPointTextBox = document.createElement('div');
-		this.cameraLookAtPointTextBox.style.zIndex = '1';
-
-		this.cameraLookAtPointTextBox.style.position = 'absolute';
-		this.cameraLookAtPointTextBox.style.top = '30px';
-		this.cameraLookAtPointTextBox.style.left = '0';
-		this.cameraLookAtPointTextBox.style.color = 'white';
-		this.cameraLookAtPointTextBox.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-		this.cameraLookAtPointTextBox.style.padding = '5px';
-		document.body.appendChild(this.cameraLookAtPointTextBox);
-
-		this.deltaTimeTextBox = document.createElement('div');
-		this.deltaTimeTextBox.style.zIndex = '1';
-
-		this.deltaTimeTextBox.style.position = 'absolute';
-		this.deltaTimeTextBox.style.top = '0';
-		this.deltaTimeTextBox.style.right = '0';
-		this.deltaTimeTextBox.style.color = 'white';
-		this.deltaTimeTextBox.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-		this.deltaTimeTextBox.style.padding = '5px';
-		document.body.appendChild(this.deltaTimeTextBox);
 	}
 
-	updateInfo(cameraPosition, cameraLookAtPoint, deltaTime)
+	updateInfo(camera, deltaTime)
 	{
-		this.cameraPositionTextBox.innerHTML = `Camera Position: x: ${cameraPosition.x.toFixed(2)}, y: ${cameraPosition.y.toFixed(2)}, z: ${cameraPosition.z.toFixed(2)}`;
-		this.cameraLookAtPointTextBox.innerHTML = `Camera Look At Point: x: ${cameraLookAtPoint.x.toFixed(2)}, y: ${cameraLookAtPoint.y.toFixed(2)}, z: ${cameraLookAtPoint.z.toFixed(2)}`;
-		
-		let msTime = deltaTime.toFixed(4);
-		let fps = deltaTime > 0 ? (1000 / deltaTime) : 0;
-		this.deltaTimeTextBox.innerHTML = `${msTime}ms `;
-	}
+		const camera_position = document.getElementById('camera_position');
+		camera_position.textContent = 'Camera Position: x: ' + camera.position.x.toFixed(2) + ', y: ' + camera.position.y.toFixed(2) + ', z: ' + camera.position.z.toFixed(2);
 
-	cameraPositionTextBox;
-	cameraLookAtPointTextBox;
-	deltaTimeTextBox;
+		const camera_rotation = document.getElementById('camera_rotation');
+		camera_rotation.textContent = 'Camera rotation: x: ' + camera.rotation.x.toFixed(2) + ', y: ' + camera.rotation.y.toFixed(2) + ', z: ' + camera.rotation.z.toFixed(2);
+
+		const performance_deltaTime = document.getElementById('performance_deltaTime');
+		performance_deltaTime.textContent = deltaTime.toFixed(4) + ' ms';
+
+		const performance_fps = document.getElementById('performance_fps');
+		performance_fps.textContent = (1.0 / deltaTime).toFixed(0) + ' fps';
+	}
 }
 
 export { UI };

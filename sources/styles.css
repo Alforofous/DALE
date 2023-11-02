@@ -1,0 +1,25 @@
+#sidebar
+{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 200px;
+	height: 100%;
+	padding: 20px;
+	background-color: #f8f9fa;
+	z-index: 2;
+}
+
+#sidebar button
+{
+	display: block;
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+#sidebar input[type="text"]
+{
+	width: 100%;
+	padding: 10px;
+}

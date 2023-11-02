@@ -7,6 +7,8 @@ class Mouse
 
 		document.addEventListener('mousemove', (event) =>
 		{
+			if (document.pointerLockElement == null)
+				this.isCaptured = false;
 			if (this.isCaptured)
 				camera.updateMouse(event.movementX, event.movementY);
 		});
@@ -24,16 +26,6 @@ class Mouse
 				this.isClicked = false;
 			});
 		});
-
-		/*
-		document.addEventListener('pointerlockchange', function ()
-		{
-			if (!document.pointerLockElement && isCapturingMouse)
-			{
-				document.body.requestPointerLock();
-			}
-		});
-		*/
 	}
 
 	deltaMove;
