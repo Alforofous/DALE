@@ -1,32 +1,45 @@
 class Mouse
 {
-	constructor()
+	constructor(renderer, camera)
 	{
-		deltaMove = { x: 0, y: 0 };
-		position = { x: 0, y: 0 };
+		this.deltaMove = { x: 0, y: 0 };
+		this.position = { x: 0, y: 0 };
 
-		document.addEventListener('mousemove', function (event)
+		document.addEventListener('mousemove', (event) =>
 		{
-			deltaMove.x = event.clientX - lastMousePosition.x;
-			deltaMove.y = event.clientY - lastMousePosition.y;
-			lastMousePosition.x = event.clientX;
-			lastMousePosition.y = event.clientY;
+			if (this.isCaptured)
+				camera.updateMouse(event.movementX, event.movementY);
 		});
+
+		document.addEventListener('click', (event) =>
+		{
+			this.isClicked = true;
+			if (event.button === 0 && event.target === renderer.domElement)
+			{
+				this.isCaptured = true;
+				document.body.requestPointerLock();
+			}
+			requestAnimationFrame(() =>
+			{
+				this.isClicked = false;
+			});
+		});
+
+		/*
+		document.addEventListener('pointerlockchange', function ()
+		{
+			if (!document.pointerLockElement && isCapturingMouse)
+			{
+				document.body.requestPointerLock();
+			}
+		});
+		*/
 	}
 
 	deltaMove;
-	position;
-
-	get deltaMove() 
-	{
-		return this._deltaMove;
-	}
-
-	get position() 
-	{
-		return this._position;
-	}
-
+	position = { x: 0, y: 0 };
+	isClicked = false;
+	isCaptured = false;
 	#lastMousePosition = { x: 0, y: 0 };
 }
 

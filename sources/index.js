@@ -1,64 +1,46 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-
-const cameraPositionDiv = document.createElement('div');
-cameraPositionDiv.style.position = 'absolute';
-cameraPositionDiv.style.top = '0';
-cameraPositionDiv.style.left = '0';
-cameraPositionDiv.style.color = 'white';
-cameraPositionDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-cameraPositionDiv.style.padding = '5px';
-document.body.appendChild(cameraPositionDiv);
-
-const deltaDiv = document.createElement('div');
-deltaDiv.style.position = 'absolute';
-deltaDiv.style.top = '0';
-deltaDiv.style.right = '0';
-deltaDiv.style.color = 'white';
-deltaDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-deltaDiv.style.padding = '5px';
-document.body.appendChild(deltaDiv);
-
-let isCapturingMouse = false;
-
-document.addEventListener('click', function (event)
-{
-	if (event.button === 0 && event.target === renderer.domElement) {
-		isCapturingMouse = true;
-		document.body.requestPointerLock();
-	}
-});
-
-document.addEventListener('pointerlockchange', function ()
-{
-	if (!document.pointerLockElement && isCapturingMouse) {
-		document.body.requestPointerLock();
-	}
-});
+import { Camera } from './camera.js';
+import { Renderer } from './renderer.js';
+import { Model } from './model.js';
+import { Mouse } from './mouse.js';
+import { Keyboard } from './keyboard.js';
+import { UI } from './UI.js';
+//use this if we want fixed point camera
+//import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
+const camera = new Camera();
+const renderer = new Renderer();
+const mouse = new Mouse(renderer, camera);
+const keyboard = new Keyboard();
+const model = new Model(scene);
+const clock = new THREE.Clock();
+const userInterface = new UI();
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth * 0.75, window.innerHeight);
-renderer.domElement.style.position = 'absolute';
-renderer.domElement.style.left = `${window.innerWidth * 0.25}px`;
-document.body.appendChild(renderer.domElement);
+init();
 
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+function init()
+{
+	const geometry = new THREE.BoxGeometry();
+	const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+	const cube = new THREE.Mesh(geometry, material);
 
-import { cameraInput, updateCamera } from './camera.js';
+	scene.add(cube);
 
-let clock = new THREE.Clock();
-clock.start();
-let keysPressed = {};
+	// Create a directional light
+	const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+	directionalLight.position.set(0, 200, 0); // set the position of the light
+	scene.add(directionalLight);
 
-import { Mouse } from './mouse.js';
-mouse = new Mouse();
+	// Create an ambient light
+	const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+	scene.add(ambientLight);
+
+	clock.start();
+	model.loadGLTF('lowPolyMountain.gltf');
+
+	onUpdate();
+}
 
 function onUpdate()
 {
@@ -66,42 +48,9 @@ function onUpdate()
 
 	renderer.render(scene, camera);
 
-	let mouseMovement = mouse.deltaMove;
-	if (isCapturingMouse)
-		mouseMovement = { x: 0, y: 0 };
-	updateCamera(camera, keysPressed, mouseMovement, clock);
-
-	const position = camera.position;
-	cameraPositionDiv.innerHTML = `Camera Position: x: ${position.x.toFixed(2)}, y: ${position.y.toFixed(2)}, z: ${position.z.toFixed(2)}`;
-
-	const delta = clock.getDelta();
-	deltaDiv.innerHTML = `Delta: ${delta.toFixed(5)}`;
-}
-
-cameraPositionDiv.style.zIndex = '1';
-deltaDiv.style.zIndex = '1';
-
-document.addEventListener('keydown', function (event) {
-	keysPressed[event.key] = true;
-});
-
-document.addEventListener('keyup', function (event) {
-	keysPressed[event.key] = false;
-});
-
-loadModel('Icelandic_mountain.gltf');
-onUpdate();
-
-function loadModel(modelName) {
-	const gltfLoader = new GLTFLoader();
-
-	gltfLoader.setPath('./models/');
-	gltfLoader.load(modelName,
-		function (gltf) {
-			scene.add(gltf.scene);
-		},
-		undefined,
-		function (error) {
-			console.error(error);
-		});
+	if (document.pointerLockElement == null)
+		mouse.isCaptured = false;
+	camera.update(keyboard.pressedKeys, clock);
+	const cameraLookAt = new THREE.Vector3(0, 0, 0);
+	userInterface.updateInfo(camera.position, cameraLookAt, clock.getDelta());
 }
