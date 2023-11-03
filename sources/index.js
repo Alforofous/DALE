@@ -84,68 +84,39 @@ window.addEventListener('mousedown', function (event)
 
 			let range = 100; // Replace with your range
 			let indicesInRange = [];
+			const markerGeometry = new THREE.SphereGeometry(1, 32, 32);
+			const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
 			for (let i = 0; i < positions.count; i++)
 			{
-				let vertex = new THREE.Vector3(positions.array[i * 3], positions.array[i * 3 + 1], positions.array[i * 3 + 2]);
-				vertex.applyMatrix4(intersection.object.matrixWorld);
-				if (vertex.distanceTo(intersection.point) < range)
+				let vertexLocal = new THREE.Vector3(positions.getX(i), positions.getY(i), positions.getZ(i));
+				let vertexWorld = vertexLocal.applyMatrix4(intersection.object.matrixWorld);
+				if (vertexWorld.distanceTo(intersection.point) < range)
 				{
 					indicesInRange.push(i);
-				}
-			}
-			if (indicesInRange.length > 0)
-			{
-				console.log('Vertices within range:', indicesInRange);
 
-				// Create marker objects at the vertices within range
-				const markerGeometry = new THREE.SphereGeometry(1, 32, 32);
-				const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-				for (let i = 0; i < indicesInRange.length; i++)
-				{
-					let vertex = new THREE.Vector3(positions.array[indicesInRange[i] * 3], positions.array[indicesInRange[i] * 3 + 1], positions.array[indicesInRange[i] * 3 + 2]);
-					vertex.applyMatrix4(intersection.object.matrixWorld);
-
-					const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-					marker.position.copy(vertex);
-					scene.add(marker);
-
-					let displacementWorld = new THREE.Vector3(0, -1, 0);
+					let displacementWorld = new THREE.Vector3(0, -5, 0);
 					let matrixWorldInverse = new THREE.Matrix4().copy(intersection.object.matrixWorld).invert();
 					let displacementObject = displacementWorld.applyMatrix4(matrixWorldInverse);
 
-					positions.array[indicesInRange[i] * 3] += displacementObject.x;
-					positions.array[indicesInRange[i] * 3 + 1] += displacementObject.y;
-					positions.array[indicesInRange[i] * 3 + 2] += displacementObject.z;
+					const x = positions.getX(i);
+					const y = positions.getY(i);
+					const z = positions.getZ(i);
 
+					positions.setY(i, y + displacementObject.y);
+
+					const marker = new THREE.Mesh(markerGeometry, markerMaterial);
+					marker.ignoreRaycast = true;
+					marker.position.copy(vertexWorld);
+					scene.add(marker);
 					// Remove the marker after 3 seconds
 					setTimeout(() =>
 					{
 						scene.remove(marker);
-					}, 3000);
+					}, 1000);
 				}
-
-				let indices = geometry.index;
-				for (let i = 0; i < indices.count; i += 3)
-				{
-					// Get the indices of the vertices for this face
-					let a = indices.array[i];
-					let b = indices.array[i + 1];
-					let c = indices.array[i + 2];
-
-					// Check if any of the vertices for this face have been moved
-					if (indicesInRange.includes(a) || indicesInRange.includes(b) || indicesInRange.includes(c))
-					{
-						// Update the indices to point to the new vertex positions
-						// This is a placeholder - you'll need to replace this with the actual new indices
-						indices.array[i] = a;
-						indices.array[i + 1] = b;
-						indices.array[i + 2] = c;
-					}
-				}
-
-				indices.needsUpdate = true;
-				positions.needsUpdate = true;
 			}
+			positions.needsUpdate = true;
+			intersection.object.geometry.computeVertexNormals();
 		}
 	}
 }, false);
