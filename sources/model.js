@@ -26,7 +26,8 @@ class Model
 			(xhr) => {
 				console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
 			},
-			(error) => {
+			(error) =>
+			{
 				console.error('An error happened', error);
 			}
 		);
@@ -38,12 +39,45 @@ class Model
 			modelName,
 			(gltf) =>
 			{
-				gltf.scene.traverse((child) => {
-					if (child.isMesh) {
+				gltf.scene.traverse((child) =>
+				{
+					if (child.isMesh)
+					{
+						let geometry = child.geometry;
+						let positionAttribute = geometry.attributes.position;
+						let colors = new Float32Array(positionAttribute.count * 3);
+
+						let minY = Infinity;
+						let maxY = -Infinity;
+						for (let i = 0; i < positionAttribute.count; i++)
+						{
+							let y = positionAttribute.getY(i);
+							minY = Math.min(minY, y);
+							maxY = Math.max(maxY, y);
+						}
+
+						let bottomColor = new THREE.Color('white');
+						let topColor = new THREE.Color('green');
+
+						for (let i = 0; i < positionAttribute.count; i++)
+						{
+							let y = positionAttribute.getY(i);
+							let t = (y - minY) / (maxY - minY);
+							let color = new THREE.Color();
+							color.lerpColors(bottomColor, topColor, t);
+
+							colors[i * 3] = color.r;
+							colors[i * 3 + 1] = color.g;
+							colors[i * 3 + 2] = color.b;
+						}
+
+						geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
 						child.material = new THREE.MeshPhongMaterial({
-							color: 0x008585,
-							transparent: false,
-							opacity: 0.5,
+							vertexColors: true,
+							wireframe: true,
+							transparent: true,
+							opacity: 1.0,
 						});
 					}
 				});

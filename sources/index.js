@@ -22,7 +22,7 @@ init();
 function init()
 {
 	const geometry = new THREE.BoxGeometry(20, 20, 20);
-	const material = new THREE.MeshBasicMaterial({ color: 0x780000 });
+	const material = new THREE.MeshStandardMaterial({ color: 0x780000 });
 	const cube = new THREE.Mesh(geometry, material);
 
 	scene.add(cube);
@@ -58,6 +58,10 @@ function onUpdate()
 	userInterface.updateInfo(camera, deltaTime);
 }
 
+///
+///HERE TEST CODE BELOW
+///
+
 let raycaster = new THREE.Raycaster();
 let ray = new THREE.Vector2();
 
@@ -70,17 +74,19 @@ window.addEventListener('mousemove', function (event)
 
 window.addEventListener('mousedown', function (event)
 {
-	// Raycast to the scene
 	raycaster.setFromCamera(ray, camera);
 	let intersects = raycaster.intersectObjects(scene.children, true);
 
-	if (intersects.length > 0)
+	if (intersects.length === 0)
+		return;
+	if (!actionButton)
 	{
 		let intersection = intersects[0];
 
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
 			let positions = intersection.object.geometry.attributes.position;
+			intersection.object.geometry.attributes.position.array;
 
 			let range = 100; // Replace with your range
 			let indicesInRange = [];
@@ -105,7 +111,7 @@ window.addEventListener('mousedown', function (event)
 					positions.setY(i, y + displacementObject.y);
 
 					const marker = new THREE.Mesh(markerGeometry, markerMaterial);
-					marker.ignoreRaycast = true;
+					marker.layers.set(1);
 					marker.position.copy(vertexWorld);
 					scene.add(marker);
 					// Remove the marker after 3 seconds
@@ -119,4 +125,110 @@ window.addEventListener('mousedown', function (event)
 			intersection.object.geometry.computeVertexNormals();
 		}
 	}
+	else
+	{
+		let coneGeometry = new THREE.ConeGeometry(1, 10, 32);
+		let coneMaterial = new THREE.MeshPhongMaterial({ color: 0x152FC9 });
+		
+		let intersection = intersects[0];
+		let cone = new THREE.Mesh(coneGeometry, coneMaterial);
+		cone.layers.set(1);
+		cone.position.copy(intersection.point);
+		
+		let normalMatrix = new THREE.Matrix3().getNormalMatrix(intersection.object.matrixWorld);
+		let normal = intersection.face.normal.clone().applyMatrix3(normalMatrix).normalize();
+
+		let lookAtTarget = new THREE.Vector3().copy(intersection.point).add(normal);
+
+		cone.lookAt(lookAtTarget);
+		cone.rotation.z += Math.PI / 2; // Rotate the cone 90 degrees around the X-axis
+		scene.add(cone);	
+	}
 }, false);
+
+let opacitySlider = document.getElementById('opacitySlider');
+opacitySlider.addEventListener('input', function ()
+{
+	let value = parseFloat(opacitySlider.value) / 100;
+	for (let i = 0; i < scene.children.length; i++)
+	{
+		let object = scene.children[i];
+		if (object instanceof THREE.Group)
+		{
+			object.traverse(function (child)
+			{
+				if (child.material)
+				{
+					setOpacity(child, value);
+				}
+			});
+		}
+		else if (object.material)
+		{
+			setOpacity(object, value);
+		}
+	}
+	renderer.render(scene, camera); // Manually trigger a render
+});
+
+function setOpacity(object, value)
+{
+	if (Array.isArray(object.material))
+	{
+		for (let i = 0; i < object.material.length; i++)
+		{
+			object.material[i].opacity = value;
+			object.material[i].transparent = value < 1;
+		}
+	}
+	else
+	{
+		object.material.opacity = value;
+		object.material.transparent = value < 1;
+	}
+}
+
+let actionButton = false;
+let toggleButton = document.getElementById('toggleButton');
+toggleButton.addEventListener('click', function ()
+{
+	actionButton = !actionButton;
+});
+
+let wireframeButton = document.getElementById('wireframeButton');
+wireframeButton.addEventListener('click', function ()
+{
+	for (let i = 0; i < scene.children.length; i++)
+	{
+		let object = scene.children[i];
+		if (object instanceof THREE.Group)
+		{
+			object.traverse(function (child)
+			{
+				if (child.material)
+				{
+					toggleWireframe(child);
+				}
+			});
+		}
+		else if (object.material)
+		{
+			toggleWireframe(object);
+		}
+	}
+});
+
+function toggleWireframe(object)
+{
+	if (Array.isArray(object.material))
+	{
+		for (let i = 0; i < object.material.length; i++)
+		{
+			object.material[i].wireframe = !object.material[i].wireframe;
+		}
+	}
+	else
+	{
+		object.material.wireframe = !object.material.wireframe;
+	}
+}

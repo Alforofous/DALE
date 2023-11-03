@@ -8,6 +8,7 @@ class Camera extends PerspectiveCamera
 		super(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 10000);
 		this.position.z = 50;
 		this.position.y = 700;
+		this.layers.enable(1);
 	}
 
 	update(keysPressed, deltaTime)
