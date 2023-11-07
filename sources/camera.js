@@ -3,7 +3,7 @@ import * as THREE from 'three';
 
 class Camera extends PerspectiveCamera
 {
-	constructor()
+	constructor(scene)
 	{
 		super(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 10000);
 		this.position.z = 50;
@@ -14,22 +14,22 @@ class Camera extends PerspectiveCamera
 	update(keysPressed, deltaTime)
 	{
 		let speed = 10.0 * deltaTime;
-		if (keysPressed['Shift'])
+		if (keysPressed['ShiftLeft'])
 		{
 			this.#lastShiftPress += deltaTime;
-			speed *= Math.min(Math.max(2.0, this.#lastShiftPress), 20.0);
+			speed *= Math.min(Math.max(5.0, this.#lastShiftPress * 10), 50.0);
 		}
 		else
 		{
 			this.#lastShiftPress = 0;
 		}
 
-		this.updateKeyboard(keysPressed, speed);
+		this.updatePosition(keysPressed, speed);
 	}
 
-	updateMouse(movementX, movementY)
+	updateRotation(movementX, movementY)
 	{
-		const sensitivity = 0.002;
+		const sensitivity = 0.004;
 		const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 		euler.setFromQuaternion(this.quaternion);
 
@@ -40,7 +40,7 @@ class Camera extends PerspectiveCamera
 		this.quaternion.setFromEuler(euler);
 	}
 
-	updateKeyboard(keysPressed, speed)
+	updatePosition(keysPressed, speed)
 	{
 		const direction = new THREE.Vector3(0, 0, -1);
 		direction.applyQuaternion(this.quaternion);
@@ -49,45 +49,45 @@ class Camera extends PerspectiveCamera
 		const up = new THREE.Vector3();
 		up.crossVectors(right, direction);
 
-		if (keysPressed['w'])
+		if (keysPressed['KeyW'])
 		{
 			this.position.add(direction.clone().multiplyScalar(speed));
 		}
-		if (keysPressed['a'])
+		if (keysPressed['KeyA'])
 		{
 			this.position.add(right.clone().multiplyScalar(-speed));
 		}
-		if (keysPressed['s'])
+		if (keysPressed['KeyS'])
 		{
 			this.position.add(direction.clone().multiplyScalar(-speed));
 		}
-		if (keysPressed['d'])
+		if (keysPressed['KeyD'])
 		{
 			this.position.add(right.clone().multiplyScalar(speed));
 		}
-		if (keysPressed['q'])
+		if (keysPressed['KeyQ'])
 		{
 			this.position.add(up.clone().multiplyScalar(-speed));
 		}
-		if (keysPressed['e'])
+		if (keysPressed['KeyE'])
 		{
 			this.position.add(up.clone().multiplyScalar(speed));
 		}
 		if (keysPressed['ArrowUp'])
 		{
-			this.updateMouse(0, -5);
+			this.updateRotation(0, -5);
 		}
 		if (keysPressed['ArrowLeft'])
 		{
-			this.updateMouse(-5, 0);
+			this.updateRotation(-5, 0);
 		}
 		if (keysPressed['ArrowDown'])
 		{
-			this.updateMouse(0, 5);
+			this.updateRotation(0, 5);
 		}
 		if (keysPressed['ArrowRight'])
 		{
-			this.updateMouse(5, 0);
+			this.updateRotation(5, 0);
 		}
 	}
 

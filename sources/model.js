@@ -56,13 +56,14 @@ class Model
 							maxY = Math.max(maxY, y);
 						}
 
-						let bottomColor = new THREE.Color('white');
-						let topColor = new THREE.Color('green');
+						let bottomColor = new THREE.Color(0x004D00);
+						let topColor = new THREE.Color(0xFFFFFF);
 
 						for (let i = 0; i < positionAttribute.count; i++)
 						{
 							let y = positionAttribute.getY(i);
 							let t = (y - minY) / (maxY - minY);
+							t = Math.pow(t, 5);
 							let color = new THREE.Color();
 							color.lerpColors(bottomColor, topColor, t);
 
@@ -75,10 +76,11 @@ class Model
 
 						child.material = new THREE.MeshPhongMaterial({
 							vertexColors: true,
-							wireframe: true,
+							wireframe: false,
 							transparent: true,
 							opacity: 1.0,
 						});
+						child.geometry.computeVertexNormals();
 					}
 				});
 				this.scene.add(gltf.scene);

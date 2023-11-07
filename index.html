@@ -17,12 +17,19 @@
 	<div id="sidebar">
 		<p id="camera_position">placeholder.</p>
 		<p id="camera_rotation">placeholder.</p>
-		<p id="performance_deltaTime">placeholder.</p>
-		<p id="performance_fps">placeholder.</p>
-		<button id="toggleButton">Toggle</button>
 		<button id="wireframeButton">Wireframe</button>
 		<label for="opacitySlider">opacity:</label>
 		<input type="range" id="opacitySlider" name="opacitySlider" min="0" max="100">
+		<p id="object_count">placeholder.</p>
+		<button id="spawnConesButton" class="sidebar-button">Spawn Cones</button>
+		<button id="drawAreaButton" class="sidebar-button">Draw Area</button>
+		<button id="digTerrainButton" class="sidebar-button">Dig Terrain</button>
+
+		<style>
+			.active {
+				background-color: #ddd;
+			}
+		</style>
 	</div>
 </body>
 
