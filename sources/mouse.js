@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
+import { DynamicPolygon } from './dynamic_polygon.js';
 
 class Mouse
 {
@@ -19,14 +20,15 @@ class Mouse
 			if (event.clientX >= rect.left && event.clientX <= rect.right &&
 				event.clientY >= rect.top && event.clientY <= rect.bottom) 
 			{
-				this.buttonsPressed[event.button] = true;
-				this.clickSignal = true;
+				this.pressedButtons[event.button] = true;
+				this.pressedButtonsSignal[event.button] = true;
+				requestAnimationFrame(() => this.pressedButtonsSignal[event.button] = false);
 			}
 		}.bind(this));
 
 		document.addEventListener('mouseup', function (event)
 		{
-			this.buttonsPressed[event.button] = false;
+			this.pressedButtons[event.button] = false;
 		}.bind(this));
 
 		document.addEventListener('mousemove', function (event)
@@ -47,12 +49,23 @@ class Mouse
 	{
 		if (this.isCaptured)
 			this.#camera_ref.updateRotation(this.movement.x, this.movement.y);
-		if (this.buttonsPressed[0] && this.isCaptured === false)
+		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
 			if (this.#userInterface_ref?.active_button?.id === 'digTerrainButton')
 				this.digTerrain(this.#scene_ref, this.#camera_ref);
 			else if (this.#userInterface_ref?.active_button?.id === 'spawnConesButton')
-				this.spawnCones(this.#scene_ref, this.#camera_ref, this.#userInterface_ref);
+				this.spawnCones(this.#scene_ref, this.#camera_ref);
+		}
+	}
+
+	onMouseDown()
+	{
+		if (this.pressedButtonsSignal[0] === true)
+		{
+			if (this.isCaptured === false && this.#userInterface_ref.active_button === undefined)
+				document.body.requestPointerLock();
+			if (this.isCaptured === false && this.#userInterface_ref?.active_button?.id === 'drawPolygonButton')
+				this.drawArea(this.#scene_ref, this.#camera_ref);
 		}
 	}
 
@@ -61,13 +74,33 @@ class Mouse
 		this.isCaptured = true;
 		if (document.pointerLockElement == null)
 			this.isCaptured = false;
-		if (this.buttonsPressed[0] && this.clickSignal === true && this.isCaptured === false && this.#userInterface_ref.active_button === undefined)
-		{
-			document.body.requestPointerLock();
-		}
+
+		if (Object.values(this.pressedButtonsSignal).some(value => value === true))
+			this.onMouseDown();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
-		this.clickSignal = false;
+	}
+
+	drawArea(scene, camera)
+	{
+		let raycaster = new THREE.Raycaster();
+
+		raycaster.setFromCamera(this.ray, camera);
+		let intersects = raycaster.intersectObjects(scene.children, true);
+
+		if (intersects.length === 0)
+			return;
+		let intersection = intersects[0];
+
+		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
+		{
+			if (scene.currentDynamicMesh === undefined)
+			{
+				scene.currentDynamicMesh = new DynamicPolygon();
+				scene.add(scene.currentDynamicMesh);
+			}
+			scene.currentDynamicMesh.addVertex(intersection.point);
+		}
 	}
 
 	digTerrain(scene, camera)
@@ -158,11 +191,11 @@ class Mouse
 		return ray;
 	}
 
-	buttonsPressed = { 0: false };
+	pressedButtons = {};
+	pressedButtonsSignal = {};
 	position = { x: 0, y: 0 };
 	movement = { x: 0, y: 0 };
 	isCaptured = false;
-	clickSignal = false;
 	#renderer_ref;
 	#camera_ref;
 	#userInterface_ref;

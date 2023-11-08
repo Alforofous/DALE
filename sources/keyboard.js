@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 class Keyboard
 {
 	constructor()
@@ -9,7 +11,8 @@ class Keyboard
 			if (this.pressedKeyCode[key])
 				return;
 			this.pressedKeyCode[key] = true;
-			this.pressedSignal = true;
+			this.pressedKeyCodeSignal[key] = true;
+			requestAnimationFrame(() => this.pressedKeyCodeSignal[key] = false);
 		});
 
 		document.addEventListener('keyup', (event) =>
@@ -21,23 +24,31 @@ class Keyboard
 
 	onKeyDown(userInterface)
 	{
-		if (this.pressedKeyCode['Digit1'] )
+		if (this.pressedKeyCodeSignal['Digit1'] )
 			userInterface.buttons[0].click();
-		if (this.pressedKeyCode['Digit2'] )
+		if (this.pressedKeyCodeSignal['Digit2'] )
 			userInterface.buttons[1].click();
-		if (this.pressedKeyCode['Digit3'] )
+		if (this.pressedKeyCodeSignal['Digit3'] )
 			userInterface.buttons[2].click();
+		if (userInterface.active_button !== undefined)
+		{
+			document.body.style.cursor = 'crosshair';
+			document.exitPointerLock();
+		}
+		else
+		{
+			document.body.style.cursor = 'default';
+		}
 	}
 
 	onUpdate(userInterface)
 	{
-		if (this.pressedSignal === true)
+		if (Object.values(this.pressedKeyCodeSignal).some(value => value === true))
 			this.onKeyDown(userInterface);
-		this.pressedSignal = false;
 	}
 
 	pressedKeyCode = {};
-	pressedSignal = false;
+	pressedKeyCodeSignal = {};
 }
 
 export { Keyboard };

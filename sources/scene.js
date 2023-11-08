@@ -68,6 +68,7 @@ class Scene extends THREE.Scene
 	}
 
 	opacitySlider;
+	currentDynamicMesh;
 }
 
 export { Scene };
