@@ -56,14 +56,14 @@ class Model
 							maxY = Math.max(maxY, y);
 						}
 
-						let bottomColor = new THREE.Color(0x004D00);
-						let topColor = new THREE.Color(0xFFFFFF);
+						let bottomColor = new THREE.Color(0x126F1C);
+						let topColor = new THREE.Color(0xCDCDCD);
 
 						for (let i = 0; i < positionAttribute.count; i++)
 						{
 							let y = positionAttribute.getY(i);
 							let t = (y - minY) / (maxY - minY);
-							t = Math.pow(t, 5);
+							t = Math.pow(t, 3.2); 
 							let color = new THREE.Color();
 							color.lerpColors(bottomColor, topColor, t);
 

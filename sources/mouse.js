@@ -52,9 +52,9 @@ class Mouse
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
 			if (this.#userInterface_ref?.active_button?.id === 'digTerrainButton')
-				this.digTerrain(this.#scene_ref, this.#camera_ref);
+				this.digTerrain();
 			else if (this.#userInterface_ref?.active_button?.id === 'spawnConesButton')
-				this.spawnCones(this.#scene_ref, this.#camera_ref);
+				this.spawnCones(this.#scene_ref);
 		}
 	}
 
@@ -65,7 +65,9 @@ class Mouse
 			if (this.isCaptured === false && this.#userInterface_ref.active_button === undefined)
 				document.body.requestPointerLock();
 			if (this.isCaptured === false && this.#userInterface_ref?.active_button?.id === 'drawPolygonButton')
-				this.drawArea(this.#scene_ref, this.#camera_ref);
+				this.drawArea(this.#scene_ref);
+			if (this.isCaptured === false && this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
+				this.addCylinder(this.#scene_ref);
 		}
 	}
 
@@ -81,17 +83,11 @@ class Mouse
 			this.onMove();
 	}
 
-	drawArea(scene, camera)
+	drawArea(scene)
 	{
-		let raycaster = new THREE.Raycaster();
-
-		raycaster.setFromCamera(this.ray, camera);
-		let intersects = raycaster.intersectObjects(scene.children, true);
-
-		if (intersects.length === 0)
+		let intersection = this.first_intersected_object;
+		if (intersection === undefined)
 			return;
-		let intersection = intersects[0];
-
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
 			if (scene.currentDynamicMesh === undefined)
@@ -103,16 +99,33 @@ class Mouse
 		}
 	}
 
-	digTerrain(scene, camera)
+	addCylinder(scene)
 	{
-		let raycaster = new THREE.Raycaster();
-
-		raycaster.setFromCamera(this.ray, camera);
-		let intersects = raycaster.intersectObjects(scene.children, true);
-
-		if (intersects.length === 0)
+		let intersection = this.first_intersected_object;
+		if (intersection === undefined)
 			return;
-		let intersection = intersects[0];
+		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
+		{
+			const height = Math.abs(scene.reference_height - intersection.point.y);
+			const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 32);
+			const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xF22F49 });
+			const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+			cylinder.position.y -= height / 2;
+
+			this.#renderer_ref.outlinePass.selectedObjects.push(cylinder);
+
+			const pivot = new THREE.Object3D();
+			pivot.position.copy(intersection.point);
+			pivot.add(cylinder);
+			scene.add(pivot);
+		}
+	}
+
+	digTerrain()
+	{
+		let intersection = this.first_intersected_object;
+		if (intersection === undefined)
+			return;
 
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
@@ -146,15 +159,12 @@ class Mouse
 		}
 	}
 
-	spawnCones(scene, camera)
+	spawnCones(scene)
 	{
-		let raycaster = new THREE.Raycaster();
-
-		raycaster.setFromCamera(this.ray, camera);
-		let intersects = raycaster.intersectObjects(scene.children, true);
-
-		if (intersects.length === 0)
+		let intersection = this.first_intersected_object;
+		if (intersection === undefined)
 			return;
+		
 		let coneGeometry = new THREE.ConeGeometry(1, 10, 3, 1);
 		let coneMaterial = new THREE.MeshPhongMaterial({ color: 0x152FC9 });
 		let cone = new THREE.InstancedMesh(coneGeometry, coneMaterial, 1000);
@@ -170,7 +180,6 @@ class Mouse
 
 		cone.instanceMatrix.needsUpdate = true;
 
-		let intersection = intersects[0];
 		cone.layers.set(1);
 		cone.position.copy(intersection.point);
 
@@ -189,6 +198,21 @@ class Mouse
 		ray.x = ((this.position.x - rect.left) / rect.width) * 2 - 1;
 		ray.y = -((this.position.y - rect.top) / rect.height) * 2 + 1;
 		return ray;
+	}
+
+	get intersected_objects()
+	{
+		let raycaster = new THREE.Raycaster();
+		raycaster.setFromCamera(this.ray, this.#camera_ref);
+		return raycaster.intersectObjects(this.#scene_ref.children, true);
+	}
+
+	get first_intersected_object()
+	{
+		let intersects = this.intersected_objects;
+		if (intersects.length === 0)
+			return undefined;
+		return intersects[0];
 	}
 
 	pressedButtons = {};

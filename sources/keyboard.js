@@ -30,6 +30,8 @@ class Keyboard
 			userInterface.buttons[1].click();
 		if (this.pressedKeyCodeSignal['Digit3'] )
 			userInterface.buttons[2].click();
+		if (this.pressedKeyCodeSignal['Digit4'] )
+			userInterface.buttons[3].click();
 		if (userInterface.active_button !== undefined)
 		{
 			document.body.style.cursor = 'crosshair';

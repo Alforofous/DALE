@@ -20,11 +20,18 @@ class Scene extends THREE.Scene
 		pointLight.add(pointLightHelper);
 		this.add(pointLightHelper);
 
-		const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+		const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
 		this.add(ambientLight);
 
 		this.opacitySlider = document.getElementById('opacitySlider');
 		this.opacitySlider.addEventListener('input', this.changeOpacity.bind(this));
+
+		const planeGeometry = new THREE.PlaneGeometry(10000, 10000, 20, 20);
+		const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x5D8DD9, wireframe: true });
+		const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+		plane.lookAt(new THREE.Vector3(0, 1, 0));
+		plane.position.y = this.reference_height;
+		this.add(plane);
 	}
 
 	changeOpacity()
@@ -57,18 +64,17 @@ class Scene extends THREE.Scene
 			{
 				object.material[i].opacity = value;
 				object.material[i].transparent = value < 1;
-				object.material[i].depthTest = value < 1;
 			}
 		} else
 		{
 			object.material.opacity = value;
 			object.material.transparent = value < 1;
-			object.material.depthTest = value < 1;
 		}
 	}
 
 	opacitySlider;
 	currentDynamicMesh;
+	reference_height = 0;
 }
 
 export { Scene };
