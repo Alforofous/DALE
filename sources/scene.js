@@ -24,28 +24,27 @@ class Scene extends THREE.Scene
 		this.add(ambientLight);
 
 		this.opacitySlider = document.getElementById('opacitySlider');
-		this.opacitySlider.addEventListener('input', this.changeOpacity);
+		this.opacitySlider.addEventListener('input', this.changeOpacity.bind(this));
 	}
 
 	changeOpacity()
 	{
-		let value = parseFloat(opacitySlider.value) / 100;
+		let value = parseFloat(this.opacitySlider.value) / 100;
 		for (let i = 0; i < this.children.length; i++)
 		{
 			let object = this.children[i];
 			if (object instanceof THREE.Group)
 			{
-				object.traverse(function (child)
+				object.traverse((child) =>
 				{
 					if (child.material)
 					{
-						setOpacity(child, value);
+						this.setOpacity(child, value);
 					}
 				});
-			}
-			else if (object.material)
+			} else if (object.material)
 			{
-				setOpacity(object, value);
+				this.setOpacity(object, value);
 			}
 		}
 	}
@@ -58,12 +57,13 @@ class Scene extends THREE.Scene
 			{
 				object.material[i].opacity = value;
 				object.material[i].transparent = value < 1;
+				object.material[i].depthTest = value < 1;
 			}
-		}
-		else
+		} else
 		{
 			object.material.opacity = value;
 			object.material.transparent = value < 1;
+			object.material.depthTest = value < 1;
 		}
 	}
 

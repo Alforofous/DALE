@@ -73,7 +73,20 @@ class UI
 		camera_rotation.textContent = 'Camera rotation: x: ' + camera.rotation.x.toFixed(2) + ', y: ' + camera.rotation.y.toFixed(2) + ', z: ' + camera.rotation.z.toFixed(2);
 
 		const object_count = document.getElementById('object_count');
-		object_count.textContent = 'Object count: ' + scene.children.length;
+		let triangleCount = 0;
+		scene.traverse((child) =>
+		{
+			if (child.isMesh)
+			{
+				let count = child.geometry.index ? child.geometry.index.count / 3 : child.geometry.attributes.position.count / 3;
+				if (child instanceof THREE.InstancedMesh)
+				{
+					count *= child.count;
+				}
+				triangleCount += count;
+			}
+		});
+		object_count.textContent = 'Object count: ' + scene.children.length + ', Triangle count: ' + triangleCount;
 	}
 
 	buttons;
