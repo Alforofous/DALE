@@ -29,6 +29,8 @@ class Mouse
 		document.addEventListener('mouseup', function (event)
 		{
 			this.pressedButtons[event.button] = false;
+			this.releasedButtonsSignal[event.button] = true;
+			requestAnimationFrame(() => this.releasedButtonsSignal[event.button] = false);
 		}.bind(this));
 
 		document.addEventListener('mousemove', function (event)
@@ -55,20 +57,72 @@ class Mouse
 				this.digTerrain();
 			else if (this.#userInterface_ref?.active_button?.id === 'spawnConesButton')
 				this.spawnCones(this.#scene_ref);
+			else if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
+				this.updateSelectionRectangle();
+		}
+	}
+
+	onMouseUp()
+	{
+		if (this.releasedButtonsSignal[0] && this.isCaptured === false)
+		{
+			if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
+				this.destroySelectionRectangle();
 		}
 	}
 
 	onMouseDown()
 	{
-		if (this.pressedButtonsSignal[0] === true)
+		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
-			if (this.isCaptured === false && this.#userInterface_ref.active_button === undefined)
+			if (this.#userInterface_ref.active_button === undefined)
 				document.body.requestPointerLock();
-			if (this.isCaptured === false && this.#userInterface_ref?.active_button?.id === 'drawPolygonButton')
+			else if (this.#userInterface_ref?.active_button?.id === 'drawPolygonButton')
 				this.drawArea(this.#scene_ref);
-			if (this.isCaptured === false && this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
+			else if (this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
 				this.addCylinder(this.#scene_ref);
+			else if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
+				this.createSelectionRectangle();
 		}
+	}
+
+	createSelectionRectangle()
+	{
+		this.selection_rectangle = document.createElement('div');
+		this.selection_rectangle.style.position = 'absolute';
+		this.selection_rectangle.style.backgroundColor = 'rgba(134, 221, 255, 0.2)';
+
+		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+		this.xy1 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
+
+		this.selection_rectangle.style.left = `${rendererBounds.left + this.xy1.x}px`;
+		this.selection_rectangle.style.top = `${rendererBounds.top + this.xy1.y}px`;
+
+		document.body.appendChild(this.selection_rectangle);
+	}
+
+	updateSelectionRectangle()
+	{
+		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+		this.xy2 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
+
+		let left = Math.min(this.xy1.x, this.xy2.x);
+		let top = Math.min(this.xy1.y, this.xy2.y);
+		let width = Math.abs(this.xy1.x - this.xy2.x);
+		let height = Math.abs(this.xy1.y - this.xy2.y);
+
+		this.selection_rectangle.style.left = `${rendererBounds.left + left}px`;
+		this.selection_rectangle.style.top = `${rendererBounds.top + top}px`;
+		this.selection_rectangle.style.width = `${width}px`;
+		this.selection_rectangle.style.height = `${height}px`;
+	}
+
+	destroySelectionRectangle()
+	{
+		if (this.selection_rectangle === undefined)
+			return;
+		this.selection_rectangle.remove();
+		this.selection_rectangle = undefined;
 	}
 
 	onUpdate()
@@ -79,6 +133,8 @@ class Mouse
 
 		if (Object.values(this.pressedButtonsSignal).some(value => value === true))
 			this.onMouseDown();
+		if (Object.values(this.releasedButtonsSignal).some(value => value === true))
+			this.onMouseUp();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
 	}
@@ -215,8 +271,10 @@ class Mouse
 		return intersects[0];
 	}
 
+	selection_rectangle;
 	pressedButtons = {};
 	pressedButtonsSignal = {};
+	releasedButtonsSignal = {};
 	position = { x: 0, y: 0 };
 	movement = { x: 0, y: 0 };
 	isCaptured = false;

@@ -24,14 +24,17 @@ class Keyboard
 
 	onKeyDown(userInterface)
 	{
-		if (this.pressedKeyCodeSignal['Digit1'] )
+		if (this.pressedKeyCodeSignal['Digit1'])
 			userInterface.buttons[0].click();
-		if (this.pressedKeyCodeSignal['Digit2'] )
+		else if (this.pressedKeyCodeSignal['Digit2'])
 			userInterface.buttons[1].click();
-		if (this.pressedKeyCodeSignal['Digit3'] )
+		else if (this.pressedKeyCodeSignal['Digit3'])
 			userInterface.buttons[2].click();
-		if (this.pressedKeyCodeSignal['Digit4'] )
+		else if (this.pressedKeyCodeSignal['Digit4'])
 			userInterface.buttons[3].click();
+		else if (this.pressedKeyCodeSignal['Digit5'])
+			userInterface.buttons[4].click();
+
 		if (userInterface.active_button !== undefined)
 		{
 			document.body.style.cursor = 'crosshair';
