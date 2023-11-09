@@ -8,6 +8,13 @@ import { Keyboard } from './keyboard.js';
 import { UI } from './UI.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+
+// Add the extension functions
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
+
 //use this if we want fixed point camera
 //import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
@@ -35,6 +42,14 @@ function init()
 	composer.addPass(renderPass);
 	composer.addPass(renderer.outlinePass);
 
+	scene.traverse((child) =>
+	{
+		if (child.isMesh)
+		{
+			console.log(child);
+			child.geometry.computeBoundsTree();
+		}
+	});
 	onUpdate();
 }
 

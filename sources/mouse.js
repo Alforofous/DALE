@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamic_polygon.js';
 
+
 class Mouse
 {
 	constructor(renderer, scene, userInterface, camera)
@@ -67,7 +68,12 @@ class Mouse
 		if (this.releasedButtonsSignal[0] && this.isCaptured === false)
 		{
 			if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
+			{
+				if (this.selection_rectangle === undefined)
+					return;
+				this.#renderer_ref.outlinePass.selectedObjects = this.selectObjectsWithinRectangle();
 				this.destroySelectionRectangle();
+			}
 		}
 	}
 
@@ -84,6 +90,41 @@ class Mouse
 			else if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
 				this.createSelectionRectangle();
 		}
+	}
+
+	selectObjectsWithinRectangle()
+	{
+		let selectedObjects = new Set();
+
+		let rect = this.selection_rectangle.getBoundingClientRect();
+		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+
+		console.time("selectObjectsWithinRectangle");
+		console.log(rect);
+
+		for (let x = rect.left; x <= rect.right; x++)
+		{
+			for (let y = rect.top; y <= rect.bottom; y++)
+			{
+				let ndcX = ((x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
+				let ndcY = -((y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
+
+				let raycaster = new THREE.Raycaster();
+				raycaster.firstHitOnly = true;
+				raycaster.setFromCamera({ x: ndcX, y: ndcY }, this.#camera_ref);
+
+				let intersections = raycaster.intersectObjects(this.#scene_ref.children, true);
+
+				if (intersections.length > 0)
+				{
+					selectedObjects.add(intersections[0].object);
+				}
+			}
+		}
+
+		console.timeEnd("selectObjectsWithinRectangle");
+
+		return Array.from(selectedObjects);
 	}
 
 	createSelectionRectangle()
@@ -119,8 +160,6 @@ class Mouse
 
 	destroySelectionRectangle()
 	{
-		if (this.selection_rectangle === undefined)
-			return;
 		this.selection_rectangle.remove();
 		this.selection_rectangle = undefined;
 	}
@@ -166,6 +205,7 @@ class Mouse
 			const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 32);
 			const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xF22F49 });
 			const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+			cylinder.layers.set(2);
 			cylinder.position.y -= height / 2;
 
 			this.#renderer_ref.outlinePass.selectedObjects.push(cylinder);

@@ -9,6 +9,7 @@ class Camera extends PerspectiveCamera
 		this.position.z = 50;
 		this.position.y = 700;
 		this.layers.enable(1);
+		this.layers.enable(2);
 	}
 
 	update(keysPressed, deltaTime)
