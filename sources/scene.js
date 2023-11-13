@@ -37,23 +37,7 @@ class Scene extends THREE.Scene
 	changeOpacity()
 	{
 		let value = parseFloat(this.opacitySlider.value) / 100;
-		for (let i = 0; i < this.children.length; i++)
-		{
-			let object = this.children[i];
-			if (object instanceof THREE.Group)
-			{
-				object.traverse((child) =>
-				{
-					if (child.material)
-					{
-						this.setOpacity(child, value);
-					}
-				});
-			} else if (object.material)
-			{
-				this.setOpacity(object, value);
-			}
-		}
+		this.setOpacity(this.terrainMesh, value);
 	}
 
 	setOpacity(object, value)
