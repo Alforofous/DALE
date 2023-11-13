@@ -24,17 +24,17 @@ class Scene extends THREE.Scene
 		this.add(ambientLight);
 
 		this.opacitySlider = document.getElementById('opacitySlider');
-		this.opacitySlider.addEventListener('input', this.changeOpacity.bind(this));
+		this.opacitySlider.addEventListener('input', this.changeTerrainMeshOpacity.bind(this));
 
 		const planeGeometry = new THREE.PlaneGeometry(10000, 10000, 20, 20);
-		const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x5D8DD9, wireframe: true });
+		const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xF4CD15, wireframe: true });
 		const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 		plane.lookAt(new THREE.Vector3(0, 1, 0));
 		plane.position.y = this.reference_height;
 		this.add(plane);
 	}
 
-	changeOpacity()
+	changeTerrainMeshOpacity()
 	{
 		let value = parseFloat(this.opacitySlider.value) / 100;
 		this.setOpacity(this.terrainMesh, value);
@@ -60,6 +60,7 @@ class Scene extends THREE.Scene
 	currentDynamicMesh;
 	reference_height = 0;
 	terrainMesh;
+	cylinders = [];
 }
 
 export { Scene };

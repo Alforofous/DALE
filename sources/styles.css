@@ -10,6 +10,11 @@
 	z-index: 2;
 }
 
+body
+{
+	overflow: hidden;
+}
+
 #sidebar button
 {
 	color: #77818b;

@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamic_polygon.js';
 import { GPUPicker } from './static_modules/src/gpupicker.js';
+import { SelectionBox } from 'three/examples/jsm/interactive/SelectionBox.js';
+import { SelectionHelper } from 'three/examples/jsm/interactive/SelectionHelper.js'
+import { originPointMarkers } from './origin_point_markers.js';
 
 class Mouse
 {
@@ -15,6 +18,8 @@ class Mouse
 		this.#camera_ref = camera;
 		this.#userInterface_ref = userInterface;
 		this.gpu_picker = new GPUPicker(THREE, renderer, scene, camera);
+		this.selectionBox = new SelectionBox(camera, scene);
+		this.selectionHelper = new SelectionHelper(renderer, 'selectBox');
 
 		document.addEventListener('mousedown', function (event)
 		{
@@ -61,6 +66,8 @@ class Mouse
 				this.spawnCones(this.#scene_ref);
 			else if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
 				this.updateSelectionRectangle();
+			else if (this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
+				this.addCylinder(this.#scene_ref);
 		}
 	}
 
@@ -72,7 +79,6 @@ class Mouse
 			{
 				if (this.selection_rectangle === undefined)
 					return;
-				this.#renderer_ref.outlinePass.selectedObjects = this.selectObjectsWithinRectangle();
 				this.destroySelectionRectangle();
 			}
 		}
@@ -93,59 +99,22 @@ class Mouse
 		}
 	}
 
-	selectObjectAtCoordinates(x, y)
-	{
-		var objectId = this.gpu_picker.pick(
-			(x),
-			(y),
-			obj => 
-			{
-				if (this.#renderer_ref.outlinePass.selectedObjects.includes(obj))
-				{
-					console.log('already selected' + ' ' + obj.id);
-					return false;
-				}
-				return true;
-			});
-		const selectedObject = this.#scene_ref.getObjectById(objectId);
-		return selectedObject;
-	}
-
-	selectObjectsWithinRectangle()
-	{
-		
-		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
-		let selected_objects = [];
-		
-		let rect = this.selection_rectangle.getBoundingClientRect();
-		let left = rect.left - rendererBounds.left;
-		let top = rect.top - rendererBounds.top;
-		let width = rect.width;
-		let height = rect.height;
-
-		// Loop through all pixels in the rectangle
-		for (let x = left; x < left + width + 1; x++)
-		{
-			for (let y = top; y < top + height + 1; y++)
-			{
-				// Select the object at the current pixel
-				let selected_object = this.selectObjectAtCoordinates(x, y);
-				if (selected_object !== undefined && !selected_objects.includes(selected_object))
-				{
-					selected_objects.push(selected_object);
-				}
-			}
-		}
-		return selected_objects;
-	}
-
 	createSelectionRectangle()
 	{
+		this.#renderer_ref.outlinePass.selectedObjects = [];
+		this.originPointMarkers = new originPointMarkers(this.#scene_ref.cylinders, this.#scene_ref);
+
+		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+
+		let normalizedX = ((this.position.x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
+		let normalizedY = -((this.position.y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
+
+		this.selectionBox.startPoint.set(normalizedX, normalizedY, 0.5);
+
 		this.selection_rectangle = document.createElement('div');
 		this.selection_rectangle.style.position = 'absolute';
 		this.selection_rectangle.style.backgroundColor = 'rgba(134, 221, 255, 0.2)';
 
-		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
 		this.xy1 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
 
 		this.selection_rectangle.style.left = `${rendererBounds.left + this.xy1.x}px`;
@@ -157,6 +126,25 @@ class Mouse
 	updateSelectionRectangle()
 	{
 		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+		if (this.selectionHelper.isDown)
+		{
+			let normalizedX = ((this.position.x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
+			let normalizedY = -((this.position.y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
+
+			this.#renderer_ref.outlinePass.selectedObjects = [];
+			let selectedObjects = this.selectionBox.select();
+			for (let i = 0; i < selectedObjects.length; i++)
+			{
+				const selectedObject = selectedObjects[i];
+				if ((selectedObject.layers.mask & 4) === 4)
+				{
+					this.#renderer_ref.outlinePass.selectedObjects.push(selectedObject);
+				}
+			}
+	
+			this.selectionBox.endPoint.set(normalizedX, normalizedY, 0.5);
+		}
+
 		this.xy2 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
 
 		let left = Math.min(this.xy1.x, this.xy2.x);
@@ -172,6 +160,7 @@ class Mouse
 
 	destroySelectionRectangle()
 	{
+		this.originPointMarkers.deletePoints();
 		this.selection_rectangle.remove();
 		this.selection_rectangle = undefined;
 	}
@@ -217,10 +206,12 @@ class Mouse
 			const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 32);
 			const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xF22F49 });
 			const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+			cylinder.name = 'cylinder';
 			cylinder.layers.set(2);
 			cylinder.position.y -= height / 2;
 
 			this.#renderer_ref.outlinePass.selectedObjects.push(cylinder);
+			this.#scene_ref.cylinders.push(cylinder);
 
 			const pivot = new THREE.Object3D();
 			pivot.position.copy(intersection.point);
@@ -335,6 +326,7 @@ class Mouse
 	#camera_ref;
 	#userInterface_ref;
 	#scene_ref;
+	originPointMarkers;
 }
 
 export { Mouse };
