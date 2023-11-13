@@ -3,19 +3,27 @@
 	position: fixed;
 	left: 0;
 	top: 0;
-	width: 200px;
+	width: 25%;
 	height: 100%;
-	padding: 20px;
-	background-color: #f8f9fa;
+	color: #77818b;
+	background-color: #12293f;
 	z-index: 2;
 }
 
 #sidebar button
 {
+	color: #77818b;
 	display: block;
 	width: 100%;
 	padding: 10px;
 	margin-bottom: 10px;
+	background-color: #18334d;
+}
+
+#sidebar button.active
+{
+	color: aquamarine;
+	background-color: #2f5272
 }
 
 #sidebar input[type="text"]

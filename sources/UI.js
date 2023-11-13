@@ -25,27 +25,16 @@ class UI
 			}.bind(this));
 		});
 
+		const button = document.querySelector('#sidebar button');
+		button.addEventListener('click', () =>
+		{
+			button.classList.toggle('active');
+		});
+
 		this.wireframeButton = document.getElementById('wireframeButton');
 		this.wireframeButton.addEventListener('click', function ()
 		{
-			for (let i = 0; i < scene.children.length; i++)
-			{
-				let object = scene.children[i];
-				if (object instanceof THREE.Group)
-				{
-					object.traverse(function (child)
-					{
-						if (child.material)
-						{
-							toggleWireframe(child);
-						}
-					});
-				}
-				else if (object.material)
-				{
-					toggleWireframe(object);
-				}
-			}
+			toggleWireframe(scene.terrainMesh);
 		});
 
 		function toggleWireframe(object)
@@ -53,14 +42,10 @@ class UI
 			if (Array.isArray(object.material))
 			{
 				for (let i = 0; i < object.material.length; i++)
-				{
 					object.material[i].wireframe = !object.material[i].wireframe;
-				}
 			}
 			else
-			{
 				object.material.wireframe = !object.material.wireframe;
-			}
 		}
 	}
 

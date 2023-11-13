@@ -43,6 +43,7 @@ class Model
 				{
 					if (child.isMesh)
 					{
+						this.scene.terrainMesh = child;
 						let geometry = child.geometry;
 						let positionAttribute = geometry.attributes.position;
 						let colors = new Float32Array(positionAttribute.count * 3);

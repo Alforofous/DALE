@@ -32,28 +32,6 @@ class Scene extends THREE.Scene
 		plane.lookAt(new THREE.Vector3(0, 1, 0));
 		plane.position.y = this.reference_height;
 		this.add(plane);
-
-		let canvas = document.createElement('canvas');
-		canvas.width = 500;  // adjust as needed
-		canvas.height = 100;  // adjust as needed
-		let context = canvas.getContext('2d');
-
-		context.fillStyle = 'rgba(2, 2, 255, 0.5)';  // adjust color and transparency as needed
-		context.fillRect(0, 0, canvas.width, canvas.height);
-
-		let texture = new THREE.CanvasTexture(canvas);
-
-		let material = new THREE.SpriteMaterial({
-			map: texture,
-			transparent: true,
-			opacity: 0.5,
-		});
-
-		let sprite = new THREE.Sprite(material);
-		sprite.position.set(0, 0, 0);  // adjust as needed
-		sprite.scale.set(100, 100, 1);  // adjust as needed
-
-		this.add(sprite);
 	}
 
 	changeOpacity()
@@ -97,6 +75,7 @@ class Scene extends THREE.Scene
 	opacitySlider;
 	currentDynamicMesh;
 	reference_height = 0;
+	terrainMesh;
 }
 
 export { Scene };

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamic_polygon.js';
-
+import { GPUPicker } from './static_modules/src/gpupicker.js';
 
 class Mouse
 {
@@ -14,6 +14,7 @@ class Mouse
 		this.#renderer_ref = renderer;
 		this.#camera_ref = camera;
 		this.#userInterface_ref = userInterface;
+		this.gpu_picker = new GPUPicker(THREE, renderer, scene, camera);
 
 		document.addEventListener('mousedown', function (event)
 		{
@@ -92,39 +93,50 @@ class Mouse
 		}
 	}
 
+	selectObjectAtCoordinates(x, y)
+	{
+		var objectId = this.gpu_picker.pick(
+			(x),
+			(y),
+			obj => 
+			{
+				if (this.#renderer_ref.outlinePass.selectedObjects.includes(obj))
+				{
+					console.log('already selected' + ' ' + obj.id);
+					return false;
+				}
+				return true;
+			});
+		const selectedObject = this.#scene_ref.getObjectById(objectId);
+		return selectedObject;
+	}
+
 	selectObjectsWithinRectangle()
 	{
-		let selectedObjects = new Set();
-
-		let rect = this.selection_rectangle.getBoundingClientRect();
+		
 		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+		let selected_objects = [];
+		
+		let rect = this.selection_rectangle.getBoundingClientRect();
+		let left = rect.left - rendererBounds.left;
+		let top = rect.top - rendererBounds.top;
+		let width = rect.width;
+		let height = rect.height;
 
-		console.time("selectObjectsWithinRectangle");
-		console.log(rect);
-
-		for (let x = rect.left; x <= rect.right; x++)
+		// Loop through all pixels in the rectangle
+		for (let x = left; x < left + width + 1; x++)
 		{
-			for (let y = rect.top; y <= rect.bottom; y++)
+			for (let y = top; y < top + height + 1; y++)
 			{
-				let ndcX = ((x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
-				let ndcY = -((y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
-
-				let raycaster = new THREE.Raycaster();
-				raycaster.firstHitOnly = true;
-				raycaster.setFromCamera({ x: ndcX, y: ndcY }, this.#camera_ref);
-
-				let intersections = raycaster.intersectObjects(this.#scene_ref.children, true);
-
-				if (intersections.length > 0)
+				// Select the object at the current pixel
+				let selected_object = this.selectObjectAtCoordinates(x, y);
+				if (selected_object !== undefined && !selected_objects.includes(selected_object))
 				{
-					selectedObjects.add(intersections[0].object);
+					selected_objects.push(selected_object);
 				}
 			}
 		}
-
-		console.timeEnd("selectObjectsWithinRectangle");
-
-		return Array.from(selectedObjects);
+		return selected_objects;
 	}
 
 	createSelectionRectangle()
@@ -263,12 +275,13 @@ class Mouse
 		
 		let coneGeometry = new THREE.ConeGeometry(1, 10, 3, 1);
 		let coneMaterial = new THREE.MeshPhongMaterial({ color: 0x152FC9 });
-		let cone = new THREE.InstancedMesh(coneGeometry, coneMaterial, 1000);
+		let cone = new THREE.InstancedMesh(coneGeometry, coneMaterial, 10000);
 
 		let matrix = new THREE.Matrix4();
+		const distance = 100;
 		for (let i = 0; i < cone.count; i++)
 		{
-			let moveVector = new THREE.Vector3(randFloat(-40, 40), randFloat(-40, 40), randFloat(-40, 40));
+			let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
 			matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
 			cone.setMatrixAt(i, matrix);

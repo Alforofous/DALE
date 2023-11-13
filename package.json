@@ -12,6 +12,7 @@
   "dependencies": {
     "stats.js": "^0.17.0",
     "three": "^0.158.0",
+    "three_gpu_picking": "^1.0.4",
     "three-mesh-bvh": "^0.6.8",
     "three.meshline": "^1.4.0",
     "webpack": "^5.89.0"
