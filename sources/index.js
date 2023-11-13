@@ -115,9 +115,9 @@ function renderViewports()
 
 window.addEventListener('resize', () =>
 {
-	renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 	renderer.domElement.style.position = 'relative';
 	renderer.domElement.style.width = '75%';
 	renderer.domElement.style.height = '100vh';
 	renderer.domElement.style.left = `25%`;
+	renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 });
