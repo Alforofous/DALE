@@ -10,6 +10,7 @@ class DynamicPolygon extends Line2
 		const geometry = new LineGeometry();
 		const material = new LineMaterial({ color: 0xFFA500, linewidth: 5 });
 		super(geometry, material);
+		this.layers.set(1);
 		this.material.resolution.set(window.innerWidth, window.innerHeight);
 		this.vertices = [];
 	}
