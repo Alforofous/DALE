@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "postprocessing": "^6.33.3",
     "stats.js": "^0.17.0",
     "three": "^0.158.0",
     "three_gpu_picking": "^1.0.4",

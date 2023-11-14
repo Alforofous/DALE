@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamic_polygon.js';
-import { GPUPicker } from './static_modules/src/gpupicker.js';
 import { SelectionBox } from 'three/examples/jsm/interactive/SelectionBox.js';
 import { SelectionHelper } from 'three/examples/jsm/interactive/SelectionHelper.js'
 import { originPointMarkers } from './origin_point_markers.js';
@@ -17,7 +16,6 @@ class Mouse
 		this.#renderer_ref = renderer;
 		this.#camera_ref = camera;
 		this.#userInterface_ref = userInterface;
-		this.gpu_picker = new GPUPicker(THREE, renderer, scene, camera);
 		this.selectionBox = new SelectionBox(camera, scene);
 		this.selectionHelper = new SelectionHelper(renderer, 'selectBox');
 
@@ -64,8 +62,6 @@ class Mouse
 				this.digTerrain();
 			else if (this.#userInterface_ref?.active_button?.id === 'spawnConesButton')
 				this.spawnCones(this.#scene_ref);
-			else if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
-				this.updateSelectionRectangle();
 			else if (this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
 				this.addCylinder(this.#scene_ref);
 		}
@@ -101,7 +97,6 @@ class Mouse
 
 	createSelectionRectangle()
 	{
-		this.#renderer_ref.outlinePass.selectedObjects = [];
 		this.originPointMarkers = new originPointMarkers(this.#scene_ref.cylinders, this.#scene_ref);
 
 		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
@@ -126,36 +121,35 @@ class Mouse
 	updateSelectionRectangle()
 	{
 		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
-		if (this.selectionHelper.isDown)
+		if (this.selectionHelper.isDown && this.selection_rectangle !== undefined)
 		{
 			let normalizedX = ((this.position.x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
 			let normalizedY = -((this.position.y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
 
-			this.#renderer_ref.outlinePass.selectedObjects = [];
+			this.#renderer_ref.outlineEffect.selection.clear();
+			this.#renderer_ref.outlineEffect.selection.add(this.originPointMarkers.points);
 			let selectedObjects = this.selectionBox.select();
 			for (let i = 0; i < selectedObjects.length; i++)
 			{
 				const selectedObject = selectedObjects[i];
 				if ((selectedObject.layers.mask & 4) === 4)
 				{
-					this.#renderer_ref.outlinePass.selectedObjects.push(selectedObject);
+					this.#renderer_ref.outlineEffect.selection.add(selectedObject);
 				}
 			}
-	
 			this.selectionBox.endPoint.set(normalizedX, normalizedY, 0.5);
+			this.xy2 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
+
+			let left = Math.min(this.xy1.x, this.xy2.x);
+			let top = Math.min(this.xy1.y, this.xy2.y);
+			let width = Math.abs(this.xy1.x - this.xy2.x);
+			let height = Math.abs(this.xy1.y - this.xy2.y);
+
+			this.selection_rectangle.style.left = `${rendererBounds.left + left}px`;
+			this.selection_rectangle.style.top = `${rendererBounds.top + top}px`;
+			this.selection_rectangle.style.width = `${width}px`;
+			this.selection_rectangle.style.height = `${height}px`;
 		}
-
-		this.xy2 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
-
-		let left = Math.min(this.xy1.x, this.xy2.x);
-		let top = Math.min(this.xy1.y, this.xy2.y);
-		let width = Math.abs(this.xy1.x - this.xy2.x);
-		let height = Math.abs(this.xy1.y - this.xy2.y);
-
-		this.selection_rectangle.style.left = `${rendererBounds.left + left}px`;
-		this.selection_rectangle.style.top = `${rendererBounds.top + top}px`;
-		this.selection_rectangle.style.width = `${width}px`;
-		this.selection_rectangle.style.height = `${height}px`;
 	}
 
 	destroySelectionRectangle()
@@ -177,6 +171,8 @@ class Mouse
 			this.onMouseUp();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
+		if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
+			this.updateSelectionRectangle();
 	}
 
 	drawArea(scene)
@@ -210,7 +206,7 @@ class Mouse
 			cylinder.layers.set(2);
 			cylinder.position.y -= height / 2;
 
-			this.#renderer_ref.outlinePass.selectedObjects.push(cylinder);
+			this.#renderer_ref.outlineEffect.selection.add(cylinder);
 			this.#scene_ref.cylinders.push(cylinder);
 
 			const pivot = new THREE.Object3D();

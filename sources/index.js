@@ -6,8 +6,6 @@ import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 // Add the extension functions
@@ -25,16 +23,11 @@ const scene = new Scene();
 const camera = new Camera(scene);
 const renderer = new Renderer(scene, camera);
 
-document.body.appendChild(renderer.domElement);
-renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
-
 const userInterface = new UI(scene);
 const mouse = new Mouse(renderer, scene, userInterface, camera);
 const keyboard = new Keyboard();
 const model = new Model(scene);
 const clock = new THREE.Clock();
-const composer = new EffectComposer(renderer);
-const renderPass = new RenderPass(scene, camera);
 
 const views = [
 	{
@@ -63,8 +56,6 @@ function init()
 	clock.start();
 
 	model.loadGLTF('Icelandic_mountain.gltf');
-	composer.addPass(renderPass);
-	composer.addPass(renderer.outlinePass);
 
 	scene.traverse((child) =>
 	{
@@ -88,17 +79,22 @@ function onUpdate()
 
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);
-	userInterface.updateInfo(camera, deltaTime, scene);
+	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	stats.end();
 	requestAnimationFrame(onUpdate);
+	renderer.info.reset();
 }
 
 function renderViewports()
 {
 	for (let i = 0; i < views.length; ++i)
 	{
+		if (i > 0 && !userInterface.showViewport2)
+		{
+			break;
+		}
+
 		const view = views[i];
-		const camera = view.camera;
 
 		const rendererBounds = renderer.domElement.getBoundingClientRect();
 		const left = Math.floor(rendererBounds.width * view.left);
@@ -109,7 +105,7 @@ function renderViewports()
 		renderer.setScissor(left, bottom, width, height);
 		renderer.setScissorTest(true);
 
-		composer.render();
+		renderer.composer.render();
 	}
 }
 
@@ -120,4 +116,5 @@ window.addEventListener('resize', () =>
 	renderer.domElement.style.height = '100vh';
 	renderer.domElement.style.left = `25%`;
 	renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+	renderer.composer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 });

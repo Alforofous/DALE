@@ -34,6 +34,8 @@ class Keyboard
 			userInterface.buttons[3].click();
 		else if (this.pressedKeyCodeSignal['Digit5'])
 			userInterface.buttons[4].click();
+		else if (this.pressedKeyCodeSignal['ShiftRight'])
+			userInterface.showViewport2 = !userInterface.showViewport2;
 
 		if (userInterface.active_button !== undefined)
 		{
