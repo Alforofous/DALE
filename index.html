@@ -21,16 +21,17 @@
 		<label for="opacitySlider">opacity:</label>
 		<input type="range" id="opacitySlider" name="opacitySlider" min="0" max="100">
 		<p id="object_count">placeholder.</p>
-		<button id="spawnConesButton" class="sidebar-button">Spawn Cones</button>
-		<button id="drawPolygonButton" class="sidebar-button">Draw Polygon Area</button>
-		<button id="digTerrainButton" class="sidebar-button">Dig Terrain</button>
-		<button id="addCylinderButton" class="sidebar-button">Add Cylinder</button>
-		<button id="objectSelectionButton" class="sidebar-button">Select Objects</button>
-		<style>
-			.active {
-				background-color: #ddd;
-			}
-		</style>
+		<button id="spawnConesButton" class="tool_menu">Spawn Cones</button>
+		<button id="drawPolygonButton" class="tool_menu">Draw Polygon Area</button>
+		<button id="digTerrainButton" class="tool_menu">Dig Terrain</button>
+		<div id="drillHoleMenu" class="tool_menu">Drill Hole
+			<button id="addDrillHole" class="tool_button toggle_visibility">Add</button>
+			<button id="selectDrillHole" class="tool_button toggle_visibility">Select</button>
+			<button id="testDrillHole" class="tool_button toggle_visibility">Move selected</button>
+		</div>
+		<div id="test" class="tool_menu">TEST
+			<button id="testbutton" class="tool_button toggle_visibility">Add</button>
+		</div>
 	</div>
 </body>
 

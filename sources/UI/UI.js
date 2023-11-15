@@ -1,35 +1,11 @@
 import * as THREE from 'three';
+import { createToolMenusArray } from './tool_menus';
 
 class UI
 {
 	constructor(scene)
 	{
-		this.buttons = document.querySelectorAll('.sidebar-button');
-
-		this.buttons.forEach(button =>
-		{
-			button.addEventListener('click', function (event)
-			{
-				this.buttons.forEach(btn => btn.classList.remove('active'));
-				if (this.active_button === event.target)
-				{
-					event.target.classList.remove('active');
-					this.active_button = undefined;
-					return;
-				}
-				else
-				{
-					event.target.classList.add('active');
-					this.active_button = event.target;
-				}
-			}.bind(this));
-		});
-
-		const button = document.querySelector('#sidebar button');
-		button.addEventListener('click', () =>
-		{
-			button.classList.toggle('active');
-		});
+		this.tool_menus = createToolMenusArray();
 
 		this.wireframeButton = document.getElementById('wireframeButton');
 		this.wireframeButton.addEventListener('click', function ()
@@ -47,7 +23,18 @@ class UI
 			else
 				object.material.wireframe = !object.material.wireframe;
 		}
-		this.showViewport2 = true;
+		this.showViewport2 = false;
+	}
+
+	activeToolMenu()
+	{
+		let active_menu = undefined;
+		this.tool_menus.forEach(tool_menu =>
+		{
+			if (tool_menu.isActive())
+				active_menu = tool_menu;
+		});
+		return (active_menu);
 	}
 
 	updateInfo(camera, deltaTime, scene, renderer)
@@ -64,8 +51,7 @@ class UI
 		object_count.textContent = 'Object count: ' + objectCount + ', Triangle count: ' + triangleCount;
 	}
 
-	buttons;
-	active_button;
+	active_menu;
 	wireframeButton;
 }
 

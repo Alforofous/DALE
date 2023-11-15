@@ -37,7 +37,7 @@ class Renderer extends WebGLRenderer
 				pulseSpeed: 0.5,
 				visibleEdgeColor: 0x379CA5,
 				hiddenEdgeColor: 0xFFFFFF,
-				edgeStrength: 2.0,
+				edgeStrength: 3.0,
 				blur: false,
 			}
 		);

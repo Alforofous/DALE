@@ -5,7 +5,7 @@ import { Renderer } from './renderer.js';
 import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
-import { UI } from './UI.js';
+import { UI } from './UI/UI.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 // Add the extension functions

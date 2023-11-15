@@ -1,5 +1,3 @@
-import * as THREE from 'three';
-
 class Keyboard
 {
 	constructor()
@@ -25,19 +23,17 @@ class Keyboard
 	onKeyDown(userInterface)
 	{
 		if (this.pressedKeyCodeSignal['Digit1'])
-			userInterface.buttons[0].click();
+			userInterface.tool_menus[0].selectNextButton();
 		else if (this.pressedKeyCodeSignal['Digit2'])
-			userInterface.buttons[1].click();
+			userInterface.tool_menus[1].selectNextButton();
 		else if (this.pressedKeyCodeSignal['Digit3'])
-			userInterface.buttons[2].click();
+			userInterface.tool_menus[2].selectNextButton();
 		else if (this.pressedKeyCodeSignal['Digit4'])
-			userInterface.buttons[3].click();
-		else if (this.pressedKeyCodeSignal['Digit5'])
-			userInterface.buttons[4].click();
+			userInterface.tool_menus[3].selectNextButton();
 		else if (this.pressedKeyCodeSignal['ShiftRight'])
 			userInterface.showViewport2 = !userInterface.showViewport2;
 
-		if (userInterface.active_button !== undefined)
+		if (userInterface.activeToolMenu() !== undefined)
 		{
 			document.body.style.cursor = 'crosshair';
 			document.exitPointerLock();

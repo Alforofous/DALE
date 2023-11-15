@@ -58,40 +58,46 @@ class Mouse
 			this.#camera_ref.updateRotation(this.movement.x, this.movement.y);
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
-			if (this.#userInterface_ref?.active_button?.id === 'digTerrainButton')
-				this.digTerrain();
-			else if (this.#userInterface_ref?.active_button?.id === 'spawnConesButton')
+			if (this.#userInterface_ref?.tool_menus[0].isActive())
 				this.spawnCones(this.#scene_ref);
-			else if (this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
-				this.addCylinder(this.#scene_ref);
+			else if (this.#userInterface_ref?.tool_menus[1].isActive())
+				this.drawArea(this.#scene_ref);
+			else if (this.#userInterface_ref.tool_menus[2].isActive())
+				this.digTerrain();
+			else if (this.#userInterface_ref?.tool_menus[3].isActive())
+			{
+				const activeButtonIndex = this.#userInterface_ref?.tool_menus[3].activeButtonIndex();
+				if (activeButtonIndex === 0)
+					this.addCylinder(this.#scene_ref);
+			}
 		}
 	}
 
 	onMouseUp()
 	{
-		if (this.releasedButtonsSignal[0] && this.isCaptured === false)
-		{
-			if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
-			{
-				if (this.selection_rectangle === undefined)
-					return;
-				this.destroySelectionRectangle();
-			}
-		}
+		this.destroySelectionRectangle();
 	}
 
 	onMouseDown()
 	{
 		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
-			if (this.#userInterface_ref.active_button === undefined)
-				document.body.requestPointerLock();
-			else if (this.#userInterface_ref?.active_button?.id === 'drawPolygonButton')
+			if (this.#userInterface_ref?.tool_menus[0].isActive())
+				this.spawnCones(this.#scene_ref);
+			else if (this.#userInterface_ref?.tool_menus[1].isActive())
 				this.drawArea(this.#scene_ref);
-			else if (this.#userInterface_ref?.active_button?.id === 'addCylinderButton')
-				this.addCylinder(this.#scene_ref);
-			else if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
-				this.createSelectionRectangle();
+			else if (this.#userInterface_ref?.tool_menus[2].isActive())
+				this.digTerrain();
+			else if (this.#userInterface_ref?.tool_menus[3].isActive())
+			{
+				const activeButtonIndex = this.#userInterface_ref?.tool_menus[3].activeButtonIndex();
+				if (activeButtonIndex === 0)
+					this.addCylinder(this.#scene_ref);
+				else if (activeButtonIndex === 1)
+					this.createSelectionRectangle();
+			}
+			else
+				document.body.requestPointerLock();
 		}
 	}
 
@@ -154,6 +160,8 @@ class Mouse
 
 	destroySelectionRectangle()
 	{
+		if (this.selection_rectangle === undefined)
+			return;
 		this.originPointMarkers.deletePoints();
 		this.selection_rectangle.remove();
 		this.selection_rectangle = undefined;
@@ -171,8 +179,7 @@ class Mouse
 			this.onMouseUp();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
-		if (this.#userInterface_ref?.active_button?.id === 'objectSelectionButton')
-			this.updateSelectionRectangle();
+		this.updateSelectionRectangle();
 	}
 
 	drawArea(scene)
@@ -199,8 +206,8 @@ class Mouse
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
 			const height = Math.abs(scene.reference_height - intersection.point.y);
-			const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 32);
-			const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xF22F49 });
+			const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
+			const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xF22F49, wireframe: false });
 			const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
 			cylinder.name = 'cylinder';
 			cylinder.layers.set(2);

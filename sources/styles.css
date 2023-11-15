@@ -1,3 +1,8 @@
+body
+{
+	overflow: hidden;
+}
+
 #sidebar
 {
 	position: fixed;
@@ -10,12 +15,7 @@
 	z-index: 2;
 }
 
-body
-{
-	overflow: hidden;
-}
-
-#sidebar button
+.tool_menu
 {
 	color: #77818b;
 	display: block;
@@ -25,14 +25,27 @@ body
 	background-color: #18334d;
 }
 
-#sidebar button.active
+.tool_button
+{
+	color: #6d88a4;
+	padding: 10px;
+	margin-bottom: 10px;
+	background-color: #0c2032;
+}
+
+.toggle_visibility
+{
+	display: none;
+}
+
+.tool_button.active
 {
 	color: aquamarine;
 	background-color: #2f5272
 }
 
-#sidebar input[type="text"]
+.tool_menu.active
 {
-	width: 100%;
-	padding: 10px;
+	color: aquamarine;
+	background-color: #2f5272
 }
