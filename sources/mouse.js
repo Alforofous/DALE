@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
-import { DynamicPolygon } from './dynamic_polygon.js';
+import { DynamicPolygon } from './dynamicPolygon.js';
 import { SelectionBox } from 'three/examples/jsm/interactive/SelectionBox.js';
 import { SelectionHelper } from 'three/examples/jsm/interactive/SelectionHelper.js'
-import { originPointMarkers } from './origin_point_markers.js';
+import { originPointMarkers } from './originPointMarkers.js';
+import { DrillHole } from './drillHole/drillHole.js';
 
 class Mouse
 {
@@ -12,10 +13,10 @@ class Mouse
 		this.movement = { x: 0, y: 0 };
 		this.position = { x: 0, y: 0 };
 
-		this.#scene_ref = scene;
-		this.#renderer_ref = renderer;
-		this.#camera_ref = camera;
-		this.#userInterface_ref = userInterface;
+		this.scene = scene;
+		this.renderer = renderer;
+		this.camera = camera;
+		this.userInterface = userInterface;
 		this.selectionBox = new SelectionBox(camera, scene);
 		this.selectionHelper = new SelectionHelper(renderer, 'selectBox');
 
@@ -55,20 +56,20 @@ class Mouse
 	onMove()
 	{
 		if (this.isCaptured)
-			this.#camera_ref.updateRotation(this.movement.x, this.movement.y);
+			this.camera.updateRotation(this.movement.x, this.movement.y);
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
-			if (this.#userInterface_ref?.tool_menus[0].isActive())
-				this.spawnCones(this.#scene_ref);
-			else if (this.#userInterface_ref?.tool_menus[1].isActive())
-				this.drawArea(this.#scene_ref);
-			else if (this.#userInterface_ref.tool_menus[2].isActive())
+			if (this.userInterface?.toolMenus[0].isActive())
+				this.spawnCones(this.scene);
+			else if (this.userInterface?.toolMenus[1].isActive())
+				this.drawArea(this.scene);
+			else if (this.userInterface.toolMenus[2].isActive())
 				this.digTerrain();
-			else if (this.#userInterface_ref?.tool_menus[3].isActive())
+			else if (this.userInterface?.toolMenus[3].isActive())
 			{
-				const activeButtonIndex = this.#userInterface_ref?.tool_menus[3].activeButtonIndex();
+				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
-					this.addCylinder(this.#scene_ref);
+					this.addDrillHole(this.scene);
 			}
 		}
 	}
@@ -82,17 +83,17 @@ class Mouse
 	{
 		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
-			if (this.#userInterface_ref?.tool_menus[0].isActive())
-				this.spawnCones(this.#scene_ref);
-			else if (this.#userInterface_ref?.tool_menus[1].isActive())
-				this.drawArea(this.#scene_ref);
-			else if (this.#userInterface_ref?.tool_menus[2].isActive())
+			if (this.userInterface?.toolMenus[0].isActive())
+				this.spawnCones(this.scene);
+			else if (this.userInterface?.toolMenus[1].isActive())
+				this.drawArea(this.scene);
+			else if (this.userInterface?.toolMenus[2].isActive())
 				this.digTerrain();
-			else if (this.#userInterface_ref?.tool_menus[3].isActive())
+			else if (this.userInterface?.toolMenus[3].isActive())
 			{
-				const activeButtonIndex = this.#userInterface_ref?.tool_menus[3].activeButtonIndex();
+				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
-					this.addCylinder(this.#scene_ref);
+					this.addDrillHole(this.scene);
 				else if (activeButtonIndex === 1)
 					this.createSelectionRectangle();
 			}
@@ -103,44 +104,44 @@ class Mouse
 
 	createSelectionRectangle()
 	{
-		this.originPointMarkers = new originPointMarkers(this.#scene_ref.cylinders, this.#scene_ref);
+		this.originPointMarkers = new originPointMarkers(this.scene.drillHoleCylinders, this.scene);
 
-		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
+		let rendererBounds = this.renderer.domElement.getBoundingClientRect();
 
 		let normalizedX = ((this.position.x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
 		let normalizedY = -((this.position.y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
 
 		this.selectionBox.startPoint.set(normalizedX, normalizedY, 0.5);
 
-		this.selection_rectangle = document.createElement('div');
-		this.selection_rectangle.style.position = 'absolute';
-		this.selection_rectangle.style.backgroundColor = 'rgba(134, 221, 255, 0.2)';
+		this.selectionRectangle = document.createElement('div');
+		this.selectionRectangle.style.position = 'absolute';
+		this.selectionRectangle.style.backgroundColor = 'rgba(134, 221, 255, 0.2)';
 
 		this.xy1 = { x: this.position.x - rendererBounds.left, y: this.position.y - rendererBounds.top };
 
-		this.selection_rectangle.style.left = `${rendererBounds.left + this.xy1.x}px`;
-		this.selection_rectangle.style.top = `${rendererBounds.top + this.xy1.y}px`;
+		this.selectionRectangle.style.left = `${rendererBounds.left + this.xy1.x}px`;
+		this.selectionRectangle.style.top = `${rendererBounds.top + this.xy1.y}px`;
 
-		document.body.appendChild(this.selection_rectangle);
+		document.body.appendChild(this.selectionRectangle);
 	}
 
 	updateSelectionRectangle()
 	{
-		let rendererBounds = this.#renderer_ref.domElement.getBoundingClientRect();
-		if (this.selectionHelper.isDown && this.selection_rectangle !== undefined)
+		let rendererBounds = this.renderer.domElement.getBoundingClientRect();
+		if (this.selectionHelper.isDown && this.selectionRectangle !== undefined)
 		{
 			let normalizedX = ((this.position.x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
 			let normalizedY = -((this.position.y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
 
-			this.#renderer_ref.outlineEffect.selection.clear();
-			this.#renderer_ref.outlineEffect.selection.add(this.originPointMarkers.points);
+			this.renderer.outlineEffect.selection.clear();
+			this.renderer.outlineEffect.selection.add(this.originPointMarkers.points);
 			let selectedObjects = this.selectionBox.select();
 			for (let i = 0; i < selectedObjects.length; i++)
 			{
 				const selectedObject = selectedObjects[i];
-				if ((selectedObject.layers.mask & 4) === 4)
+				if (selectedObject.name === 'cylinder')
 				{
-					this.#renderer_ref.outlineEffect.selection.add(selectedObject);
+					this.renderer.outlineEffect.selection.add(selectedObject);
 				}
 			}
 			this.selectionBox.endPoint.set(normalizedX, normalizedY, 0.5);
@@ -151,20 +152,20 @@ class Mouse
 			let width = Math.abs(this.xy1.x - this.xy2.x);
 			let height = Math.abs(this.xy1.y - this.xy2.y);
 
-			this.selection_rectangle.style.left = `${rendererBounds.left + left}px`;
-			this.selection_rectangle.style.top = `${rendererBounds.top + top}px`;
-			this.selection_rectangle.style.width = `${width}px`;
-			this.selection_rectangle.style.height = `${height}px`;
+			this.selectionRectangle.style.left = `${rendererBounds.left + left}px`;
+			this.selectionRectangle.style.top = `${rendererBounds.top + top}px`;
+			this.selectionRectangle.style.width = `${width}px`;
+			this.selectionRectangle.style.height = `${height}px`;
 		}
 	}
 
 	destroySelectionRectangle()
 	{
-		if (this.selection_rectangle === undefined)
+		if (this.selectionRectangle === undefined)
 			return;
 		this.originPointMarkers.deletePoints();
-		this.selection_rectangle.remove();
-		this.selection_rectangle = undefined;
+		this.selectionRectangle.remove();
+		this.selectionRectangle = undefined;
 	}
 
 	onUpdate()
@@ -198,28 +199,16 @@ class Mouse
 		}
 	}
 
-	addCylinder(scene)
+	addDrillHole(scene)
 	{
 		let intersection = this.first_intersected_object;
 		if (intersection === undefined)
 			return;
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
-			const height = Math.abs(scene.reference_height - intersection.point.y);
-			const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
-			const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0xF22F49, wireframe: false });
-			const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-			cylinder.name = 'cylinder';
-			cylinder.layers.set(2);
-			cylinder.position.y -= height / 2;
-
-			this.#renderer_ref.outlineEffect.selection.add(cylinder);
-			this.#scene_ref.cylinders.push(cylinder);
-
-			const pivot = new THREE.Object3D();
-			pivot.position.copy(intersection.point);
-			pivot.add(cylinder);
-			scene.add(pivot);
+			const drill_hole = new DrillHole(intersection.point, scene, this.renderer);
+			scene.add(drill_hole);
+			scene.drillHoleCylinders.push(drill_hole.cylinder);
 		}
 	}
 
@@ -297,7 +286,7 @@ class Mouse
 	get ray()
 	{
 		let ray = new THREE.Vector2();
-		let rect = this.#renderer_ref.domElement.getBoundingClientRect();
+		let rect = this.renderer.domElement.getBoundingClientRect();
 		ray.x = ((this.position.x - rect.left) / rect.width) * 2 - 1;
 		ray.y = -((this.position.y - rect.top) / rect.height) * 2 + 1;
 		return ray;
@@ -306,8 +295,8 @@ class Mouse
 	get intersected_objects()
 	{
 		let raycaster = new THREE.Raycaster();
-		raycaster.setFromCamera(this.ray, this.#camera_ref);
-		return raycaster.intersectObjects(this.#scene_ref.children, true);
+		raycaster.setFromCamera(this.ray, this.camera);
+		return raycaster.intersectObjects(this.scene.children, true);
 	}
 
 	get first_intersected_object()
@@ -318,18 +307,13 @@ class Mouse
 		return intersects[0];
 	}
 
-	selection_rectangle;
+	selectionRectangle;
 	pressedButtons = {};
 	pressedButtonsSignal = {};
 	releasedButtonsSignal = {};
 	position = { x: 0, y: 0 };
 	movement = { x: 0, y: 0 };
 	isCaptured = false;
-	#renderer_ref;
-	#camera_ref;
-	#userInterface_ref;
-	#scene_ref;
-	originPointMarkers;
 }
 
 export { Mouse };

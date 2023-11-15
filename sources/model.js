@@ -78,7 +78,7 @@ class Model
 						child.material = new THREE.MeshPhongMaterial({
 							vertexColors: true,
 							wireframe: false,
-							transparent: true,
+							transparent: false,
 							opacity: 1.0,
 						});
 						child.geometry.computeVertexNormals();

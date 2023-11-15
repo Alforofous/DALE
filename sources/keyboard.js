@@ -23,13 +23,13 @@ class Keyboard
 	onKeyDown(userInterface)
 	{
 		if (this.pressedKeyCodeSignal['Digit1'])
-			userInterface.tool_menus[0].selectNextButton();
+			userInterface.toolMenus[0].selectNextButton();
 		else if (this.pressedKeyCodeSignal['Digit2'])
-			userInterface.tool_menus[1].selectNextButton();
+			userInterface.toolMenus[1].selectNextButton();
 		else if (this.pressedKeyCodeSignal['Digit3'])
-			userInterface.tool_menus[2].selectNextButton();
+			userInterface.toolMenus[2].selectNextButton();
 		else if (this.pressedKeyCodeSignal['Digit4'])
-			userInterface.tool_menus[3].selectNextButton();
+			userInterface.toolMenus[3].selectNextButton();
 		else if (this.pressedKeyCodeSignal['ShiftRight'])
 			userInterface.showViewport2 = !userInterface.showViewport2;
 

@@ -1,11 +1,11 @@
 import * as THREE from 'three';
-import { createToolMenusArray } from './tool_menus';
+import { createToolMenusArray } from './toolMenus';
 
 class UI
 {
 	constructor(scene)
 	{
-		this.tool_menus = createToolMenusArray();
+		this.toolMenus = createToolMenusArray();
 
 		this.wireframeButton = document.getElementById('wireframeButton');
 		this.wireframeButton.addEventListener('click', function ()
@@ -29,10 +29,10 @@ class UI
 	activeToolMenu()
 	{
 		let active_menu = undefined;
-		this.tool_menus.forEach(tool_menu =>
+		this.toolMenus.forEach(toolMenu =>
 		{
-			if (tool_menu.isActive())
-				active_menu = tool_menu;
+			if (toolMenu.isActive())
+				active_menu = toolMenu;
 		});
 		return (active_menu);
 	}

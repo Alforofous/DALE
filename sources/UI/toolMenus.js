@@ -1,8 +1,8 @@
 function createToolMenusArray()
 {
-	const menu_list = document.querySelectorAll('.tool_menu');
+	const menuList = document.querySelectorAll('.toolMenu');
 	const array = [];
-	menu_list.forEach(button =>
+	menuList.forEach(button =>
 	{
 		array.push(new ToolMenu(button));
 	});
@@ -11,42 +11,42 @@ function createToolMenusArray()
 
 class ToolMenu
 {
-	constructor(tool_menu)
+	constructor(toolMenu)
 	{
-		this.tool_menu = tool_menu;
-		this.tool_buttons = Array.from(tool_menu.children);
+		this.toolMenu = toolMenu;
+		this.toolButtons = Array.from(toolMenu.children);
 
-		this.#clickEvent(tool_menu);
+		this.#clickEvent(toolMenu);
 		this.printMenuAndChildrenButtonIds();
 	}
 
 	isActive()
 	{
-		return this.tool_menu.classList.contains('active');
+		return this.toolMenu.classList.contains('active');
 	}
 
 	selectNextButton()
 	{
-		if (this.tool_buttons.length === 0)
+		if (this.toolButtons.length === 0)
 		{
-			this.tool_menu.click();
+			this.toolMenu.click();
 			return;
 		}
 		let index = this.activeButtonIndex() + 1;
 		if (this.isActive() === false)
 		{
 			index = 0;
-			this.#expand(this.tool_menu);
+			this.toolMenu.click();
 		}
 		this.#activateButtonAtIndexAndDeactivateOthers(index);
 		if (this.activeButtonIndex() === -1)
-			this.tool_menu.click();
+			this.toolMenu.click();
 	}
 
 	printMenuAndChildrenButtonIds()
 	{
-		console.log('Menu: ' + this.tool_menu.id);
-		this.tool_buttons.forEach(button =>
+		console.log('Menu: ' + this.toolMenu.id);
+		this.toolButtons.forEach(button =>
 		{
 			console.log('↳Button: ' + button.id);
 		});
@@ -70,10 +70,10 @@ class ToolMenu
 		menu.classList.remove('active');
 	}
 
-	#clickEvent(tool_menu)
+	#clickEvent(toolMenu)
 	{
-		const menu_list = document.querySelectorAll('.tool_menu');
-		tool_menu.addEventListener('click', (event) =>
+		const menuList = document.querySelectorAll('.toolMenu');
+		toolMenu.addEventListener('click', (event) =>
 		{
 			if (event.target.classList.contains('active') === false)
 			{
@@ -83,14 +83,14 @@ class ToolMenu
 			}
 			else
 				this.#collapse(event.target);
-			menu_list.forEach(btn =>
+			menuList.forEach(btn =>
 			{
 				if (btn !== event.target)
 					this.#collapse(btn);
 			});
 		});
 
-		this.tool_buttons.forEach(button =>
+		this.toolButtons.forEach(button =>
 		{
 			button.addEventListener('click', (event) =>
 			{
@@ -102,20 +102,20 @@ class ToolMenu
 
 	#activateButtonAndDeactivateOthers(button)
 	{
-		this.tool_buttons.forEach(btn => btn.classList.remove('active'));
+		this.toolButtons.forEach(btn => btn.classList.remove('active'));
 		button.classList.add('active');
 	}
 
 	#activateButtonAtIndexAndDeactivateOthers(index)
 	{
-		this.tool_buttons.forEach(btn => btn.classList.remove('active'));
-		if (index < this.tool_buttons.length && index >= 0)
-			this.tool_buttons[index].classList.add('active');
+		this.toolButtons.forEach(btn => btn.classList.remove('active'));
+		if (index < this.toolButtons.length && index >= 0)
+			this.toolButtons[index].classList.add('active');
 	}
 
 	activeButtonIndex()
 	{
-		return this.tool_buttons.findIndex(btn => btn.classList.contains('active'));
+		return this.toolButtons.findIndex(btn => btn.classList.contains('active'));
 	}
 }
 

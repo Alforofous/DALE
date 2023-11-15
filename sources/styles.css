@@ -15,7 +15,7 @@ body
 	z-index: 2;
 }
 
-.tool_menu
+.toolMenu
 {
 	color: #77818b;
 	display: block;
@@ -25,7 +25,7 @@ body
 	background-color: #18334d;
 }
 
-.tool_button
+.toolButton
 {
 	color: #6d88a4;
 	padding: 10px;
@@ -38,13 +38,13 @@ body
 	display: none;
 }
 
-.tool_button.active
+.toolButton.active
 {
 	color: aquamarine;
 	background-color: #2f5272
 }
 
-.tool_menu.active
+.toolMenu.active
 {
 	color: aquamarine;
 	background-color: #2f5272

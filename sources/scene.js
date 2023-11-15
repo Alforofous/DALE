@@ -30,7 +30,7 @@ class Scene extends THREE.Scene
 		const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xF4CD15, wireframe: true });
 		const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 		plane.lookAt(new THREE.Vector3(0, 1, 0));
-		plane.position.y = this.reference_height;
+		plane.position.y = this.referenceHeight;
 		this.add(plane);
 	}
 
@@ -58,9 +58,9 @@ class Scene extends THREE.Scene
 
 	opacitySlider;
 	currentDynamicMesh;
-	reference_height = 0;
+	referenceHeight = 0;
 	terrainMesh;
-	cylinders = [];
+	drillHoleCylinders = [];
 }
 
 export { Scene };
