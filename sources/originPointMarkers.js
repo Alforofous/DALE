@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-class originPointMarkers
+class OriginPointMarkers
 {
 	constructor(objects, scene)
 	{
@@ -33,4 +33,4 @@ class originPointMarkers
 	}
 }
 
-export { originPointMarkers };
+export { OriginPointMarkers };

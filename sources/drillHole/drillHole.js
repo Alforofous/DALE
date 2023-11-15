@@ -2,18 +2,15 @@ import * as THREE from 'three';
 
 class DrillHole extends THREE.Object3D
 {
-	constructor(spawnPosition, scene, renderer)
+	constructor(spawnPosition, scene)
 	{
 		super();
 		this.scene = scene;
-		this.renderer = renderer;
 
-		this.createAndPosition(spawnPosition);
-
-		this.renderer.outlineEffect.selection.add(this.cylinder);
+		this.#createAndPosition(spawnPosition);
 	}
 
-	createAndPosition(spawnPosition)
+	#createAndPosition(spawnPosition)
 	{
 		const height = Math.abs(this.scene.referenceHeight - spawnPosition.y);
 		const cylinderGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
