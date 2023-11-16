@@ -64,7 +64,7 @@ function init()
 		}
 	});
 
-	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene, 10000);
+	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene, 100000);
 	scene.add(scene.drillHoles);
 	onUpdate();
 }

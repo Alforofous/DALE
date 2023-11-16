@@ -64,13 +64,17 @@ class DrillHoleSelector
 				const selectedInstanceIndexArray = selectedInstances[key];
 				console.log('selected: ', selectedInstanceIndexArray);
 
+				let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
+				for (let i = 0; i < highlightAttribute.count; i++)
+				{
+					highlightAttribute.setX(i, 0);
+				}
 				for (let j = 0; j < selectedInstanceIndexArray.length; j++)
 				{
 					const selectedInstanceIndex = selectedInstanceIndexArray[j];
-					let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
 					highlightAttribute.setX(selectedInstanceIndex, 1);
-					highlightAttribute.needsUpdate = true;
 				}
+				highlightAttribute.needsUpdate = true;
 			}
 
 			this.xy2 = { x: position.x - rendererBounds.left, y: position.y - rendererBounds.top };

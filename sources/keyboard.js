@@ -32,6 +32,8 @@ class Keyboard
 			userInterface.toolMenus[3].selectNextButton();
 		else if (this.pressedKeyCodeSignal['ShiftRight'])
 			userInterface.showViewport2 = !userInterface.showViewport2;
+		else if (this.pressedKeyCodeSignal['KeyF'])
+			document.body.requestFullscreen();
 
 		if (userInterface.activeToolMenu() !== undefined)
 		{

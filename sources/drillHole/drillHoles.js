@@ -1,22 +1,19 @@
 import * as THREE from 'three';
 
-let vertexDrillHoleShader = `
-    attribute float highlight;
-    varying float vHighlight;
-    void main() {
-        vHighlight = highlight;
-        vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(position, 1.0);
-        gl_Position = projectionMatrix * mvPosition;
-    }
-`;
+let lambertShader = THREE.ShaderLib['lambert'];
 
-let fragmentDrillHoleShader = `
-	varying float vHighlight;
-	void main() {
-		vec3 color = mix(vec3(0.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vHighlight);
-		gl_FragColor = vec4(color, 1.0);
-	}
-`;
+let customLambertShader = {
+	uniforms: THREE.UniformsUtils.clone(lambertShader.uniforms),
+	vertexShader: lambertShader.vertexShader,
+	fragmentShader: lambertShader.fragmentShader
+};
+
+customLambertShader.vertexShader = 'attribute float highlight;\nvarying float vHighlight;\n' + customLambertShader.vertexShader;
+customLambertShader.vertexShader = customLambertShader.vertexShader.replace('#include <begin_vertex>', 'vHighlight = highlight;\n#include <begin_vertex>');
+
+customLambertShader.fragmentShader = 'varying float vHighlight;\n' + customLambertShader.fragmentShader;
+//customLambertShader.fragmentShader = customLambertShader.fragmentShader.replace('vec4( diffuse, opacity )', 'vec4( mix(diffuse, vec3(1.0), vHighlight), opacity )');
+customLambertShader.fragmentShader = customLambertShader.fragmentShader.replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(1.0), vHighlight * 0.2), gl_FragColor.a);');
 
 class DrillHoles extends THREE.InstancedMesh
 {
@@ -24,11 +21,17 @@ class DrillHoles extends THREE.InstancedMesh
 	{
 		const height = Math.abs(scene.referenceHeight - spawnPosition.y);
 		const drillHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
-		const cylinderMaterial = new THREE.ShaderMaterial(
-			{
-				vertexShader: vertexDrillHoleShader,
-				fragmentShader: fragmentDrillHoleShader
-			});
+		console.log(customLambertShader.vertexShader);
+		console.log(customLambertShader.fragmentShader);
+		const cylinderMaterial = new THREE.ShaderMaterial({
+			uniforms: customLambertShader.uniforms,
+			vertexShader: customLambertShader.vertexShader,
+			fragmentShader: customLambertShader.fragmentShader,
+			lights: true
+		});
+		cylinderMaterial.uniforms.diffuse.value.set(0x00ff00);
+
+		const lambertMaterial = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
 		drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(instanceCount), 1));
 
 		super(drillHoleGeometry, cylinderMaterial, instanceCount);
