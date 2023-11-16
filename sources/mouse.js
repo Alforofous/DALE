@@ -216,6 +216,7 @@ class Mouse
 	{
 		document.addEventListener('mousedown', function (event)
 		{
+			event.preventDefault();
 			let rect = this.renderer.domElement.getBoundingClientRect();
 			if (event.clientX >= rect.left && event.clientX <= rect.right &&
 				event.clientY >= rect.top && event.clientY <= rect.bottom) 
