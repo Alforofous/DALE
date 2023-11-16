@@ -32,6 +32,8 @@ class Scene extends THREE.Scene
 		plane.lookAt(new THREE.Vector3(0, 1, 0));
 		plane.position.y = this.referenceHeight;
 		this.add(plane);
+
+		this.drillHoles = null;
 	}
 
 	changeTerrainMeshOpacity()

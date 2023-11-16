@@ -1,14 +1,3 @@
-function createToolMenusArray()
-{
-	const menuList = document.querySelectorAll('.toolMenu');
-	const array = [];
-	menuList.forEach(button =>
-	{
-		array.push(new ToolMenu(button));
-	});
-	return (array);
-}
-
 class ToolMenu
 {
 	constructor(toolMenu)
@@ -118,5 +107,17 @@ class ToolMenu
 		return this.toolButtons.findIndex(btn => btn.classList.contains('active'));
 	}
 }
+
+function createToolMenusArray()
+{
+	const menuList = document.querySelectorAll('.toolMenu');
+	const array = [];
+	menuList.forEach(button =>
+	{
+		array.push(new ToolMenu(button));
+	});
+	return (array);
+}
+
 
 export { createToolMenusArray };

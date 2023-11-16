@@ -1,5 +1,5 @@
-import * as THREE from 'three';
 import { createToolMenusArray } from './toolMenus';
+import Stats from 'stats.js';
 
 class UI
 {
@@ -24,6 +24,9 @@ class UI
 				object.material.wireframe = !object.material.wireframe;
 		}
 		this.showViewport2 = false;
+
+		this.stats = new Stats();
+		document.body.appendChild(this.stats.dom);
 	}
 
 	activeToolMenu()

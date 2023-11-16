@@ -47,15 +47,31 @@ class DrillHoleSelector
 
 			this.renderer.outlineEffect.selection.clear();
 			this.renderer.outlineEffect.selection.add(this.originPointMarkers.points);
-			let selectedObjects = this.selectionBox.select();
-			for (let i = 0; i < selectedObjects.length; i++)
+
+			this.selectionBox.instances = {};
+
+			this.selectionBox.select();
+			let selectedInstances = this.selectionBox.instances;
+			console.log(selectedInstances);
+
+			let keys = Object.keys(selectedInstances);
+			console.log(keys.length);
+
+			for (let i = 0; i < keys.length; i++)
 			{
-				const selectedObject = selectedObjects[i];
-				if (selectedObject.name === 'cylinder')
+				const key = keys[i];
+				const selectedInstanceIndexArray = selectedInstances[key];
+				console.log('selected: ', selectedInstanceIndexArray);
+
+				for (let j = 0; j < selectedInstanceIndexArray.length; j++)
 				{
-					this.renderer.outlineEffect.selection.add(selectedObject);
+					const selectedInstanceIndex = selectedInstanceIndexArray[j];
+					let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
+					highlightAttribute.setX(selectedInstanceIndex, 1);
+					highlightAttribute.needsUpdate = true;
 				}
 			}
+
 			this.selectionBox.endPoint.set(normalizedX, normalizedY, 0.5);
 			this.xy2 = { x: position.x - rendererBounds.left, y: position.y - rendererBounds.top };
 

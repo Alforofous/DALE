@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
-import { DrillHole } from './drillHole/drillHole.js';
+import { DrillHoles } from './drillHole/drillHoles.js';
 import { DrillHoleSelector } from './drillHole/drillHoleSelector.js';
 
 class Mouse
@@ -93,10 +93,16 @@ class Mouse
 			return;
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
-			const drill_hole = new DrillHole(intersection.point, scene, this.renderer);
-			scene.add(drill_hole);
-			scene.drillHoleCylinders.push(drill_hole.cylinder);
-			this.renderer.outlineEffect.selection.add(drill_hole.cylinder);
+			let matrix = new THREE.Matrix4();
+			const distance = 2000;
+			for (let i = 0; i < scene.drillHoles.count; i++)
+			{
+				let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
+
+				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
+				scene.drillHoles.setMatrixAt(i, matrix);
+			}
+			scene.drillHoles.instanceMatrix.needsUpdate = true;
 		}
 	}
 

@@ -6,6 +6,7 @@ import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
+import { DrillHoles } from './drillHole/drillHoles.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
 // Add the extension functions
@@ -46,9 +47,6 @@ const views = [
 	}
 ];
 
-import Stats from 'stats.js';
-let stats = new Stats();
-document.body.appendChild(stats.dom);
 init();
 
 function init()
@@ -65,12 +63,15 @@ function init()
 			child.geometry.computeBoundsTree();
 		}
 	});
+
+	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene, 10000);
+	scene.add(scene.drillHoles);
 	onUpdate();
 }
 
 function onUpdate()
 {
-	stats.begin();
+	userInterface.stats.begin();
 	const deltaTime = clock.getDelta();
 
 	renderViewports();
@@ -80,7 +81,7 @@ function onUpdate()
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
-	stats.end();
+	userInterface.stats.end();
 	requestAnimationFrame(onUpdate);
 	renderer.info.reset();
 }
