@@ -7,21 +7,19 @@ import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
 import { DrillHoles } from './drillHole/drillHoles.js';
-import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 
-// Add the extension functions
+//MIGHT REMOVE
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
-//use this if we want fixed point camera
-//import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 document.body.style.margin = '0';
 document.body.style.height = '100vh';
 document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
-const camera = new Camera(scene);
+const camera = new Camera();
 const renderer = new Renderer(scene, camera);
 
 const userInterface = new UI(scene);

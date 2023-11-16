@@ -3,21 +3,23 @@ import * as THREE from 'three';
 
 class Camera extends PerspectiveCamera
 {
-	constructor(scene)
+	constructor()
 	{
 		super(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 10000);
 		this.position.z = 50;
 		this.position.y = 700;
 		this.layers.enable(1);
 		this.layers.enable(2);
+		this.deltaTime = 0;
 	}
 
 	update(keysPressed, deltaTime)
 	{
-		let speed = 10.0 * deltaTime;
+		this.deltaTime = deltaTime;
+		let speed = 10.0 * this.deltaTime;
 		if (keysPressed['ShiftLeft'])
 		{
-			this.#lastShiftPress += deltaTime;
+			this.#lastShiftPress += this.deltaTime;
 			speed *= Math.min(Math.max(5.0, this.#lastShiftPress * 10), 50.0);
 		}
 		else
@@ -30,12 +32,13 @@ class Camera extends PerspectiveCamera
 
 	updateRotation(movementX, movementY)
 	{
-		const sensitivity = 0.004;
+		const sensitivity = 1;
+		const rotationSpeed = sensitivity * this.deltaTime;
 		const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 		euler.setFromQuaternion(this.quaternion);
 
-		euler.y -= movementX * sensitivity;
-		euler.x -= movementY * sensitivity;
+		euler.y -= movementX * rotationSpeed;
+		euler.x -= movementY * rotationSpeed;
 		euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
 
 		this.quaternion.setFromEuler(euler);
@@ -76,19 +79,19 @@ class Camera extends PerspectiveCamera
 		}
 		if (keysPressed['ArrowUp'])
 		{
-			this.updateRotation(0, -5);
+			this.updateRotation(0, -3);
 		}
 		if (keysPressed['ArrowLeft'])
 		{
-			this.updateRotation(-5, 0);
+			this.updateRotation(-3, 0);
 		}
 		if (keysPressed['ArrowDown'])
 		{
-			this.updateRotation(0, 5);
+			this.updateRotation(0, 3);
 		}
 		if (keysPressed['ArrowRight'])
 		{
-			this.updateRotation(5, 0);
+			this.updateRotation(3, 0);
 		}
 	}
 
