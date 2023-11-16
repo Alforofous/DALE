@@ -50,32 +50,18 @@ class DrillHoleSelector
 			this.renderer.outlineEffect.selection.add(this.originPointMarkers.points);
 
 			this.selectionBox.instances = {};
-
 			this.selectionBox.select();
 			let selectedInstances = this.selectionBox.instances;
-			console.log(selectedInstances);
+			let drillHolesArray = selectedInstances[this.scene.drillHoles.uuid];
 
-			let keys = Object.keys(selectedInstances);
-			console.log(keys.length);
-
-			for (let i = 0; i < keys.length; i++)
+			let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
+			highlightAttribute.array.fill(0);
+			for (let i = 0; i < drillHolesArray.length; i++)
 			{
-				const key = keys[i];
-				const selectedInstanceIndexArray = selectedInstances[key];
-				console.log('selected: ', selectedInstanceIndexArray);
-
-				let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
-				for (let i = 0; i < highlightAttribute.count; i++)
-				{
-					highlightAttribute.setX(i, 0);
-				}
-				for (let j = 0; j < selectedInstanceIndexArray.length; j++)
-				{
-					const selectedInstanceIndex = selectedInstanceIndexArray[j];
-					highlightAttribute.setX(selectedInstanceIndex, 1);
-				}
-				highlightAttribute.needsUpdate = true;
+				const selectedInstanceIndex = drillHolesArray[i];
+				highlightAttribute.setX(selectedInstanceIndex, 1);
 			}
+			highlightAttribute.needsUpdate = true;
 
 			this.xy2 = { x: position.x - rendererBounds.left, y: position.y - rendererBounds.top };
 

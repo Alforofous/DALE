@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
-import { DrillHoles } from './drillHole/drillHoles.js';
 import { DrillHoleSelector } from './drillHole/drillHoleSelector.js';
 
 class Mouse
