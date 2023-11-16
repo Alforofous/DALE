@@ -44,6 +44,7 @@ class DrillHoleSelector
 		{
 			let normalizedX = ((position.x - rendererBounds.left) / rendererBounds.width) * 2 - 1;
 			let normalizedY = -((position.y - rendererBounds.top) / rendererBounds.height) * 2 + 1;
+			this.selectionBox.endPoint.set(normalizedX, normalizedY, 0.5);
 
 			this.renderer.outlineEffect.selection.clear();
 			this.renderer.outlineEffect.selection.add(this.originPointMarkers.points);
@@ -72,7 +73,6 @@ class DrillHoleSelector
 				}
 			}
 
-			this.selectionBox.endPoint.set(normalizedX, normalizedY, 0.5);
 			this.xy2 = { x: position.x - rendererBounds.left, y: position.y - rendererBounds.top };
 
 			let left = Math.min(this.xy1.x, this.xy2.x);
