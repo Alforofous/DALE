@@ -19,8 +19,9 @@ document.body.style.height = '100vh';
 document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
+const drillHoleScene = new THREE.Scene();
 const camera = new Camera();
-const renderer = new Renderer(scene, camera);
+const renderer = new Renderer(drillHoleScene, scene, camera);
 
 const userInterface = new UI(scene);
 const mouse = new Mouse(renderer, scene, userInterface, camera);
@@ -30,14 +31,12 @@ const clock = new THREE.Clock();
 
 const views = [
 	{
-		camera: camera,
 		left: 0,
 		bottom: 0,
 		width: 1.0,
 		height: 1.0
 	},
 	{
-		camera: camera,
 		left: 0.75,
 		bottom: 0,
 		width: 0.25,
@@ -62,8 +61,15 @@ function init()
 		}
 	});
 
+	console.log(scene.referenceHeight); // Should log 0
+
 	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene, 100000);
 	scene.add(scene.drillHoles);
+
+	console.log(scene.referenceHeight);
+
+	let drillHolesClone = scene.drillHoles.clone();
+	drillHoleScene.add(drillHolesClone);
 	onUpdate();
 }
 
@@ -88,9 +94,17 @@ function renderViewports()
 {
 	for (let i = 0; i < views.length; ++i)
 	{
-		if (i > 0 && !userInterface.showViewport2)
+		if (i == 0)
 		{
-			break;
+			renderer.composer.passes[0].enabled = true;
+			renderer.composer.passes[1].enabled = false;
+		}
+		else if (i == 1)
+		{
+			renderer.composer.passes[0].enabled = false;
+			renderer.composer.passes[1].enabled = true;
+			if (!userInterface.showViewport2)
+				break;
 		}
 
 		const view = views[i];

@@ -31,7 +31,6 @@ class DrillHoles extends THREE.InstancedMesh
 		});
 		cylinderMaterial.uniforms.diffuse.value.set(0x00ff00);
 
-		const lambertMaterial = new THREE.MeshLambertMaterial({ color: 0x00ff00 });
 		drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(instanceCount), 1));
 
 		super(drillHoleGeometry, cylinderMaterial, instanceCount);

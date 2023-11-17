@@ -5,6 +5,9 @@ class Scene extends THREE.Scene
 	constructor()
 	{
 		super();
+		this.referenceHeight = 0;
+		this.drillHoles = null;
+		this.drillHoleCylinders = [];
 
 		const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
 		directionalLight.position.set(0, 1, 2);
@@ -32,8 +35,6 @@ class Scene extends THREE.Scene
 		plane.lookAt(new THREE.Vector3(0, 1, 0));
 		plane.position.y = this.referenceHeight;
 		this.add(plane);
-
-		this.drillHoles = null;
 	}
 
 	changeTerrainMeshOpacity()
@@ -57,12 +58,6 @@ class Scene extends THREE.Scene
 			object.material.transparent = value < 1;
 		}
 	}
-
-	opacitySlider;
-	currentDynamicMesh;
-	referenceHeight = 0;
-	terrainMesh;
-	drillHoleCylinders = [];
 }
 
 export { Scene };

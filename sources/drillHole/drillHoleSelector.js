@@ -52,6 +52,7 @@ class DrillHoleSelector
 			this.selectionBox.instances = {};
 			this.selectionBox.select();
 			let selectedInstances = this.selectionBox.instances;
+			console.log(selectedInstances);
 			let drillHolesArray = selectedInstances[this.scene.drillHoles.uuid];
 
 			let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
