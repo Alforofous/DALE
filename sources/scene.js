@@ -26,8 +26,8 @@ class Scene extends THREE.Scene
 		this.add(pointLightHelper);
 
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-		directionalLight.layers.enable(1);
-		directionalLight.layers.enable(2);
+		ambientLight.layers.enable(1);
+		ambientLight.layers.enable(2);
 		this.add(ambientLight);
 
 		this.opacitySlider = document.getElementById('opacitySlider');
