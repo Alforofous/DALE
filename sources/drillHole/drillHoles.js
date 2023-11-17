@@ -20,15 +20,15 @@ class DrillHoles extends THREE.InstancedMesh
 	{
 		const height = Math.abs(referenceHeight - spawnPosition.y);
 		const drillHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
-		console.log(customLambertShader.vertexShader);
-		console.log(customLambertShader.fragmentShader);
+		//console.log(customLambertShader.vertexShader);
+		//console.log(customLambertShader.fragmentShader);
 		const cylinderMaterial = new THREE.ShaderMaterial({
 			uniforms: customLambertShader.uniforms,
 			vertexShader: customLambertShader.vertexShader,
 			fragmentShader: customLambertShader.fragmentShader,
 			lights: true
 		});
-		console.log(cylinderMaterial.uniforms.direction + ' UNIFORM');
+
 		cylinderMaterial.uniforms.diffuse.value.set(0x00ff00);
 
 		drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(instanceCount), 1));

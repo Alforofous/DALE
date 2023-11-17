@@ -25,7 +25,7 @@ drillHoleCamera.layers.set(2);
 const renderer = new Renderer(scene, camera, drillHoleCamera);
 
 const userInterface = new UI(scene);
-const mouse = new Mouse(renderer, scene, userInterface, camera);
+const mouse = new Mouse(renderer, scene, userInterface, camera, drillHoleCamera);
 const keyboard = new Keyboard();
 const model = new Model(scene);
 const clock = new THREE.Clock();
@@ -77,8 +77,10 @@ function onUpdate()
 	mouse.onUpdate();
 
 	keyboard.onUpdate(userInterface);
+
 	camera.update(keyboard.pressedKeyCode, deltaTime);
 	drillHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
+
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	userInterface.stats.end();
 	requestAnimationFrame(onUpdate);

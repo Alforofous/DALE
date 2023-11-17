@@ -5,13 +5,14 @@ import { DrillHoleSelector } from './drillHole/drillHoleSelector.js';
 
 class Mouse
 {
-	constructor(renderer, scene, userInterface, camera)
+	constructor(renderer, scene, userInterface, camera, drillHoleCamera)
 	{
 		this.movement = { x: 0, y: 0 };
 		this.position = { x: 0, y: 0 };
 		this.scene = scene;
 		this.renderer = renderer;
 		this.camera = camera;
+		this.drillHoleCamera = drillHoleCamera;
 		this.userInterface = userInterface;
 		this.pressedButtons = {};
 		this.pressedButtonsSignal = {};
@@ -67,7 +68,10 @@ class Mouse
 	onMove()
 	{
 		if (this.isCaptured)
+		{
 			this.camera.updateRotation(this.movement.x, this.movement.y);
+			this.drillHoleCamera.updateRotation(this.movement.x, this.movement.y);
+		}
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
 			if (this.userInterface?.toolMenus[0].isActive())
