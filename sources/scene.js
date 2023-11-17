@@ -12,6 +12,8 @@ class Scene extends THREE.Scene
 		const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
 		directionalLight.position.set(0, 1, 2);
 		directionalLight.castShadow = true;
+		directionalLight.layers.enable(1);
+		directionalLight.layers.enable(2);
 		this.add(directionalLight);
 
 		const pointLight = new THREE.PointLight(0xffffff, 5000.0);
@@ -24,6 +26,8 @@ class Scene extends THREE.Scene
 		this.add(pointLightHelper);
 
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+		directionalLight.layers.enable(1);
+		directionalLight.layers.enable(2);
 		this.add(ambientLight);
 
 		this.opacitySlider = document.getElementById('opacitySlider');

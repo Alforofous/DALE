@@ -4,7 +4,7 @@ import { EffectComposer, EffectPass, RenderPass, OutlineEffect } from "postproce
 
 class Renderer extends WebGLRenderer
 {
-	constructor(drillHoleScene, scene, camera)
+	constructor(scene, camera, drillHoleCamera)
 	{
 		super();
 		this.scene = scene;
@@ -18,7 +18,7 @@ class Renderer extends WebGLRenderer
 
 		this.composer = new EffectComposer(this);
 		this.composer.addPass(new RenderPass(scene, camera), 0);
-		this.composer.addPass(new RenderPass(drillHoleScene, camera), 1);
+		this.composer.addPass(new RenderPass(scene, drillHoleCamera), 1);
 		this.composer.addPass(new EffectPass(camera, this.outlineEffect), 2);
 
 		document.body.appendChild(this.domElement);

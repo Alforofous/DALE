@@ -12,14 +12,13 @@ customLambertShader.vertexShader = 'attribute float highlight;\nvarying float vH
 customLambertShader.vertexShader = customLambertShader.vertexShader.replace('#include <begin_vertex>', 'vHighlight = highlight;\n#include <begin_vertex>');
 
 customLambertShader.fragmentShader = 'varying float vHighlight;\n' + customLambertShader.fragmentShader;
-//customLambertShader.fragmentShader = customLambertShader.fragmentShader.replace('vec4( diffuse, opacity )', 'vec4( mix(diffuse, vec3(1.0), vHighlight), opacity )');
 customLambertShader.fragmentShader = customLambertShader.fragmentShader.replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(1.0), vHighlight * 0.2), gl_FragColor.a);');
 
 class DrillHoles extends THREE.InstancedMesh
 {
-	constructor(spawnPosition, scene, instanceCount = 10000)
+	constructor(spawnPosition, referenceHeight, instanceCount = 10000)
 	{
-		const height = Math.abs(scene.referenceHeight - spawnPosition.y);
+		const height = Math.abs(referenceHeight - spawnPosition.y);
 		const drillHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
 		console.log(customLambertShader.vertexShader);
 		console.log(customLambertShader.fragmentShader);
@@ -29,25 +28,17 @@ class DrillHoles extends THREE.InstancedMesh
 			fragmentShader: customLambertShader.fragmentShader,
 			lights: true
 		});
+		console.log(cylinderMaterial.uniforms.direction + ' UNIFORM');
 		cylinderMaterial.uniforms.diffuse.value.set(0x00ff00);
 
 		drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(instanceCount), 1));
 
 		super(drillHoleGeometry, cylinderMaterial, instanceCount);
 
-		this.scene = scene;
 		this.instanceCount = instanceCount;
 		this.drillHoleGeometry = drillHoleGeometry;
-		/*
-		const matrix = new THREE.Matrix4();
-		for (let i = 0; i < maxInstances; i++)
-		{
-			matrix.set(3, 3, 0);
-			this.setMatrixAt(i, matrix);
-		}
-		this.instanceMatrix.needsUpdate = true;
-		*/
 		this.name = 'drillHoles';
+		this.layers.set(2);
 	}
 }
 

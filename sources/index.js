@@ -19,9 +19,10 @@ document.body.style.height = '100vh';
 document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
-const drillHoleScene = new THREE.Scene();
 const camera = new Camera();
-const renderer = new Renderer(drillHoleScene, scene, camera);
+const drillHoleCamera = camera.clone();
+drillHoleCamera.layers.set(2);
+const renderer = new Renderer(scene, camera, drillHoleCamera);
 
 const userInterface = new UI(scene);
 const mouse = new Mouse(renderer, scene, userInterface, camera);
@@ -61,15 +62,8 @@ function init()
 		}
 	});
 
-	console.log(scene.referenceHeight); // Should log 0
-
-	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene, 100000);
+	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 100000);
 	scene.add(scene.drillHoles);
-
-	console.log(scene.referenceHeight);
-
-	let drillHolesClone = scene.drillHoles.clone();
-	drillHoleScene.add(drillHolesClone);
 	onUpdate();
 }
 
@@ -84,6 +78,7 @@ function onUpdate()
 
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);
+	drillHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	userInterface.stats.end();
 	requestAnimationFrame(onUpdate);
