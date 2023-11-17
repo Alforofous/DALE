@@ -47,11 +47,13 @@ class DrillHoles extends THREE.InstancedMesh
 		let instanceColors = new Float32Array(this.instanceCount * 3);
 		for (let i = 0; i < this.instanceCount; i++)
 		{
-			let color = new THREE.Color(i);
-
-			instanceColors[i * 3] = color.r;
-			instanceColors[i * 3 + 1] = color.g;
-			instanceColors[i * 3 + 2] = color.b;
+			let r = (i & 0xFF0000) >> 16;
+			let g = (i & 0x00FF00) >> 8;
+			let b = i & 0x0000FF;
+		
+			instanceColors[i * 3] = r / 255;
+			instanceColors[i * 3 + 1] = g / 255;
+			instanceColors[i * 3 + 2] = b / 255;
 		}
 		this.drillHoleGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
 
@@ -59,18 +61,16 @@ class DrillHoles extends THREE.InstancedMesh
 		this.layers.set(2);
 	}
 
-	switchShaders()
+	switchToIdShader()
 	{
-		if (this.material.vertexShader == this.vertexShaderCode)
-		{
-			this.material.vertexShader = this.idSelectionVertexCode;
-			this.material.fragmentShader = this.idSelectionFragmentCode;
-		}
-		else
-		{
-			this.material.vertexShader = this.vertexShaderCode;
-			this.material.fragmentShader = this.fragmentShaderCode;
-		}
+		this.material.vertexShader = this.idSelectionVertexCode;
+		this.material.fragmentShader = this.idSelectionFragmentCode;
+	}
+
+	switchToDefaultShader()
+	{
+		this.material.vertexShader = this.vertexShaderCode;
+		this.material.fragmentShader = this.fragmentShaderCode;
 	}
 }
 

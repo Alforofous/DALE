@@ -20,7 +20,7 @@ document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
 const camera = new Camera();
-const drillHoleCamera = camera.clone();
+const drillHoleCamera = new Camera();
 drillHoleCamera.layers.set(2);
 const renderer = new Renderer(scene, camera, drillHoleCamera);
 
@@ -35,13 +35,15 @@ const views = [
 		left: 0,
 		bottom: 0,
 		width: 1.0,
-		height: 1.0
+		height: 1.0,
+		camera: camera,
 	},
 	{
 		left: 0.75,
 		bottom: 0,
 		width: 0.25,
-		height: 0.25
+		height: 0.25,
+		camera: drillHoleCamera,
 	}
 ];
 
@@ -75,12 +77,17 @@ function onUpdate()
 	userInterface.stats.begin();
 	const deltaTime = clock.getDelta();
 
-	renderViewports();
+	renderer.composer.passes[0].enabled = true;
+	renderer.composer.passes[1].enabled = false;
+	renderer.renderViewport(views[0], false);
+
+	renderer.composer.passes[0].enabled = false;
+	renderer.composer.passes[1].enabled = true;
+	renderer.renderViewport(views[1], true);
 	
 	mouse.onUpdate();
 
 	keyboard.onUpdate(userInterface);
-
 	camera.update(keyboard.pressedKeyCode, deltaTime);
 	drillHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
 
@@ -88,39 +95,6 @@ function onUpdate()
 	userInterface.stats.end();
 	requestAnimationFrame(onUpdate);
 	renderer.info.reset();
-}
-
-function renderViewports()
-{
-	for (let i = 0; i < views.length; ++i)
-	{
-		scene.drillHoles.switchShaders();
-		if (i == 0)
-		{
-			renderer.composer.passes[0].enabled = true;
-			renderer.composer.passes[1].enabled = false;
-		}
-		else if (i == 1)
-		{
-			renderer.composer.passes[0].enabled = false;
-			renderer.composer.passes[1].enabled = true;
-			if (!userInterface.showViewport2)
-				break;
-		}
-
-		const view = views[i];
-
-		const rendererBounds = renderer.domElement.getBoundingClientRect();
-		const left = Math.floor(rendererBounds.width * view.left);
-		const bottom = Math.floor(rendererBounds.height * view.bottom);
-		const width = Math.floor(rendererBounds.width * view.width);
-		const height = Math.floor(rendererBounds.height * view.height);
-		renderer.setViewport(left, bottom, width, height);
-		renderer.setScissor(left, bottom, width, height);
-		renderer.setScissorTest(true);
-
-		renderer.composer.render();
-	}
 }
 
 window.addEventListener('resize', () =>

@@ -9,6 +9,7 @@ class Renderer extends WebGLRenderer
 		super();
 		this.scene = scene;
 		this.camera = camera;
+		this.drillHoleCamera = drillHoleCamera;
 		this.domElement.style.position = 'relative';
 		this.domElement.style.width = '75%';
 		this.domElement.style.height = '100vh';
@@ -17,8 +18,8 @@ class Renderer extends WebGLRenderer
 		this.outlineEffectSetup();
 
 		this.composer = new EffectComposer(this);
-		this.composer.addPass(new RenderPass(scene, camera), 0);
-		this.composer.addPass(new RenderPass(scene, drillHoleCamera), 1);
+		this.composer.addPass(new RenderPass(this.scene, camera), 0);
+		this.composer.addPass(new RenderPass(this.scene, drillHoleCamera), 1);
 		this.composer.addPass(new EffectPass(camera, this.outlineEffect), 2);
 
 		document.body.appendChild(this.domElement);
@@ -26,6 +27,7 @@ class Renderer extends WebGLRenderer
 		this.composer.setSize(this.domElement.clientWidth, this.domElement.clientHeight);
 
 		this.info.autoReset = false;
+		this.autoClear = true;
 	}
 
 	outlineEffectSetup()
@@ -42,6 +44,28 @@ class Renderer extends WebGLRenderer
 				blur: false,
 			}
 		);
+	}
+
+	renderViewport(view = {left: 0, bottom: 0, width: 1, height: 1, camera: undefined}, enableIDShader)
+	{
+		if (enableIDShader === false)
+			this.scene.drillHoles.switchToDefaultShader();
+		else
+			this.scene.drillHoles.switchToIdShader();
+
+		const rendererBounds = this.domElement.getBoundingClientRect();
+		const left = Math.floor(rendererBounds.width * view.left);
+		const bottom = Math.floor(rendererBounds.height * view.bottom);
+		const width = Math.floor(rendererBounds.width * view.width);
+		const height = Math.floor(rendererBounds.height * view.height);
+		this.setViewport(left, bottom, width, height);
+		this.setScissor(left, bottom, width, height);
+		this.setScissorTest(true);
+		if (view.camera !== undefined)
+			this.render(this.scene, view.camera);
+		else
+			this.render(this.scene, this.camera);
+		//this.composer.render();
 	}
 }
 

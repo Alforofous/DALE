@@ -17,7 +17,7 @@ class Mouse
 		this.pressedButtons = {};
 		this.pressedButtonsSignal = {};
 		this.releasedButtonsSignal = {};
-		this.drillHoleSelector = new DrillHoleSelector(this.camera, this.scene, this.renderer);
+		this.drillHoleSelector = new DrillHoleSelector(this.camera, this.drillHoleCamera, this.scene, this.renderer);
 
 		this.#addEvents();
 	}
@@ -53,7 +53,9 @@ class Mouse
 				if (activeButtonIndex === 0)
 					this.addDrillHole(this.scene);
 				else if (activeButtonIndex === 1)
+				{
 					this.drillHoleSelector.createSelectionRectangle(this.position);
+				}
 			}
 			else
 				document.body.requestPointerLock();
@@ -84,7 +86,12 @@ class Mouse
 			{
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
+				{
 					this.addDrillHole(this.scene);
+				}
+				else if (activeButtonIndex === 1)
+				{
+				}
 			}
 		}
 	}
