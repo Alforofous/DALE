@@ -102,6 +102,8 @@ class Mouse
 				scene.drillHoles.setMatrixAt(i, matrix);
 			}
 			scene.drillHoles.instanceMatrix.needsUpdate = true;
+			scene.drillHoles.computeBoundingBox();
+			scene.drillHoles.computeBoundingSphere();
 		}
 	}
 
