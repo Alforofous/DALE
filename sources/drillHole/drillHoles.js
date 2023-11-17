@@ -4,15 +4,14 @@ let lambertShader = THREE.ShaderLib['lambert'];
 
 let customLambertShader = {
 	uniforms: THREE.UniformsUtils.clone(lambertShader.uniforms),
-	vertexShader: lambertShader.vertexShader,
-	fragmentShader: lambertShader.fragmentShader
 };
 
-customLambertShader.vertexShader = 'attribute float highlight;\nvarying float vHighlight;\n' + customLambertShader.vertexShader;
-customLambertShader.vertexShader = customLambertShader.vertexShader.replace('#include <begin_vertex>', 'vHighlight = highlight;\n#include <begin_vertex>');
-
-customLambertShader.fragmentShader = 'varying float vHighlight;\n' + customLambertShader.fragmentShader;
-customLambertShader.fragmentShader = customLambertShader.fragmentShader.replace('#include <opaque_fragment>', '#include <opaque_fragment>\ngl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(1.0), vHighlight * 0.2), gl_FragColor.a);');
+async function loadShader(url)
+{
+	const response = await fetch(url);
+	const text = await response.text();
+	return text;
+}
 
 class DrillHoles extends THREE.InstancedMesh
 {
@@ -20,23 +19,38 @@ class DrillHoles extends THREE.InstancedMesh
 	{
 		const height = Math.abs(referenceHeight - spawnPosition.y);
 		const drillHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
-		//console.log(customLambertShader.vertexShader);
-		//console.log(customLambertShader.fragmentShader);
+		super(drillHoleGeometry, null, instanceCount);
+
+		this.drillHoleGeometry = drillHoleGeometry;
+		this.instanceCount = instanceCount;
+		this.init(instanceCount);
+	}
+
+	async init(instanceCount)
+	{
+		const vertexShaderCode = await loadShader('sources/shaders/customVertexLambertShader.glsl');
+		const fragmentShaderCode = await loadShader('sources/shaders/customFragmentLambertShader.glsl');
+
 		const cylinderMaterial = new THREE.ShaderMaterial({
 			uniforms: customLambertShader.uniforms,
-			vertexShader: customLambertShader.vertexShader,
-			fragmentShader: customLambertShader.fragmentShader,
+			vertexShader: vertexShaderCode,
+			fragmentShader: fragmentShaderCode,
 			lights: true
 		});
 
-		cylinderMaterial.uniforms.diffuse.value.set(0x00ff00);
+		console.log(fragmentShaderCode);
+		console.log(vertexShaderCode);
 
-		drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(instanceCount), 1));
+		cylinderMaterial.uniforms.diffuse.value.set(0x004C5A);
 
-		super(drillHoleGeometry, cylinderMaterial, instanceCount);
+		this.material = cylinderMaterial;
+		this.drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(instanceCount), 1));
 
-		this.instanceCount = instanceCount;
-		this.drillHoleGeometry = drillHoleGeometry;
+		let instanceColors = new Float32Array(instanceCount * 3);
+		for (let i = 0; i < instanceCount * 3; i++)
+			instanceColors[i] = i / instanceCount;
+		this.drillHoleGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
+
 		this.name = 'drillHoles';
 		this.layers.set(2);
 	}
