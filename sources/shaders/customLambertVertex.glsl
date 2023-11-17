@@ -16,7 +16,8 @@ varying vec3 vViewPosition;
 #include <shadowmap_pars_vertex>
 #include <logdepthbuf_pars_vertex>
 #include <clipping_planes_pars_vertex>
-void main() {
+void main()
+{
 	#include <uv_vertex>
 	#include <color_vertex>
 	#include <morphcolor_vertex>

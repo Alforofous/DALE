@@ -63,8 +63,11 @@ function init()
 	});
 
 	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 100000);
-	scene.add(scene.drillHoles);
-	onUpdate();
+	scene.drillHoles.init().then(() =>
+	{
+		scene.add(scene.drillHoles);
+		onUpdate();
+	});
 }
 
 function onUpdate()
@@ -91,6 +94,7 @@ function renderViewports()
 {
 	for (let i = 0; i < views.length; ++i)
 	{
+		scene.drillHoles.switchShaders();
 		if (i == 0)
 		{
 			renderer.composer.passes[0].enabled = true;
