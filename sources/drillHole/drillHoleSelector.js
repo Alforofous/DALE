@@ -66,7 +66,7 @@ class DrillHoleSelector
 			this.renderer.setRenderTarget(oldRenderTarget);
 
 			this.#updateSelectedItems(renderTarget, pixelBuffer, left, top, width + 1, height + 1);
-			//this.#updateSelectionBox(normalizedX, normalizedY);
+			this.#updateSelectionBox(normalizedX, normalizedY);
 		}
 	}
 
@@ -82,10 +82,17 @@ class DrillHoleSelector
 	{
 		let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
 		highlightAttribute.array.fill(0);
-		for (let i = 0; i < renderTarget.width * renderTarget.height * 4; i += 4)
+
+		console.log(left, top, width, height);
+		for (let y = top + height; y > top; y--)
 		{
-			const selectedInstanceIndex = (pixelBuffer[i] << 16) + (pixelBuffer[i + 1] << 8) + pixelBuffer[i + 2];
-			highlightAttribute.setX(selectedInstanceIndex, 1);
+			for (let x = left; x < left + width; x++)
+			{
+				let flippedY = renderTarget.height - y;
+				let i = (flippedY * renderTarget.width + x) * 4;
+				const selectedInstanceIndex = (pixelBuffer[i] << 16) + (pixelBuffer[i + 1] << 8) + pixelBuffer[i + 2];
+				highlightAttribute.setX(selectedInstanceIndex, 1);
+			}
 		}
 		highlightAttribute.needsUpdate = true;
 	}
@@ -100,7 +107,6 @@ class DrillHoleSelector
 		let drillHolesArray = selectedInstances[this.scene.drillHoles.uuid];
 
 		let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
-		highlightAttribute.array.fill(0);
 		for (let i = 0; i < drillHolesArray.length; i++)
 		{
 			const selectedInstanceIndex = drillHolesArray[i];
