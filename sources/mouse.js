@@ -1,23 +1,23 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
-import { DrillHoleSelector } from './drillHole/drillHoleSelector.js';
+import { boreHoleSelector } from './boreHole/boreHoleSelector.js';
 
 class Mouse
 {
-	constructor(renderer, scene, userInterface, camera, drillHoleCamera)
+	constructor(renderer, scene, userInterface, camera, boreHoleCamera)
 	{
 		this.movement = { x: 0, y: 0 };
 		this.position = { x: 0, y: 0 };
 		this.scene = scene;
 		this.renderer = renderer;
 		this.camera = camera;
-		this.drillHoleCamera = drillHoleCamera;
+		this.boreHoleCamera = boreHoleCamera;
 		this.userInterface = userInterface;
 		this.pressedButtons = {};
 		this.pressedButtonsSignal = {};
 		this.releasedButtonsSignal = {};
-		this.drillHoleSelector = new DrillHoleSelector(this.camera, this.drillHoleCamera, this.scene, this.renderer);
+		this.boreHoleSelector = new boreHoleSelector(this.camera, this.boreHoleCamera, this.scene, this.renderer);
 
 		this.#addEvents();
 	}
@@ -34,7 +34,7 @@ class Mouse
 			this.onMouseUp();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
-		this.drillHoleSelector.updateSelectionRectangle(this.position);
+		this.boreHoleSelector.updateSelectionRectangle(this.position);
 	}
 
 	onMouseDown()
@@ -51,10 +51,10 @@ class Mouse
 			{
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
-					this.addDrillHole(this.scene);
+					this.addboreHole(this.scene);
 				else if (activeButtonIndex === 1)
 				{
-					this.drillHoleSelector.createSelectionRectangle(this.position);
+					this.boreHoleSelector.createSelectionRectangle(this.position);
 				}
 			}
 			else
@@ -64,7 +64,7 @@ class Mouse
 
 	onMouseUp()
 	{
-		this.drillHoleSelector.destroySelectionRectangle();
+		this.boreHoleSelector.destroySelectionRectangle();
 	}
 
 	onMove()
@@ -72,7 +72,7 @@ class Mouse
 		if (this.isCaptured)
 		{
 			this.camera.updateRotation(this.movement.x, this.movement.y);
-			this.drillHoleCamera.updateRotation(this.movement.x, this.movement.y);
+			this.boreHoleCamera.updateRotation(this.movement.x, this.movement.y);
 		}
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
@@ -87,7 +87,7 @@ class Mouse
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
 				{
-					this.addDrillHole(this.scene);
+					this.addboreHole(this.scene);
 				}
 				else if (activeButtonIndex === 1)
 				{
@@ -96,7 +96,7 @@ class Mouse
 		}
 	}
 
-	addDrillHole(scene)
+	addboreHole(scene)
 	{
 		let intersection = this.first_intersected_object;
 		if (intersection === undefined)
@@ -105,16 +105,16 @@ class Mouse
 		{
 			let matrix = new THREE.Matrix4();
 			const distance = 2000;
-			for (let i = 0; i < scene.drillHoles.count; i++)
+			for (let i = 0; i < scene.boreHoles.count; i++)
 			{
 				let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
 				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
-				scene.drillHoles.setMatrixAt(i, matrix);
+				scene.boreHoles.setMatrixAt(i, matrix);
 			}
-			scene.drillHoles.instanceMatrix.needsUpdate = true;
-			scene.drillHoles.computeBoundingBox();
-			scene.drillHoles.computeBoundingSphere();
+			scene.boreHoles.instanceMatrix.needsUpdate = true;
+			scene.boreHoles.computeBoundingBox();
+			scene.boreHoles.computeBoundingSphere();
 		}
 	}
 

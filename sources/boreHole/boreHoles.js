@@ -7,15 +7,15 @@ async function loadShader(url)
 	return text;
 }
 
-class DrillHoles extends THREE.InstancedMesh
+class boreHoles extends THREE.InstancedMesh
 {
 	constructor(spawnPosition, referenceHeight, instanceCount = 10000)
 	{
 		const height = Math.abs(referenceHeight - spawnPosition.y);
-		const drillHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 3);
-		super(drillHoleGeometry, null, instanceCount);
+		const boreHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 3);
+		super(boreHoleGeometry, null, instanceCount);
 
-		this.drillHoleGeometry = drillHoleGeometry;
+		this.boreHoleGeometry = boreHoleGeometry;
 		this.instanceCount = instanceCount;
 	}
 
@@ -42,7 +42,7 @@ class DrillHoles extends THREE.InstancedMesh
 		cylinderMaterial.uniforms.diffuse.value.set(0x004C5A);
 
 		this.material = cylinderMaterial;
-		this.drillHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
+		this.boreHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
 
 		let instanceColors = new Float32Array(this.instanceCount * 3);
 		for (let i = 0; i < this.instanceCount; i++)
@@ -55,9 +55,9 @@ class DrillHoles extends THREE.InstancedMesh
 			instanceColors[i * 3 + 1] = g / 255;
 			instanceColors[i * 3 + 2] = b / 255;
 		}
-		this.drillHoleGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
+		this.boreHoleGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
 
-		this.name = 'drillHoles';
+		this.name = 'boreHoles';
 		this.layers.set(2);
 	}
 
@@ -74,4 +74,4 @@ class DrillHoles extends THREE.InstancedMesh
 	}
 }
 
-export { DrillHoles };
+export { boreHoles };

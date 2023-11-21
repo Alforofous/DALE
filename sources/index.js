@@ -6,7 +6,7 @@ import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
-import { DrillHoles } from './drillHole/drillHoles.js';
+import { boreHoles } from './boreHole/boreHoles.js';
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -20,12 +20,12 @@ document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
 const camera = new Camera();
-const drillHoleCamera = new Camera();
-drillHoleCamera.layers.set(2);
-const renderer = new Renderer(scene, camera, drillHoleCamera);
+const boreHoleCamera = new Camera();
+boreHoleCamera.layers.set(2);
+const renderer = new Renderer(scene, camera, boreHoleCamera);
 
 const userInterface = new UI(scene);
-const mouse = new Mouse(renderer, scene, userInterface, camera, drillHoleCamera);
+const mouse = new Mouse(renderer, scene, userInterface, camera, boreHoleCamera);
 const keyboard = new Keyboard();
 const model = new Model(scene);
 const clock = new THREE.Clock();
@@ -43,7 +43,7 @@ const views = [
 		bottom: 0,
 		width: 0.25,
 		height: 0.25,
-		camera: drillHoleCamera,
+		camera: boreHoleCamera,
 	}
 ];
 
@@ -64,10 +64,10 @@ function init()
 		}
 	});
 
-	scene.drillHoles = new DrillHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 100000);
-	scene.drillHoles.init().then(() =>
+	scene.boreHoles = new boreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 100000);
+	scene.boreHoles.init().then(() =>
 	{
-		scene.add(scene.drillHoles);
+		scene.add(scene.boreHoles);
 		onUpdate();
 	});
 }
@@ -89,7 +89,7 @@ function onUpdate()
 
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);
-	drillHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
+	boreHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
 
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	userInterface.stats.end();

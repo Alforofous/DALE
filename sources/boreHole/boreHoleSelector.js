@@ -2,14 +2,14 @@ import { SelectionBox } from 'three/examples/jsm/interactive/SelectionBox.js';
 import { SelectionHelper } from 'three/examples/jsm/interactive/SelectionHelper.js'
 import * as THREE from 'three';
 
-class DrillHoleSelector
+class boreHoleSelector
 {
-	constructor(camera, drillHoleCamera, scene, renderer)
+	constructor(camera, boreHoleCamera, scene, renderer)
 	{
 		this.camera = camera;
 		this.scene = scene;
 		this.renderer = renderer;
-		this.drillHoleCamera = drillHoleCamera;
+		this.boreHoleCamera = boreHoleCamera;
 
 		this.selectionBox = new SelectionBox(this.camera, this.scene);
 		this.selectionHelper = new SelectionHelper(this.renderer, 'selectBox');
@@ -59,7 +59,7 @@ class DrillHoleSelector
 			let oldRenderTarget = this.renderer.getRenderTarget();
 			let renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
 			this.renderer.setRenderTarget(renderTarget);
-			this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.drillHoleCamera }, true);
+			this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera }, true);
 
 			let pixelBuffer = new Uint8Array(renderTarget.width * renderTarget.height * 4);
 			this.renderer.readRenderTargetPixels(renderTarget, 0, 0, renderTarget.width, renderTarget.height, pixelBuffer);
@@ -80,7 +80,7 @@ class DrillHoleSelector
 
 	#updateSelectedItems(renderTarget, pixelBuffer, left, top, width, height)
 	{
-		let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
+		let highlightAttribute = this.scene.boreHoles.boreHoleGeometry.getAttribute('highlight');
 		highlightAttribute.array.fill(0);
 
 		for (let y = top + height; y > top; y--)
@@ -103,16 +103,16 @@ class DrillHoleSelector
 		this.selectionBox.instances = {};
 		this.selectionBox.select();
 		let selectedInstances = this.selectionBox.instances;
-		let drillHolesArray = selectedInstances[this.scene.drillHoles.uuid];
+		let boreHolesArray = selectedInstances[this.scene.boreHoles.uuid];
 
-		let highlightAttribute = this.scene.drillHoles.drillHoleGeometry.getAttribute('highlight');
-		for (let i = 0; i < drillHolesArray.length; i++)
+		let highlightAttribute = this.scene.boreHoles.boreHoleGeometry.getAttribute('highlight');
+		for (let i = 0; i < boreHolesArray.length; i++)
 		{
-			const selectedInstanceIndex = drillHolesArray[i];
+			const selectedInstanceIndex = boreHolesArray[i];
 			highlightAttribute.setX(selectedInstanceIndex, 1);
 		}
 		highlightAttribute.needsUpdate = true;
 	}
 }
 
-export { DrillHoleSelector };
+export { boreHoleSelector };

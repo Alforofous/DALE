@@ -4,12 +4,12 @@ import { EffectComposer, EffectPass, RenderPass, OutlineEffect } from "postproce
 
 class Renderer extends WebGLRenderer
 {
-	constructor(scene, camera, drillHoleCamera)
+	constructor(scene, camera, boreHoleCamera)
 	{
 		super();
 		this.scene = scene;
 		this.camera = camera;
-		this.drillHoleCamera = drillHoleCamera;
+		this.boreHoleCamera = boreHoleCamera;
 		this.domElement.style.position = 'relative';
 		this.domElement.style.width = '75%';
 		this.domElement.style.height = '100vh';
@@ -19,7 +19,7 @@ class Renderer extends WebGLRenderer
 
 		this.composer = new EffectComposer(this);
 		this.composer.addPass(new RenderPass(this.scene, camera), 0);
-		this.composer.addPass(new RenderPass(this.scene, drillHoleCamera), 1);
+		this.composer.addPass(new RenderPass(this.scene, boreHoleCamera), 1);
 		this.composer.addPass(new EffectPass(camera, this.outlineEffect), 2);
 
 		document.body.appendChild(this.domElement);
@@ -49,9 +49,9 @@ class Renderer extends WebGLRenderer
 	renderViewport(view = {left: 0, bottom: 0, width: 1, height: 1, camera: undefined}, enableIDShader)
 	{
 		if (enableIDShader === false)
-			this.scene.drillHoles.switchToDefaultShader();
+			this.scene.boreHoles.switchToDefaultShader();
 		else
-			this.scene.drillHoles.switchToIdShader();
+			this.scene.boreHoles.switchToIdShader();
 
 		const rendererBounds = this.domElement.getBoundingClientRect();
 		const left = Math.floor(rendererBounds.width * view.left);
