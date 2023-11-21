@@ -264,6 +264,10 @@ class Mouse
 				this.movement.y = 0;
 			});
 		}.bind(this));
+
+		window.addEventListener('contextmenu', function(event) {
+			event.preventDefault();
+		});
 	}
 }
 
