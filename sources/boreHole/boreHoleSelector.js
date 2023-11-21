@@ -46,10 +46,10 @@ class boreHoleSelector
 
 			this.xy2 = { x: position.x - rendererBounds.left, y: position.y - rendererBounds.top };
 
-			let left = Math.min(this.xy1.x, this.xy2.x);
-			let top = Math.min(this.xy1.y, this.xy2.y);
-			let width = Math.abs(this.xy1.x - this.xy2.x);
-			let height = Math.abs(this.xy1.y - this.xy2.y);
+			let left = Math.round(Math.min(this.xy1.x, this.xy2.x));
+			let top = Math.round(Math.min(this.xy1.y, this.xy2.y));
+			let width = Math.round(Math.abs(this.xy1.x - this.xy2.x));
+			let height = Math.round(Math.abs(this.xy1.y - this.xy2.y));
 
 			this.selectionRectangle.style.left = `${rendererBounds.left + left}px`;
 			this.selectionRectangle.style.top = `${rendererBounds.top + top}px`;
@@ -66,7 +66,7 @@ class boreHoleSelector
 			this.renderer.setRenderTarget(oldRenderTarget);
 
 			this.#updateSelectedItems(renderTarget, pixelBuffer, left, top, width + 1, height + 1);
-			this.#updateSelectionBox(normalizedX, normalizedY);
+			//this.#updateSelectionBox(normalizedX, normalizedY);
 		}
 	}
 
@@ -83,10 +83,12 @@ class boreHoleSelector
 		let highlightAttribute = this.scene.boreHoles.boreHoleGeometry.getAttribute('highlight');
 		highlightAttribute.array.fill(0);
 
-		for (let y = top + height; y > top; y--)
+		for (let y = top; y < top + height; y++)
 		{
 			for (let x = left; x < left + width; x++)
 			{
+				if (x < 0 || x >= renderTarget.width || y < 0 || y >= renderTarget.height)
+					continue;
 				let flippedY = renderTarget.height - y;
 				let i = (flippedY * renderTarget.width + x) * 4;
 				const selectedInstanceIndex = (pixelBuffer[i] << 16) + (pixelBuffer[i + 1] << 8) + pixelBuffer[i + 2];

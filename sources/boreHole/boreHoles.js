@@ -12,7 +12,7 @@ class boreHoles extends THREE.InstancedMesh
 	constructor(spawnPosition, referenceHeight, instanceCount = 10000)
 	{
 		const height = Math.abs(referenceHeight - spawnPosition.y);
-		const boreHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 3);
+		const boreHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
 		super(boreHoleGeometry, null, instanceCount);
 
 		this.boreHoleGeometry = boreHoleGeometry;

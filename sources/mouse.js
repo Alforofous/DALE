@@ -103,12 +103,23 @@ class Mouse
 			return;
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
 		{
+			let raycaster = new THREE.Raycaster();
+			let direction = new THREE.Vector3(0, -1, 0);
+			raycaster.firstHitOnly = true;
+			raycaster.layers.set(0);
+
 			let matrix = new THREE.Matrix4();
-			const distance = 2000;
+			const distance = 1000;
 			for (let i = 0; i < scene.boreHoles.count; i++)
 			{
 				let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
+				let origin = new THREE.Vector3(moveVector.x, 10000, moveVector.z);
+				raycaster.set(origin, direction);
+				let intersects = raycaster.intersectObjects(scene.children, true);
+
+				if (intersects.length > 0)
+					moveVector.y = intersects[0].point.y;
 				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
 				scene.boreHoles.setMatrixAt(i, matrix);
 			}
@@ -219,6 +230,7 @@ class Mouse
 		let raycaster = new THREE.Raycaster();
 		raycaster.layers.set(0);
 		raycaster.setFromCamera(this.ray, this.camera);
+		raycaster.firstHitOnly = true;
 		return raycaster.intersectObjects(this.scene.children, true);
 	}
 

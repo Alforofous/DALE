@@ -82,6 +82,7 @@ class Model
 							opacity: 1.0,
 						});
 						child.geometry.computeVertexNormals();
+						child.geometry.computeBoundsTree();
 					}
 				});
 				this.scene.add(gltf.scene);
