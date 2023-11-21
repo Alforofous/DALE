@@ -66,7 +66,7 @@ class boreHoleSelector
 			this.renderer.setRenderTarget(oldRenderTarget);
 
 			this.#updateSelectedItems(renderTarget, pixelBuffer, left, top, width + 1, height + 1);
-			//this.#updateSelectionBox(normalizedX, normalizedY);
+			this.#updateSelectionBox(normalizedX, normalizedY);
 		}
 	}
 
