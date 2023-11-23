@@ -2,7 +2,7 @@ import { SelectionBox } from 'three/examples/jsm/interactive/SelectionBox.js';
 import { SelectionHelper } from 'three/examples/jsm/interactive/SelectionHelper.js'
 import * as THREE from 'three';
 
-class boreHoleSelector
+class BoreHoleSelector
 {
 	constructor(camera, boreHoleCamera, scene, renderer)
 	{
@@ -56,16 +56,7 @@ class boreHoleSelector
 			this.selectionRectangle.style.width = `${width}px`;
 			this.selectionRectangle.style.height = `${height}px`;
 
-			let oldRenderTarget = this.renderer.getRenderTarget();
-			let renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
-			this.renderer.setRenderTarget(renderTarget);
-			this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera }, true);
-
-			let pixelBuffer = new Uint8Array(renderTarget.width * renderTarget.height * 4);
-			this.renderer.readRenderTargetPixels(renderTarget, 0, 0, renderTarget.width, renderTarget.height, pixelBuffer);
-			this.renderer.setRenderTarget(oldRenderTarget);
-
-			this.#updateSelectedItems(renderTarget, pixelBuffer, left, top, width + 1, height + 1);
+			this.#updateSelectedIndicesGPU(left, top, width + 1, height + 1);
 			this.#updateSelectionBox(normalizedX, normalizedY);
 		}
 	}
@@ -78,14 +69,23 @@ class boreHoleSelector
 		this.selectionRectangle = undefined;
 	}
 
-	#updateSelectedItems(renderTarget, pixelBuffer, left, top, width, height)
+	#updateSelectedIndicesGPU(left, top, width, height)
 	{
+		let oldRenderTarget = this.renderer.getRenderTarget();
+		let renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
+		this.renderer.setRenderTarget(renderTarget);
+		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera }, true);
+
+		let pixelBuffer = new Uint8Array(renderTarget.width * renderTarget.height * 4);
+		this.renderer.readRenderTargetPixels(renderTarget, 0, 0, renderTarget.width, renderTarget.height, pixelBuffer);
+		this.renderer.setRenderTarget(oldRenderTarget);
+
 		let highlightAttribute = this.scene.boreHoles.boreHoleGeometry.getAttribute('highlight');
 		highlightAttribute.array.fill(0);
 
-		for (let y = top; y < top + height; y++)
+		for (let y = top; y < top + height; y += 1)
 		{
-			for (let x = left; x < left + width; x++)
+			for (let x = left; x < left + width; x += 1)
 			{
 				if (x < 0 || x >= renderTarget.width || y < 0 || y >= renderTarget.height)
 					continue;
@@ -117,4 +117,4 @@ class boreHoleSelector
 	}
 }
 
-export { boreHoleSelector };
+export { BoreHoleSelector };

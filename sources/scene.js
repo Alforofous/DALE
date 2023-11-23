@@ -43,6 +43,7 @@ class Scene extends THREE.Scene
 
 	changeTerrainMeshOpacity()
 	{
+		console.log(this.opacitySlider.value);
 		let value = parseFloat(this.opacitySlider.value) / 100;
 		this.setOpacity(this.terrainMesh, value);
 	}

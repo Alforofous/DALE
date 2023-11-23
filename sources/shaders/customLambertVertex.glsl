@@ -1,9 +1,9 @@
 attribute float highlight;
 attribute vec3 instanceColor;
-varying float vHighlight;
-varying vec3 vInstanceColor;
+out float vHighlight;
+out vec3 vInstanceColor;
 #define LAMBERT
-varying vec3 vViewPosition;
+out vec3 vViewPosition;
 #include <common>
 #include <uv_pars_vertex>
 #include <displacementmap_pars_vertex>

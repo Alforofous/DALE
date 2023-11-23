@@ -1,4 +1,4 @@
-varying vec3 vInstanceColor;
+in vec3 vInstanceColor;
 
 void main()
 {

@@ -10,6 +10,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
+		"@seregpie/three.text-sprite": "^3.2.0",
 		"gpu": "^1.0.0",
 		"postprocessing": "^6.33.3",
 		"stats.js": "^0.17.0",

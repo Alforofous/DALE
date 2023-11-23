@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
-import { boreHoleSelector } from './boreHole/boreHoleSelector.js';
+import { BoreHoleSelector } from './boreHole/boreHoleSelector.js';
 
 class Mouse
 {
@@ -17,7 +17,7 @@ class Mouse
 		this.pressedButtons = {};
 		this.pressedButtonsSignal = {};
 		this.releasedButtonsSignal = {};
-		this.boreHoleSelector = new boreHoleSelector(this.camera, this.boreHoleCamera, this.scene, this.renderer);
+		this.boreHoleSelector = new BoreHoleSelector(this.camera, this.boreHoleCamera, this.scene, this.renderer);
 
 		this.#addEvents();
 	}
@@ -51,7 +51,7 @@ class Mouse
 			{
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
-					this.addboreHole(this.scene);
+					this.addBoreHole(this.scene);
 				else if (activeButtonIndex === 1)
 				{
 					this.boreHoleSelector.createSelectionRectangle(this.position);
@@ -87,7 +87,7 @@ class Mouse
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
 				{
-					this.addboreHole(this.scene);
+					this.addBoreHole(this.scene);
 				}
 				else if (activeButtonIndex === 1)
 				{
@@ -96,7 +96,7 @@ class Mouse
 		}
 	}
 
-	addboreHole(scene)
+	addBoreHole(scene)
 	{
 		let intersection = this.first_intersected_object;
 		if (intersection === undefined)
@@ -107,8 +107,10 @@ class Mouse
 			let direction = new THREE.Vector3(0, -1, 0);
 			raycaster.firstHitOnly = true;
 			raycaster.layers.set(0);
+			raycaster.camera = this.camera;
 
 			let matrix = new THREE.Matrix4();
+			let matrix2 = new THREE.Matrix4();
 			const distance = 1000;
 			for (let i = 0; i < scene.boreHoles.count; i++)
 			{
@@ -121,11 +123,17 @@ class Mouse
 				if (intersects.length > 0)
 					moveVector.y = intersects[0].point.y;
 				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
+				matrix2.makeTranslation(moveVector.x, moveVector.y + scene.boreHoles.boreHoleGeometry.parameters.height / 2 + 5, moveVector.z);
 				scene.boreHoles.setMatrixAt(i, matrix);
+				scene.boreHoles.labels.setMatrixAt(i, matrix2);
+				scene.boreHoles.updateSprites();
 			}
 			scene.boreHoles.instanceMatrix.needsUpdate = true;
+			scene.boreHoles.labels.instanceMatrix.needsUpdate = true;
 			scene.boreHoles.computeBoundingBox();
 			scene.boreHoles.computeBoundingSphere();
+			scene.boreHoles.labels.computeBoundingBox();
+			scene.boreHoles.labels.computeBoundingSphere();
 		}
 	}
 

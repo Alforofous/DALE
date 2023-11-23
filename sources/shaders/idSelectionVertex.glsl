@@ -1,5 +1,5 @@
 attribute vec3 instanceColor;
-varying vec3 vInstanceColor;
+out vec3 vInstanceColor;
 
 void main()
 {

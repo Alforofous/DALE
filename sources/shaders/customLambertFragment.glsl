@@ -1,5 +1,5 @@
-varying vec3 vInstanceColor;
-varying float vHighlight;
+in vec3 vInstanceColor;
+in float vHighlight;
 #define LAMBERT
 uniform vec3 diffuse;
 uniform vec3 emissive;

@@ -6,7 +6,7 @@ import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
-import { boreHoles } from './boreHole/boreHoles.js';
+import { BoreHoles } from './boreHole/boreHoles.js';
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -21,7 +21,7 @@ document.documentElement.style.height = '100vh';
 const scene = new Scene();
 const camera = new Camera();
 const boreHoleCamera = new Camera();
-boreHoleCamera.layers.set(2);
+boreHoleCamera.layers.set(10);
 const renderer = new Renderer(scene, camera, boreHoleCamera);
 
 const userInterface = new UI(scene);
@@ -59,15 +59,14 @@ function init()
 	{
 		if (child.isMesh)
 		{
-			console.log(child);
 			child.geometry.computeBoundsTree();
 		}
 	});
 
-	scene.boreHoles = new boreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 10000);
-	scene.boreHoles.init().then(() =>
+	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 10000);
+	scene.boreHoles.init(scene).then(() =>
 	{
-		scene.add(scene.boreHoles);
+		//scene.boreHoles.initSprites(scene);
 		onUpdate();
 	});
 }
@@ -81,9 +80,12 @@ function onUpdate()
 	renderer.composer.passes[1].enabled = false;
 	renderer.renderViewport(views[0], false);
 
-	renderer.composer.passes[0].enabled = false;
-	renderer.composer.passes[1].enabled = true;
-	renderer.renderViewport(views[1], true);
+	if (userInterface.showViewport2)
+	{
+		renderer.composer.passes[0].enabled = false;
+		renderer.composer.passes[1].enabled = true;
+		renderer.renderViewport(views[1], true);
+	}
 	
 	mouse.onUpdate();
 
