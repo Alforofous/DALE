@@ -5,7 +5,7 @@ class BoreHoleLabels extends THREE.InstancedMesh
 {
 	constructor(fontTexturePath, fontAtlasPath, instanceCount)
 	{
-		const geometry = new THREE.PlaneGeometry(5, 5);
+		const geometry = new THREE.PlaneGeometry(2, 3);
 		const tmpMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
 		super(geometry, tmpMaterial, instanceCount);
 		this.instanceCount = instanceCount;
@@ -70,7 +70,6 @@ class BoreHoleLabels extends THREE.InstancedMesh
 			vertexShader: this.vertexShaderCode,
 			fragmentShader: this.fragmentShaderCode,
 			transparent: true,
-			opacity: 0.5,
 		});
 		this.material = material;
 		this.layers.set(2);

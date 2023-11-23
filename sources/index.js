@@ -63,7 +63,7 @@ function init()
 		}
 	});
 
-	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
+	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 100);
 	scene.boreHoles.init(scene).then(() =>
 	{
 		//scene.boreHoles.initSprites(scene);

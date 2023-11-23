@@ -89,7 +89,7 @@ class BoreHoles extends THREE.InstancedMesh
 		this.layers.set(10);
 		this.geometry.computeBoundsTree();
 
-		this.labels = new BoreHoleLabels('assets/textures/fontAtlas/courier.png', 'assets/fontAtlasData/courier.json', this.instanceCount);
+		this.labels = new BoreHoleLabels('assets/textures/fontAtlas/andale_mono.png', 'assets/fontAtlasData/andale_mono.json', this.instanceCount);
 		scene.add(this);
 		scene.add(this.labels);
 	}
