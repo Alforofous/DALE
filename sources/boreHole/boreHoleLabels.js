@@ -70,6 +70,7 @@ class BoreHoleLabels extends THREE.InstancedMesh
 			vertexShader: this.vertexShaderCode,
 			fragmentShader: this.fragmentShaderCode,
 			transparent: true,
+			opacity: 0.5,
 		});
 		this.material = material;
 		this.layers.set(2);
