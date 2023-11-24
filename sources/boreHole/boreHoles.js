@@ -61,7 +61,11 @@ class BoreHoles extends THREE.InstancedMesh
 		this.idSelectionFragmentCode = await loadShader('sources/shaders/idSelectionFragment.glsl');
 
 		const cylinderMaterial = new THREE.ShaderMaterial({
-			uniforms: customLambertShader.uniforms,
+			uniforms: {
+				...customLambertShader.uniforms,
+				uSelectedBoreHolesTexture: { value: null },
+				uResolution: { value: new THREE.Vector2() },
+			},
 			vertexShader: this.idSelectionVertexCode,
 			fragmentShader: this.idSelectionFragmentCode,
 			lights: true

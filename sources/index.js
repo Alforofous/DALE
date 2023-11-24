@@ -63,7 +63,7 @@ function init()
 		}
 	});
 
-	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 100);
+	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
 	scene.boreHoles.init(scene).then(() =>
 	{
 		//scene.boreHoles.initSprites(scene);
@@ -76,6 +76,8 @@ function onUpdate()
 	userInterface.stats.begin();
 	const deltaTime = clock.getDelta();
 
+	
+	mouse.onUpdate();
 	renderer.composer.passes[0].enabled = true;
 	renderer.composer.passes[1].enabled = false;
 	renderer.renderViewport(views[0], false);
@@ -86,8 +88,6 @@ function onUpdate()
 		renderer.composer.passes[1].enabled = true;
 		renderer.renderViewport(views[1], true);
 	}
-	
-	mouse.onUpdate();
 
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);

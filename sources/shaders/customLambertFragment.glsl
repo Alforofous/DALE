@@ -1,9 +1,13 @@
-in vec3 vInstanceColor;
-in float vHighlight;
 #define LAMBERT
 uniform vec3 diffuse;
 uniform vec3 emissive;
 uniform float opacity;
+uniform sampler2D uSelectedBoreHolesTexture;
+uniform vec2 uResolution;
+
+in vec3 vInstanceColor;
+in float vHighlight;
+
 #include <common>
 #include <packing>
 #include <dithering_pars_fragment>
@@ -30,7 +34,35 @@ uniform float opacity;
 #include <logdepthbuf_pars_fragment>
 #include <clipping_planes_pars_fragment>
 
-void main() {
+float grayscale(vec3 color)
+{
+	return (color.r + color.g + color.b) / 3.0;
+}
+
+vec3 sobelEdgeDetection(sampler2D image, vec2 uv, vec2 resolution, float scaleFactor)
+{
+	vec2 texel = vec2(1.0) / resolution;
+
+	float n[9];
+	for (int i = -1; i <= 1; i++)
+	{
+		for (int j = -1; j <= 1; j++)
+		{
+			vec2 offset = vec2(float(i), float(j)) * texel;
+			vec3 color = texture2D(image, uv + offset).rgb;
+			n[(i + 1) * 3 + (j + 1)] = grayscale(color);
+		}
+	}
+
+	float sobel_edge_h = n[2] + 2.0 * n[5] + n[8] - n[0] - 2.0 * n[3] - n[6];
+	float sobel_edge_v = n[0] + 2.0 * n[1] + n[2] - n[6] - 2.0 * n[7] - n[8];
+	float sobel = sqrt(sobel_edge_h * sobel_edge_h + sobel_edge_v * sobel_edge_v);
+
+	return vec3(sobel * scaleFactor);
+}
+
+void main()
+{
 	#include <clipping_planes_fragment>
 	vec4 diffuseColor = vec4( diffuse, opacity );
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
@@ -53,11 +85,16 @@ void main() {
 	vec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + totalEmissiveRadiance;
 	#include <envmap_fragment>
 	#include <opaque_fragment>
-	gl_FragColor = vec4(mix(gl_FragColor.rgb, vec3(1.0), vHighlight * 0.1), gl_FragColor.a);
-	gl_FragColor = vec4(mix(gl_FragColor.rgb, vInstanceColor, vHighlight), gl_FragColor.a);
 	#include <tonemapping_fragment>
 	#include <colorspace_fragment>
 	#include <fog_fragment>
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
+	vec2 uv = gl_FragCoord.xy / uResolution;
+	vec3 color = sobelEdgeDetection(uSelectedBoreHolesTexture, uv, uResolution, 100.0);
+	if (dot(color, vec3(1.0)) < 0.9)
+	{
+		color = gl_FragColor.rgb;
+	}
+	gl_FragColor = vec4(mix(gl_FragColor.rgb, color, vHighlight), gl_FragColor.a);
 }

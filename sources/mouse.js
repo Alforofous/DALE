@@ -34,6 +34,7 @@ class Mouse
 			this.onMouseUp();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
+		this.boreHoleSelector.updateData();
 		this.boreHoleSelector.updateSelectionRectangle(this.position);
 	}
 

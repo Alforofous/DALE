@@ -69,17 +69,25 @@ class BoreHoleSelector
 		this.selectionRectangle = undefined;
 	}
 
-	#updateSelectedIndicesGPU(left, top, width, height)
+	updateData()
 	{
 		let oldRenderTarget = this.renderer.getRenderTarget();
-		let renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
-		this.renderer.setRenderTarget(renderTarget);
+		this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
+		this.renderer.setRenderTarget(this.renderTarget);
 		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera }, true);
 
-		let pixelBuffer = new Uint8Array(renderTarget.width * renderTarget.height * 4);
-		this.renderer.readRenderTargetPixels(renderTarget, 0, 0, renderTarget.width, renderTarget.height, pixelBuffer);
+		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
+		this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.pixelBuffer);
 		this.renderer.setRenderTarget(oldRenderTarget);
 
+		this.texture = new THREE.DataTexture(this.pixelBuffer, this.renderTarget.width, this.renderTarget.height, THREE.RGBAFormat);
+		this.texture.needsUpdate = true;
+		this.scene.boreHoles.material.uniforms.uSelectedBoreHolesTexture.value = this.texture;
+		this.scene.boreHoles.material.uniforms.uResolution.value = new THREE.Vector2(this.renderTarget.width, this.renderTarget.height);
+	}
+
+	#updateSelectedIndicesGPU(left, top, width, height)
+	{
 		let highlightAttribute = this.scene.boreHoles.boreHoleGeometry.getAttribute('highlight');
 		highlightAttribute.array.fill(0);
 
@@ -87,11 +95,11 @@ class BoreHoleSelector
 		{
 			for (let x = left; x < left + width; x += 1)
 			{
-				if (x < 0 || x >= renderTarget.width || y < 0 || y >= renderTarget.height)
+				if (x < 0 || x >= this.renderTarget.width || y < 0 || y >= this.renderTarget.height)
 					continue;
-				let flippedY = renderTarget.height - y;
-				let i = (flippedY * renderTarget.width + x) * 4;
-				const selectedInstanceIndex = (pixelBuffer[i] << 16) + (pixelBuffer[i + 1] << 8) + pixelBuffer[i + 2];
+				let flippedY = this.renderTarget.height - y;
+				let i = (flippedY * this.renderTarget.width + x) * 4;
+				const selectedInstanceIndex = (this.pixelBuffer[i] << 16) + (this.pixelBuffer[i + 1] << 8) + this.pixelBuffer[i + 2];
 				highlightAttribute.setX(selectedInstanceIndex, 1);
 			}
 		}
