@@ -36,6 +36,15 @@ class Mouse
 			this.onMove();
 		this.boreHoleSelector.updateData();
 		this.boreHoleSelector.updateSelectionRectangle(this.position);
+		this.scene.boreHoles.labels.count = 0;
+		if (this.userInterface?.toolMenus[3].isActive())
+		{
+			const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
+			if (activeButtonIndex === 3)
+			{
+				this.scene.boreHoles.labels.count = this.scene.boreHoles.count;
+			}
+		}
 	}
 
 	onMouseDown()
