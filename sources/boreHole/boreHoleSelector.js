@@ -102,7 +102,7 @@ class BoreHoleSelector
 				let flippedY = this.renderTarget.height - y;
 				let i = (flippedY * this.renderTarget.width + x) * 4;
 				const selectedInstanceIndex = (this.pixelBuffer[i] << 16) + (this.pixelBuffer[i + 1] << 8) + this.pixelBuffer[i + 2];
-				highlightAttribute.setX(selectedInstanceIndex, 1);
+				highlightAttribute.setX(selectedInstanceIndex - 1, 1);
 			}
 		}
 		highlightAttribute.needsUpdate = true;

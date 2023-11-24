@@ -43,6 +43,8 @@ class Mouse
 			if (activeButtonIndex === 3)
 			{
 				this.scene.boreHoles.labels.count = this.scene.boreHoles.count;
+				this.scene.boreHoles.labels.computeBoundingBox();
+				this.scene.boreHoles.labels.computeBoundingSphere();
 			}
 		}
 	}

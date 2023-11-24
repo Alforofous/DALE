@@ -28,7 +28,10 @@ class Keyboard
 
 	onKeyUp(userInterface)
 	{
-
+		if (this.releasedKeyCodeSignal['ShiftLeft'])
+		{
+			this.scene.boreHoles.selector.addToSelection = false;
+		}
 	}
 
 	onKeyDown(userInterface)
@@ -45,6 +48,10 @@ class Keyboard
 			userInterface.showViewport2 = !userInterface.showViewport2;
 		else if (this.pressedKeyCodeSignal['KeyF'])
 			document.body.requestFullscreen();
+		else if (this.pressedKeyCodeSignal['ShiftLeft'])
+		{
+			this.scene.boreHoles.selector.addToSelection = true;
+		}
 
 		if (userInterface.activeToolMenu() !== undefined)
 		{
@@ -63,10 +70,6 @@ class Keyboard
 			this.onKeyDown(userInterface);
 		if (Object.values(this.releasedKeyCodeSignal).some(value => value === true))
 			this.onKeyUp(userInterface);
-		if (this.pressedKeyCode['ShiftLeft'])
-			this.scene.boreHoles.selector.addToSelection = true;
-		else
-			this.scene.boreHoles.selector.addToSelection = false;
 	}
 }
 

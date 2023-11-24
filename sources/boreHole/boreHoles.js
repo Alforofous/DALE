@@ -79,9 +79,10 @@ class BoreHoles extends THREE.InstancedMesh
 		let instanceColors = new Float32Array(this.instanceCount * 3);
 		for (let i = 0; i < this.instanceCount; i++)
 		{
-			let r = (i & 0xFF0000) >> 16;
-			let g = (i & 0x00FF00) >> 8;
-			let b = i & 0x0000FF;
+			let instanceId = i + 1;
+			let r = (instanceId & 0xFF0000) >> 16;
+			let g = (instanceId & 0x00FF00) >> 8;
+			let b = instanceId & 0x0000FF;
 		
 			instanceColors[i * 3] = r / 255;
 			instanceColors[i * 3 + 1] = g / 255;
