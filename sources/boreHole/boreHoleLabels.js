@@ -46,10 +46,6 @@ class BoreHoleLabels extends THREE.InstancedMesh
 		}
 		let strings = stringArray.join('');
 
-		console.log(strings);
-		console.log(stringLengths);
-		console.log(stringIndices);
-
 		let stringLengthsAttribute = new THREE.InstancedBufferAttribute(stringLengths, 1);
 		let stringIndicesAttribute = new THREE.InstancedBufferAttribute(stringIndices, 1);
 

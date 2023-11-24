@@ -1,9 +1,12 @@
+#define LAMBERT
+
 attribute float highlight;
 attribute vec3 instanceColor;
+
 out float vHighlight;
 out vec3 vInstanceColor;
-#define LAMBERT
 out vec3 vViewPosition;
+
 #include <common>
 #include <uv_pars_vertex>
 #include <displacementmap_pars_vertex>
@@ -16,6 +19,7 @@ out vec3 vViewPosition;
 #include <shadowmap_pars_vertex>
 #include <logdepthbuf_pars_vertex>
 #include <clipping_planes_pars_vertex>
+
 void main()
 {
 	#include <uv_vertex>
