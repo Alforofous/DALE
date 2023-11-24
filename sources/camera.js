@@ -38,7 +38,8 @@ class Camera extends PerspectiveCamera
 
 		euler.y -= movementX * rotationSpeed;
 		euler.x -= movementY * rotationSpeed;
-		euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, euler.x));
+		const halfPi = Math.PI / 2 -0.00001;
+		euler.x = Math.max(-halfPi, Math.min(halfPi, euler.x));
 
 		this.quaternion.setFromEuler(euler);
 	}

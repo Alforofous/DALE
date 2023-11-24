@@ -94,6 +94,12 @@ function onUpdate()
 	camera.update(keyboard.pressedKeyCode, deltaTime);
 	boreHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
 
+	if (scene.boreHoles.labels.material.uniforms)
+	{
+		scene.boreHoles.labels.material.uniforms.uCameraForward.value = camera.getWorldDirection(new THREE.Vector3());
+		console.log(scene.boreHoles.labels.material.uniforms.uCameraForward.value);
+	}
+
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	userInterface.stats.end();
 	requestAnimationFrame(onUpdate);

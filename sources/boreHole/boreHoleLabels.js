@@ -66,6 +66,7 @@ class BoreHoleLabels extends THREE.InstancedMesh
 				charSizes: { value: this.characterData.sizes },
 				stringTexture: { value: stringsUniform },
 				stringTextureSize: { value: stringTextureSize },
+				uCameraForward: { value: new THREE.Vector3() },
 			},
 			vertexShader: this.vertexShaderCode,
 			fragmentShader: this.fragmentShaderCode,

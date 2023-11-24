@@ -1,3 +1,5 @@
+uniform vec3 uCameraForward;
+
 attribute uint stringLengths;
 attribute uint stringIndices;
 
@@ -17,11 +19,11 @@ void main()
 	vec3 cameraToObject = cameraPosition - instancePosition;
 	float distance = length(cameraToObject) / 100.0;
 	distance = max(distance, 1.0);
-	vec3 look = normalize(cameraToObject);
+	vec3 look = -uCameraForward;
 	vec3 right = normalize(cross(vec3(0, 1, 0), look));
 	vec3 up = cross(look, right);
 
-	mat4 scaleMatrix = mat4(float(vStringLength), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);	
+	mat4 scaleMatrix = mat4(float(vStringLength), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
 	mat4 rotationMatrix = mat4(right.x * distance, right.y * distance, right.z * distance, 0, up.x * distance, up.y * distance, up.z * distance, 0, look.x * distance, look.y * distance, look.z * distance, 0, 0, 0, 0, 1);
 	mat4 translationMatrix = mat4(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, distance, 0.0, 1.0);
 
