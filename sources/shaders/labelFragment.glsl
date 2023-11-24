@@ -1,3 +1,5 @@
+precision highp float;
+
 uniform sampler2D fontTexture;
 uniform sampler2D stringTexture;
 uniform uint stringTextureSize;
@@ -34,10 +36,8 @@ void main()
 	int index = localIndex + int(vStringOffsetIndex);
 
 	int char = get_character_ascii_value_from_texture(index);
-	color = vec4(float(char) / 256.0, 0.0, 0.0, 1.0);
 	vec2 charPosition = charPositions[char];
-	color = vec4(charPosition, 0.0, 1.0);
-	vec2 charSize = charSizes[char] * 1.0;
+	vec2 charSize = charSizes[char];
 
 	vec2 indexedUv = vUv * vec2(float(vStringLength), 1.0) - vec2(float(localIndex), 0.0);
 

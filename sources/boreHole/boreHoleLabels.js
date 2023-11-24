@@ -54,6 +54,7 @@ class BoreHoleLabels extends THREE.InstancedMesh
 		let stringsUniform = this.createStringTexture(strings);
 		let stringTextureSize = Math.ceil(Math.sqrt(strings.length / 4));
 
+		this.fontTexture.minFilter = THREE.NearestFilter;
 		const material = new THREE.ShaderMaterial({
 			uniforms: {
 				fontTexture: { value: this.fontTexture },
