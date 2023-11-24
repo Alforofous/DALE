@@ -77,7 +77,6 @@ function onUpdate()
 	userInterface.stats.begin();
 	const deltaTime = clock.getDelta();
 
-	
 	mouse.onUpdate();
 	renderer.composer.passes[0].enabled = true;
 	renderer.composer.passes[1].enabled = false;

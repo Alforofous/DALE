@@ -92,7 +92,6 @@ void main()
 	#include <dithering_fragment>
 	vec2 uv = gl_FragCoord.xy / uResolution;
 
-
 	vec3 color = sobelEdgeDetection(uSelectedBoreHolesTexture, uv, uResolution, 100.0);
 
 	color = vec3(0.0);
