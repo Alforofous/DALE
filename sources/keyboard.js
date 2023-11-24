@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 class Keyboard
 {
 	constructor(scene)
@@ -31,6 +33,8 @@ class Keyboard
 		if (this.releasedKeyCodeSignal['ShiftLeft'])
 		{
 			this.scene.boreHoles.selector.addToSelection = false;
+			this.scene.boreHoles.selector.color = new THREE.Color(0x86DDFF);
+			this.scene.boreHoles.selector.updateSelectionRectangleColor();
 		}
 	}
 
@@ -51,6 +55,8 @@ class Keyboard
 		else if (this.pressedKeyCodeSignal['ShiftLeft'])
 		{
 			this.scene.boreHoles.selector.addToSelection = true;
+			this.scene.boreHoles.selector.color = new THREE.Color(0x86FFDD);
+			this.scene.boreHoles.selector.updateSelectionRectangleColor();
 		}
 
 		if (userInterface.activeToolMenu() !== undefined)

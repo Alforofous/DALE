@@ -14,6 +14,19 @@ class BoreHoleSelector
 		this.selectionBox = new SelectionBox(this.camera, this.scene);
 		this.selectionHelper = new SelectionHelper(this.renderer, 'selectBox');
 		this.addToSelection = false;
+		this.color = new THREE.Color(0x86DDFF);
+	}
+
+	updateSelectionRectangleColor()
+	{
+		if (this.selectionRectangle === undefined)
+			return;
+		let r = Math.round(this.color.r * 255);
+		let g = Math.round(this.color.g * 255);
+		let b = Math.round(this.color.b * 255);
+
+		this.selectionRectangle.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${0.3})`;
+		this.selectionRectangle.style.border = `2px solid rgba(${r}, ${g}, ${b}, ${0.5})`;
 	}
 
 	createSelectionRectangle(position)
@@ -27,7 +40,8 @@ class BoreHoleSelector
 
 		this.selectionRectangle = document.createElement('div');
 		this.selectionRectangle.style.position = 'absolute';
-		this.selectionRectangle.style.backgroundColor = 'rgba(134, 221, 255, 0.2)';
+
+		this.updateSelectionRectangleColor();
 
 		this.xy1 = { x: position.x - rendererBounds.left, y: position.y - rendererBounds.top };
 
