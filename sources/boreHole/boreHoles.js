@@ -50,19 +50,19 @@ class BoreHoles extends THREE.InstancedMesh
 	async init(scene)
 	{
 		let lambertShader = THREE.ShaderLib['lambert'];
-		let customLambertShader = {
+		let boreholeShader = {
 			uniforms: THREE.UniformsUtils.clone(lambertShader.uniforms),
 		};
 
-		this.vertexShaderCode = await loadShader('sources/shaders/customLambertVertex.glsl');
-		this.fragmentShaderCode = await loadShader('sources/shaders/customLambertFragment.glsl');
+		this.vertexShaderCode = await loadShader('sources/shaders/boreholeVertex.glsl');
+		this.fragmentShaderCode = await loadShader('sources/shaders/boreholeFragment.glsl');
 
 		this.idSelectionVertexCode = await loadShader('sources/shaders/idSelectionVertex.glsl');
 		this.idSelectionFragmentCode = await loadShader('sources/shaders/idSelectionFragment.glsl');
 
 		const cylinderMaterial = new THREE.ShaderMaterial({
 			uniforms: {
-				...customLambertShader.uniforms,
+				...boreholeShader.uniforms,
 				uSelectedBoreHolesTexture: { value: null },
 				uResolution: { value: new THREE.Vector2() },
 			},
