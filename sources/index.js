@@ -26,7 +26,7 @@ const renderer = new Renderer(scene, camera, boreHoleCamera);
 
 const userInterface = new UI(scene);
 const mouse = new Mouse(renderer, scene, userInterface, camera, boreHoleCamera);
-const keyboard = new Keyboard();
+const keyboard = new Keyboard(scene);
 const model = new Model(scene);
 const clock = new THREE.Clock();
 
@@ -67,6 +67,7 @@ function init()
 	scene.boreHoles.init(scene).then(() =>
 	{
 		//scene.boreHoles.initSprites(scene);
+		scene.boreHoles.selector = mouse.boreHoleSelector;
 		onUpdate();
 	});
 }

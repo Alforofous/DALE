@@ -1,8 +1,10 @@
 class Keyboard
 {
-	constructor()
+	constructor(scene)
 	{
 		this.pressedKeyCode = {};
+		this.pressedKeyCodeSignal = {};
+		this.releasedKeyCodeSignal = {};
 		document.addEventListener('keydown', (event) =>
 		{
 			let key = event.code;
@@ -17,7 +19,16 @@ class Keyboard
 		{
 			let key = event.code;
 			this.pressedKeyCode[key] = false;
+			this.releasedKeyCodeSignal[key] = true;
+			requestAnimationFrame(() => this.releasedKeyCodeSignal[key] = false);
 		});
+
+		this.scene = scene;
+	}
+
+	onKeyUp(userInterface)
+	{
+
 	}
 
 	onKeyDown(userInterface)
@@ -50,10 +61,13 @@ class Keyboard
 	{
 		if (Object.values(this.pressedKeyCodeSignal).some(value => value === true))
 			this.onKeyDown(userInterface);
+		if (Object.values(this.releasedKeyCodeSignal).some(value => value === true))
+			this.onKeyUp(userInterface);
+		if (this.pressedKeyCode['ShiftLeft'])
+			this.scene.boreHoles.selector.addToSelection = true;
+		else
+			this.scene.boreHoles.selector.addToSelection = false;
 	}
-
-	pressedKeyCode = {};
-	pressedKeyCodeSignal = {};
 }
 
 export { Keyboard };

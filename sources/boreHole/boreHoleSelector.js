@@ -13,6 +13,7 @@ class BoreHoleSelector
 
 		this.selectionBox = new SelectionBox(this.camera, this.scene);
 		this.selectionHelper = new SelectionHelper(this.renderer, 'selectBox');
+		this.addToSelection = false;
 	}
 
 	createSelectionRectangle(position)
@@ -89,7 +90,8 @@ class BoreHoleSelector
 	#updateSelectedIndicesGPU(left, top, width, height)
 	{
 		let highlightAttribute = this.scene.boreHoles.boreHoleGeometry.getAttribute('highlight');
-		highlightAttribute.array.fill(0);
+		if (this.addToSelection === false)
+			highlightAttribute.array.fill(0);
 
 		for (let y = top; y < top + height; y += 1)
 		{
