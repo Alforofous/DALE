@@ -17,15 +17,19 @@ int get_character_ascii_value_from_texture(int index)
 	vec4 color = texelFetch(stringTexture, ivec2(x, y), 0);
 
 	int channel = index % 4;
-	if (channel == 0)
-		return int(color.r * 255.0);
-	else if (channel == 1)
-		return int(color.g * 255.0);
-	else if (channel == 2) 
-		return int(color.b * 255.0);
-	else if (channel == 3)
-		return int(color.a * 255.0);
-	return (-1);
+	switch (channel)
+	{
+		case 0:
+			return int(color.r * 255.0);
+		case 1:
+			return int(color.g * 255.0);
+		case 2:
+			return int(color.b * 255.0);
+		case 3:
+			return int(color.a * 255.0);
+		default:
+			return -1;
+	}
 }
 
 void main()
