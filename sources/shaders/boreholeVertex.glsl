@@ -6,6 +6,7 @@ attribute vec3 instanceColor;
 out float vHighlight;
 out vec3 vInstanceColor;
 out vec3 vViewPosition;
+out vec2 vUv;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -33,6 +34,7 @@ void main()
 	#include <normal_vertex>
 	vHighlight = highlight;
 	vInstanceColor = instanceColor;
+	vUv = uv;
 	#include <begin_vertex>
 	#include <morphtarget_vertex>
 	#include <skinning_vertex>

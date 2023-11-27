@@ -63,7 +63,7 @@ class BoreHoles extends THREE.InstancedMesh
 		const cylinderMaterial = new THREE.ShaderMaterial({
 			uniforms: {
 				...boreholeShader.uniforms,
-				uSelectedBoreHolesTexture: { value: null },
+				uBoreholeIDTexture: { value: null },
 				uResolution: { value: new THREE.Vector2() },
 			},
 			vertexShader: this.idSelectionVertexCode,
@@ -103,12 +103,14 @@ class BoreHoles extends THREE.InstancedMesh
 	{
 		this.material.vertexShader = this.idSelectionVertexCode;
 		this.material.fragmentShader = this.idSelectionFragmentCode;
+		this.material.needsUpdate = true;
 	}
 
 	switchToDefaultShader()
 	{
 		this.material.vertexShader = this.vertexShaderCode;
 		this.material.fragmentShader = this.fragmentShaderCode;
+		this.material.needsUpdate = true;
 	}
 }
 

@@ -2,11 +2,12 @@
 uniform vec3 diffuse;
 uniform vec3 emissive;
 uniform float opacity;
-uniform sampler2D uSelectedBoreHolesTexture;
+uniform sampler2D uBoreholeIDTexture;
 uniform vec2 uResolution;
 
 in vec3 vInstanceColor;
 in float vHighlight;
+in vec2 vUv;
 
 #include <common>
 #include <packing>
@@ -92,7 +93,7 @@ void main()
 	#include <dithering_fragment>
 	vec2 uv = gl_FragCoord.xy / uResolution;
 
-	vec3 color = sobelEdgeDetection(uSelectedBoreHolesTexture, uv, uResolution, 100.0);
+	vec3 color = sobelEdgeDetection(uBoreholeIDTexture, uv, uResolution, 100.0);
 
 	color = vec3(0.0);
 	// Apply edge detection multiple times with different offsets
@@ -101,7 +102,7 @@ void main()
 		for (float j = -1.0; j <= 1.0; j += 1.0)
 		{
 			vec2 offset = vec2(i, j) / uResolution;
-			color += sobelEdgeDetection(uSelectedBoreHolesTexture, uv + offset, uResolution, 100.0);
+			color += sobelEdgeDetection(uBoreholeIDTexture, uv + offset, uResolution, 100.0);
 		}
 	}
 

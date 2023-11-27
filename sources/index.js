@@ -32,18 +32,34 @@ const clock = new THREE.Clock();
 
 const views = [
 	{
+		name: 'main',
 		left: 0,
 		bottom: 0,
 		width: 1.0,
 		height: 1.0,
 		camera: camera,
+		enableIDShader: false,
+		useComposer: true,
 	},
 	{
+		name: 'debug1',
 		left: 0.75,
 		bottom: 0,
 		width: 0.25,
 		height: 0.25,
 		camera: boreHoleCamera,
+		enableIDShader: true,
+		useComposer: false,
+	},
+	{
+		name: 'debug2',
+		left: 0,
+		bottom: 0,
+		width: 0.5,
+		height: 0.5,
+		camera: boreHoleCamera,
+		enableIDShader: false,
+		useComposer: false,
 	}
 ];
 
@@ -63,7 +79,7 @@ function init()
 		}
 	});
 
-	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
+	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 10000);
 	scene.boreHoles.init(scene).then(() =>
 	{
 		//scene.boreHoles.initSprites(scene);
@@ -78,15 +94,11 @@ function onUpdate()
 	const deltaTime = clock.getDelta();
 
 	mouse.onUpdate();
-	renderer.composer.passes[0].enabled = true;
-	renderer.composer.passes[1].enabled = false;
-	renderer.renderViewport(views[0], false);
-
+	renderer.updateOutlineBoreholesTexture();
+	renderer.renderViewport(views[0]);
 	if (userInterface.showViewport2)
 	{
-		renderer.composer.passes[0].enabled = false;
-		renderer.composer.passes[1].enabled = true;
-		renderer.renderViewport(views[1], true);
+		renderer.renderViewport(views[1]);
 	}
 
 	keyboard.onUpdate(userInterface);
@@ -118,5 +130,6 @@ window.addEventListener('resize', () =>
 	renderer.domElement.style.height = '100vh';
 	renderer.domElement.style.left = `25%`;
 	renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+	renderer.mainSceneRenderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 	renderer.composer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 });

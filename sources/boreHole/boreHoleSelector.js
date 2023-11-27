@@ -89,7 +89,7 @@ class BoreHoleSelector
 		let oldRenderTarget = this.renderer.getRenderTarget();
 		this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
 		this.renderer.setRenderTarget(this.renderTarget);
-		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera }, true);
+		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera, enableIDShader: true, useComposer: false });
 
 		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
 		this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.pixelBuffer);
@@ -97,7 +97,7 @@ class BoreHoleSelector
 
 		this.texture = new THREE.DataTexture(this.pixelBuffer, this.renderTarget.width, this.renderTarget.height, THREE.RGBAFormat);
 		this.texture.needsUpdate = true;
-		this.scene.boreHoles.material.uniforms.uSelectedBoreHolesTexture.value = this.texture;
+		this.scene.boreHoles.material.uniforms.uBoreholeIDTexture.value = this.texture;
 		this.scene.boreHoles.material.uniforms.uResolution.value = new THREE.Vector2(this.renderTarget.width, this.renderTarget.height);
 	}
 

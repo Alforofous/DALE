@@ -3,7 +3,7 @@ class ToolMenu
 	constructor(toolMenu)
 	{
 		this.toolMenu = toolMenu;
-		this.toolButtons = Array.from(toolMenu.children);
+		this.toolButtons = Array.from(toolMenu.children).filter(button => button.classList.contains('toolButton'));
 
 		this.#clickEvent(toolMenu);
 		this.printMenuAndChildrenButtonIds();
