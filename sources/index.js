@@ -55,8 +55,8 @@ const views = [
 		name: 'debug2',
 		left: 0,
 		bottom: 0,
-		width: 0.5,
-		height: 0.5,
+		width: 1,
+		height: 1,
 		camera: boreHoleCamera,
 		enableIDShader: false,
 		useComposer: false,
@@ -79,7 +79,7 @@ function init()
 		}
 	});
 
-	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 10000);
+	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
 	scene.boreHoles.init(scene).then(() =>
 	{
 		//scene.boreHoles.initSprites(scene);
@@ -98,6 +98,7 @@ function onUpdate()
 	renderer.renderViewport(views[0]);
 	if (userInterface.showViewport2)
 	{
+		renderer.renderViewport(views[2]);
 		renderer.renderViewport(views[1]);
 	}
 

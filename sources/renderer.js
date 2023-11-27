@@ -59,7 +59,7 @@ class Renderer extends WebGLRenderer
 	{
 		let oldRenderTarget = this.getRenderTarget();
 		this.setRenderTarget(this.outlineBoreholeRenderTarget);
-		this.renderViewport({ name: 'undef', left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera, enableIDShader: false, useComposer: false });
+		this.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera, enableIDShader: false, useComposer: false });
 		this.setRenderTarget(oldRenderTarget);
 
 		this.shaderMaterial.uniforms.uOutlinedBoreholesTexture.value = this.outlineBoreholeRenderTarget.texture;

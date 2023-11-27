@@ -92,19 +92,8 @@ void main()
 	#include <premultiplied_alpha_fragment>
 	#include <dithering_fragment>
 	vec2 uv = gl_FragCoord.xy / uResolution;
-
+	
 	vec3 color = sobelEdgeDetection(uBoreholeIDTexture, uv, uResolution, 100.0);
-
-	color = vec3(0.0);
-	// Apply edge detection multiple times with different offsets
-	for (float i = -1.0; i <= 1.0; i += 1.0)
-	{
-		for (float j = -1.0; j <= 1.0; j += 1.0)
-		{
-			vec2 offset = vec2(i, j) / uResolution;
-			color += sobelEdgeDetection(uBoreholeIDTexture, uv + offset, uResolution, 100.0);
-		}
-	}
 
 	if (dot(color, vec3(1.0)) < 0.9)
 	{
