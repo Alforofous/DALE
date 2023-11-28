@@ -68,7 +68,10 @@ class Renderer extends WebGLRenderer
 	renderViewport(view = { left: 0, bottom: 0, width: 1, height: 1, camera: undefined, enableIDShader: false, useComposer: false })
 	{
 		if (view.enableIDShader === false)
+		{
+			this.scene.boreHoles.material.uniforms.uResolution.value = new THREE.Vector2(this.domElement.clientWidth, this.domElement.clientHeight).multiply(new THREE.Vector2(view.width, view.height));
 			this.scene.boreHoles.switchToDefaultShader();
+		}
 		else
 			this.scene.boreHoles.switchToIdShader();
 
