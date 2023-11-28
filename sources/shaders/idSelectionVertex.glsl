@@ -1,8 +1,12 @@
 attribute vec3 instanceColor;
+attribute float instanceHeight;
+
 out vec3 vInstanceColor;
 
 void main()
 {
 	vInstanceColor = instanceColor;
-	gl_Position = projectionMatrix * viewMatrix * instanceMatrix * vec4(position, 1.0);
+	vec3 newPosition = position;
+	newPosition.y *= instanceHeight;
+	gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(newPosition, 1.0);
 }

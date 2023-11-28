@@ -38,6 +38,9 @@ class BoreholeMover
 		}
 		this.oldPoint = currentPoint;
 		this.scene.boreholes.instanceMatrix.needsUpdate = true;
+		this.scene.boreholes.computeBoundingBox();
+		this.scene.boreholes.computeBoundingSphere();
+		
 		this.scene.boreholes.labels.syncWithBoreholes();
 	}
 }

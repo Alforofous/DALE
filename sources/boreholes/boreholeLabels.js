@@ -30,14 +30,13 @@ class BoreholeLabels extends THREE.InstancedMesh
 		this.material = new THREE.ShaderMaterial({
 			uniforms: {
 				fontTexture: { value: null },
-				objectPosition: { value: this.position },
 				charPositions: { value: null },
 				charSizes: { value: null },
 				stringTexture: { value: null },
 				stringTextureSize: { value: null },
-				uCameraForward: { value: new THREE.Vector3() },
-				uCameraRight: { value: new THREE.Vector3() },
-				uCameraUp: { value: new THREE.Vector3() },
+				uCameraForward: { value: null },
+				uCameraRight: { value: null },
+				uCameraUp: { value: null },
 			},
 			vertexShader: this.vertexShaderCode,
 			fragmentShader: this.fragmentShaderCode,
@@ -50,7 +49,7 @@ class BoreholeLabels extends THREE.InstancedMesh
 	{
 		let instanceCount = this.boreholes.instanceCount;
 		let matrix = new THREE.Matrix4();
-		let halfHeight = this.boreholes.boreholeGeometry.parameters.height / 2;
+		let halfHeight = this.boreholes.geometry.parameters.height / 2;
 		let translationMatrix = new THREE.Matrix4().makeTranslation(0, halfHeight, 0);
 		for (let i = 0; i < instanceCount; i++)
 		{

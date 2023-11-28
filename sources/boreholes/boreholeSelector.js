@@ -104,7 +104,7 @@ class BoreholeSelector
 
 	#updateSelectedIndicesGPU(left, top, width, height)
 	{
-		let highlightAttribute = this.scene.boreholes.boreholeGeometry.getAttribute('highlight');
+		let highlightAttribute = this.scene.boreholes.geometry.getAttribute('highlight');
 		if (this.addToSelection === false)
 			highlightAttribute.array.fill(0);
 
@@ -132,7 +132,7 @@ class BoreholeSelector
 		let selectedInstances = this.selectionBox.instances;
 		let boreholesArray = selectedInstances[this.scene.boreholes.uuid];
 
-		let highlightAttribute = this.scene.boreholes.boreholeGeometry.getAttribute('highlight');
+		let highlightAttribute = this.scene.boreholes.geometry.getAttribute('highlight');
 		for (let i = 0; i < boreholesArray.length; i++)
 		{
 			const selectedInstanceIndex = boreholesArray[i];

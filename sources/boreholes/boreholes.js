@@ -4,21 +4,24 @@ import { BoreholeLabels } from './boreholeLabels.js';
 
 class Boreholes extends THREE.InstancedMesh
 {
-	constructor(spawnPosition, referenceHeight, instanceCount = 100000, scene)
+	constructor(instanceCount = 100000, scene)
 	{
-		const height = Math.abs(referenceHeight - spawnPosition.y);
-		const boreholeGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
+		const geometry = new THREE.CylinderGeometry(5, 5, 1, 8);
 		const tempMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
-		super(boreholeGeometry, tempMaterial, instanceCount);
+		super(geometry, tempMaterial, instanceCount);
 
-		this.boreholeGeometry = boreholeGeometry;
+		this.geometry = geometry;
 		this.instanceCount = instanceCount;
 		this.info = {
-			id: Array(instanceCount)
+			id: Array(instanceCount),
+			parentFreeSurface: Array(instanceCount),
+			height: Array(instanceCount),
 		};
 		for (let i = 0; i < instanceCount; i++)
 		{
 			this.info.id[i] = 'ID ' + i.toString();
+			this.info.parentFreeSurface[i] = scene.freeSurface[0];
+			this.info.height[i] = i + 1;
 		}
 		this.init(scene);
 		this.labels.values = this.info.id;
@@ -57,7 +60,7 @@ class Boreholes extends THREE.InstancedMesh
 		cylinderMaterial.uniforms.diffuse.value.set(0x004C5A);
 
 		this.material = cylinderMaterial;
-		this.boreholeGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
+		this.geometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
 
 		let instanceColors = new Float32Array(this.instanceCount * 3);
 		for (let i = 0; i < this.instanceCount; i++)
@@ -71,7 +74,10 @@ class Boreholes extends THREE.InstancedMesh
 			instanceColors[i * 3 + 1] = g / 255;
 			instanceColors[i * 3 + 2] = b / 255;
 		}
-		this.boreholeGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
+		this.geometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
+
+		let instanceHeight = new Float32Array(this.info.height);
+		this.geometry.setAttribute('instanceHeight', new THREE.InstancedBufferAttribute(instanceHeight, 1));
 
 		this.name = 'boreholes';
 		this.layers.set(10);
