@@ -79,13 +79,9 @@ function init()
 		}
 	});
 
-	scene.boreholes = new Boreholes(new THREE.Vector3(0, 50, 0), scene.freeSurface[0].position.y, 1000);
-	scene.boreholes.init(scene).then(() =>
-	{
-		//scene.boreholes.initSprites(scene);
-		scene.boreholes.selector = mouse.boreholeSelector;
-		onUpdate();
-	});
+	scene.boreholes = new Boreholes(new THREE.Vector3(0, 50, 0), scene.freeSurface[0].position.y, 1000, scene);
+	scene.boreholes.selector = mouse.boreholeSelector;
+	onUpdate();
 }
 
 function onUpdate()

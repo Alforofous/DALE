@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { loadShader } from '../shaders/shaderLoader.js';
+import { loadShaderSynchronous } from '../shaders/shaderLoader.js';
 
 class BoreholeLabels extends THREE.InstancedMesh
 {
@@ -13,40 +13,37 @@ class BoreholeLabels extends THREE.InstancedMesh
 		this.boreholes = boreholes;
 
 		const loader = new THREE.TextureLoader();
+		this.vertexShaderCode = loadShaderSynchronous('sources/shaders/labelVertex.glsl');
+		this.fragmentShaderCode = loadShaderSynchronous('sources/shaders/labelFragment.glsl');
 		Promise.all([
-			loadShader('sources/shaders/labelVertex.glsl'),
-			loadShader('sources/shaders/labelFragment.glsl'),
 			loader.load(fontTexturePath),
 			fetch(fontAtlasPath).then(response => response.json())
-		]).then(([vertexShaderCode, fragmentShaderCode, fontTexture, fontData]) =>
+		]).then(([fontTexture, fontData]) =>
 		{
-			this.vertexShaderCode = vertexShaderCode;
-			this.fragmentShaderCode = fragmentShaderCode;
-			this.fontTexture = fontTexture;
-			this.fontData = fontData;
-			this.characterData = this.#initCharacterData();
-			this.values = new Array(this.instanceCount);
-			for (let i = 0; i < this.instanceCount; i++)
-				this.values[i] = i.toString();
-			this.material = new THREE.ShaderMaterial({
-				uniforms: {
-					fontTexture: { value: this.fontTexture },
-					objectPosition: { value: this.position },
-					charPositions: { value: this.characterData.positions },
-					charSizes: { value: this.characterData.sizes },
-					stringTexture: { value: null },
-					stringTextureSize: { value: null },
-					uCameraForward: { value: new THREE.Vector3() },
-					uCameraRight: { value: new THREE.Vector3() },
-					uCameraUp: { value: new THREE.Vector3() },
-				},
-				vertexShader: this.vertexShaderCode,
-				fragmentShader: this.fragmentShaderCode,
-				transparent: true,
-			});
-			this.layers.set(2);
-			this.initValues();
+			fontTexture.minFilter = THREE.NearestFilter;
+			this.material.uniforms.fontTexture.value = fontTexture;
+			this.characterData = this.#initCharacterData(fontData);
+			this.material.uniforms.charPositions.value = this.characterData.positions;
+			this.material.uniforms.charSizes.value = this.characterData.sizes;
 		});
+		this.values = undefined;
+		this.material = new THREE.ShaderMaterial({
+			uniforms: {
+				fontTexture: { value: null },
+				objectPosition: { value: this.position },
+				charPositions: { value: null },
+				charSizes: { value: null },
+				stringTexture: { value: null },
+				stringTextureSize: { value: null },
+				uCameraForward: { value: new THREE.Vector3() },
+				uCameraRight: { value: new THREE.Vector3() },
+				uCameraUp: { value: new THREE.Vector3() },
+			},
+			vertexShader: this.vertexShaderCode,
+			fragmentShader: this.fragmentShaderCode,
+			transparent: true,
+		});
+		this.layers.set(2);
 	}
 
 	syncWithBoreholes()
@@ -99,8 +96,6 @@ class BoreholeLabels extends THREE.InstancedMesh
 
 		this.material.uniforms.stringTexture.value = stringsUniform;
 		this.material.uniforms.stringTextureSize.value = stringTextureSize;
-
-		this.fontTexture.minFilter = THREE.NearestFilter;
 	}
 
 	createStringTexture(str)
@@ -119,21 +114,21 @@ class BoreholeLabels extends THREE.InstancedMesh
 		return texture;
 	}
 
-	#initCharacterData()
+	#initCharacterData(fontData)
 	{
 		let positions = new Float32Array(256 * 2);
 		let sizes = new Float32Array(256 * 2);
 
-		for (let char in this.fontData.characters)
+		for (let char in fontData.characters)
 		{
-			let charData = this.fontData.characters[char];
+			let charData = fontData.characters[char];
 			let index = char.charCodeAt(0) * 2;
-			let charWidth = charData.width / this.fontData.width;
-			let charHeight = charData.height / this.fontData.height;
+			let charWidth = charData.width / fontData.width;
+			let charHeight = charData.height / fontData.height;
 			sizes[index] = charWidth;
 			sizes[index + 1] = charHeight;
-			positions[index] = charData.x / this.fontData.width;
-			positions[index + 1] = 1 - charData.y / this.fontData.height - charHeight;
+			positions[index] = charData.x / fontData.width;
+			positions[index + 1] = 1 - charData.y / fontData.height - charHeight;
 		}
 
 		return { positions, sizes };

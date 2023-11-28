@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { loadShader } from '../shaders/shaderLoader.js';
+import { loadShaderSynchronous } from '../shaders/shaderLoader.js';
 import { BoreholeLabels } from './boreholeLabels.js';
 
 class Boreholes extends THREE.InstancedMesh
 {
-	constructor(spawnPosition, referenceHeight, instanceCount = 100000)
+	constructor(spawnPosition, referenceHeight, instanceCount = 100000, scene)
 	{
 		const height = Math.abs(referenceHeight - spawnPosition.y);
 		const boreholeGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
@@ -13,11 +13,16 @@ class Boreholes extends THREE.InstancedMesh
 
 		this.boreholeGeometry = boreholeGeometry;
 		this.instanceCount = instanceCount;
-		this.info = [];
+		this.info = {
+			id: Array(instanceCount)
+		};
 		for (let i = 0; i < instanceCount; i++)
 		{
-			this.info.push({ id: 'id: ' + i.toString() });
+			this.info.id[i] = 'ID ' + i.toString();
 		}
+		this.init(scene);
+		this.labels.values = this.info.id;
+		this.labels.initValues();
 	}
 
 	setId(id, index)
@@ -25,18 +30,18 @@ class Boreholes extends THREE.InstancedMesh
 		this.info[index].id = id;
 	}
 
-	async init(scene)
+	init(scene)
 	{
 		let lambertShader = THREE.ShaderLib['lambert'];
 		let boreholeShader = {
 			uniforms: THREE.UniformsUtils.clone(lambertShader.uniforms),
 		};
 
-		this.vertexShaderCode = await loadShader('sources/shaders/boreholeVertex.glsl');
-		this.fragmentShaderCode = await loadShader('sources/shaders/boreholeFragment.glsl');
+		this.vertexShaderCode = loadShaderSynchronous('sources/shaders/boreholeVertex.glsl');
+		this.fragmentShaderCode = loadShaderSynchronous('sources/shaders/boreholeFragment.glsl');
 
-		this.idSelectionVertexCode = await loadShader('sources/shaders/idSelectionVertex.glsl');
-		this.idSelectionFragmentCode = await loadShader('sources/shaders/idSelectionFragment.glsl');
+		this.idSelectionVertexCode = loadShaderSynchronous('sources/shaders/idSelectionVertex.glsl');
+		this.idSelectionFragmentCode = loadShaderSynchronous('sources/shaders/idSelectionFragment.glsl');
 
 		const cylinderMaterial = new THREE.ShaderMaterial({
 			uniforms: {
