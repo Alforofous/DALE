@@ -1,18 +1,18 @@
 import * as THREE from 'three';
 import TextSprite from '@seregpie/three.text-sprite';
 import { loadShader } from '../shaders/shaderLoader.js';
-import { BoreHoleLabels } from './boreHoleLabels.js';
+import { BoreholeLabels } from './boreholeLabels.js';
 
-class BoreHoles extends THREE.InstancedMesh
+class Boreholes extends THREE.InstancedMesh
 {
 	constructor(spawnPosition, referenceHeight, instanceCount = 10000)
 	{
 		const height = Math.abs(referenceHeight - spawnPosition.y);
-		const boreHoleGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
+		const boreholeGeometry = new THREE.CylinderGeometry(5, 5, height, 8);
 		const tempMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
-		super(boreHoleGeometry, tempMaterial, instanceCount);
+		super(boreholeGeometry, tempMaterial, instanceCount);
 
-		this.boreHoleGeometry = boreHoleGeometry;
+		this.boreholeGeometry = boreholeGeometry;
 		this.instanceCount = instanceCount;
 		this.sprites = [];
 	}
@@ -42,7 +42,7 @@ class BoreHoles extends THREE.InstancedMesh
 		{
 			this.getMatrixAt(i, matrix);
 			let position = new THREE.Vector3().setFromMatrixPosition(matrix);
-			position.y += this.boreHoleGeometry.parameters.height / 2 + 5;
+			position.y += this.boreholeGeometry.parameters.height / 2 + 5;
 			this.sprites[i].position.copy(position);
 		}
 	}
@@ -63,7 +63,7 @@ class BoreHoles extends THREE.InstancedMesh
 		const cylinderMaterial = new THREE.ShaderMaterial({
 			uniforms: {
 				...boreholeShader.uniforms,
-				uBoreholeIDTexture: { value: null },
+				uBoreholeIdTexture: { value: null },
 				uResolution: { value: new THREE.Vector2() },
 			},
 			vertexShader: this.idSelectionVertexCode,
@@ -74,7 +74,7 @@ class BoreHoles extends THREE.InstancedMesh
 		cylinderMaterial.uniforms.diffuse.value.set(0x004C5A);
 
 		this.material = cylinderMaterial;
-		this.boreHoleGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
+		this.boreholeGeometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
 
 		let instanceColors = new Float32Array(this.instanceCount * 3);
 		for (let i = 0; i < this.instanceCount; i++)
@@ -88,13 +88,13 @@ class BoreHoles extends THREE.InstancedMesh
 			instanceColors[i * 3 + 1] = g / 255;
 			instanceColors[i * 3 + 2] = b / 255;
 		}
-		this.boreHoleGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
+		this.boreholeGeometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
 
-		this.name = 'boreHoles';
+		this.name = 'boreholes';
 		this.layers.set(10);
 		this.geometry.computeBoundsTree();
 
-		this.labels = new BoreHoleLabels('assets/textures/fontAtlas/andale_mono.png', 'assets/fontAtlasData/andale_mono.json', this.instanceCount);
+		this.labels = new BoreholeLabels('assets/textures/fontAtlas/andale_mono.png', 'assets/fontAtlasData/andale_mono.json', this.instanceCount);
 		scene.add(this);
 		scene.add(this.labels);
 	}
@@ -114,4 +114,4 @@ class BoreHoles extends THREE.InstancedMesh
 	}
 }
 
-export { BoreHoles };
+export { Boreholes };

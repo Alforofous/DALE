@@ -8,12 +8,12 @@ import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectio
 
 class Renderer extends WebGLRenderer
 {
-	constructor(scene, camera, boreHoleCamera)
+	constructor(scene, camera, boreholeCamera)
 	{
 		super();
 		this.scene = scene;
 		this.camera = camera;
-		this.boreHoleCamera = boreHoleCamera;
+		this.boreholeCamera = boreholeCamera;
 		this.domElement.style.position = 'relative';
 		this.domElement.style.width = '75%';
 		this.domElement.style.height = '100vh';
@@ -59,21 +59,21 @@ class Renderer extends WebGLRenderer
 	{
 		let oldRenderTarget = this.getRenderTarget();
 		this.setRenderTarget(this.outlineBoreholeRenderTarget);
-		this.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreHoleCamera, enableIDShader: false, useComposer: false });
+		this.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreholeCamera, enableIdShader: false, useComposer: false });
 		this.setRenderTarget(oldRenderTarget);
 
 		this.shaderMaterial.uniforms.uOutlinedBoreholesTexture.value = this.outlineBoreholeRenderTarget.texture;
 	}
 
-	renderViewport(view = { left: 0, bottom: 0, width: 1, height: 1, camera: undefined, enableIDShader: false, useComposer: false })
+	renderViewport(view = { left: 0, bottom: 0, width: 1, height: 1, camera: undefined, enableIdShader: false, useComposer: false })
 	{
-		if (view.enableIDShader === false)
+		if (view.enableIdShader === false)
 		{
-			this.scene.boreHoles.material.uniforms.uResolution.value = new THREE.Vector2(this.domElement.clientWidth, this.domElement.clientHeight).multiply(new THREE.Vector2(view.width, view.height));
-			this.scene.boreHoles.switchToDefaultShader();
+			this.scene.boreholes.material.uniforms.uResolution.value = new THREE.Vector2(this.domElement.clientWidth, this.domElement.clientHeight).multiply(new THREE.Vector2(view.width, view.height));
+			this.scene.boreholes.switchToDefaultShader();
 		}
 		else
-			this.scene.boreHoles.switchToIdShader();
+			this.scene.boreholes.switchToIdShader();
 
 		const rendererBounds = this.domElement.getBoundingClientRect();
 		const left = Math.floor(rendererBounds.width * view.left);

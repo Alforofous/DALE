@@ -1,23 +1,25 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
-import { BoreHoleSelector } from './boreHole/boreHoleSelector.js';
+import { BoreholeSelector } from './borehole/boreholeSelector.js';
+import { BoreholeMover } from './borehole/boreholeMover.js';
 
 class Mouse
 {
-	constructor(renderer, scene, userInterface, camera, boreHoleCamera)
+	constructor(renderer, scene, userInterface, camera, boreholeCamera)
 	{
 		this.movement = { x: 0, y: 0 };
 		this.position = { x: 0, y: 0 };
 		this.scene = scene;
 		this.renderer = renderer;
 		this.camera = camera;
-		this.boreHoleCamera = boreHoleCamera;
+		this.boreholeCamera = boreholeCamera;
 		this.userInterface = userInterface;
 		this.pressedButtons = {};
 		this.pressedButtonsSignal = {};
 		this.releasedButtonsSignal = {};
-		this.boreHoleSelector = new BoreHoleSelector(this.camera, this.boreHoleCamera, this.scene, this.renderer);
+		this.boreholeSelector = new BoreholeSelector(this.camera, this.boreholeCamera, this.scene, this.renderer);
+		this.boreholeMover = new BoreholeMover(this.scene);
 
 		this.#addEvents();
 	}
@@ -29,27 +31,46 @@ class Mouse
 			this.isCaptured = false;
 
 		if (Object.values(this.pressedButtonsSignal).some(value => value === true))
-			this.onMouseDown();
+			this.onMouseDownSignal();
 		if (Object.values(this.releasedButtonsSignal).some(value => value === true))
-			this.onMouseUp();
+			this.onMouseUpSignal();
 		if (this.movement.x !== 0 || this.movement.y !== 0)
 			this.onMove();
-		this.boreHoleSelector.updateData();
-		this.boreHoleSelector.updateSelectionRectangle(this.position);
-		this.scene.boreHoles.labels.count = 0;
+		if (Object.values(this.pressedButtons).some(value => value === true))
+			this.onMouseDown();
+		this.boreholeSelector.updateData();
+		this.boreholeSelector.updateSelectionRectangle(this.position);
+		this.scene.boreholes.labels.count = 0;
 		if (this.userInterface?.toolMenus[3].isActive())
 		{
 			const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 			if (activeButtonIndex === 3)
 			{
-				this.scene.boreHoles.labels.count = this.scene.boreHoles.count;
-				this.scene.boreHoles.labels.computeBoundingBox();
-				this.scene.boreHoles.labels.computeBoundingSphere();
+				this.scene.boreholes.labels.count = this.scene.boreholes.count;
+				this.scene.boreholes.labels.computeBoundingBox();
+				this.scene.boreholes.labels.computeBoundingSphere();
 			}
 		}
 	}
 
 	onMouseDown()
+	{
+		if (this.pressedButtons[0])
+		{
+			if (this.userInterface?.toolMenus[3].isActive())
+			{
+				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
+				if (activeButtonIndex === 2)
+				{
+					const firstIntersectedObject = this.firstIntersectedObject;
+					if (firstIntersectedObject !== undefined)
+						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
+				}
+			}
+		}
+	}
+
+	onMouseDownSignal()
 	{
 		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
@@ -63,10 +84,10 @@ class Mouse
 			{
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
-					this.addBoreHole(this.scene);
+					this.addBorehole(this.scene);
 				else if (activeButtonIndex === 1)
 				{
-					this.boreHoleSelector.createSelectionRectangle(this.position);
+					this.boreholeSelector.createSelectionRectangle(this.position);
 				}
 			}
 			else
@@ -74,9 +95,10 @@ class Mouse
 		}
 	}
 
-	onMouseUp()
+	onMouseUpSignal()
 	{
-		this.boreHoleSelector.destroySelectionRectangle();
+		this.boreholeSelector.destroySelectionRectangle();
+		this.boreholeMover.onMouseRelease();
 	}
 
 	onMove()
@@ -84,7 +106,7 @@ class Mouse
 		if (this.isCaptured)
 		{
 			this.camera.updateRotation(this.movement.x, this.movement.y);
-			this.boreHoleCamera.updateRotation(this.movement.x, this.movement.y);
+			this.boreholeCamera.updateRotation(this.movement.x, this.movement.y);
 		}
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
@@ -99,7 +121,7 @@ class Mouse
 				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
 				{
-					this.addBoreHole(this.scene);
+					this.addBorehole(this.scene);
 				}
 				else if (activeButtonIndex === 1)
 				{
@@ -108,9 +130,9 @@ class Mouse
 		}
 	}
 
-	addBoreHole(scene)
+	addBorehole(scene)
 	{
-		let intersection = this.first_intersected_object;
+		let intersection = this.firstIntersectedObject;
 		if (intersection === undefined)
 			return;
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
@@ -124,7 +146,7 @@ class Mouse
 			let matrix = new THREE.Matrix4();
 			let matrix2 = new THREE.Matrix4();
 			const distance = 1000;
-			for (let i = 0; i < scene.boreHoles.count; i++)
+			for (let i = 0; i < scene.boreholes.count; i++)
 			{
 				let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
@@ -135,23 +157,23 @@ class Mouse
 				if (intersects.length > 0)
 					moveVector.y = intersects[0].point.y;
 				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
-				matrix2.makeTranslation(moveVector.x, moveVector.y + scene.boreHoles.boreHoleGeometry.parameters.height / 2 + 5, moveVector.z);
-				scene.boreHoles.setMatrixAt(i, matrix);
-				scene.boreHoles.labels.setMatrixAt(i, matrix2);
-				scene.boreHoles.updateSprites();
+				matrix2.makeTranslation(moveVector.x, moveVector.y + scene.boreholes.boreholeGeometry.parameters.height / 2 + 5, moveVector.z);
+				scene.boreholes.setMatrixAt(i, matrix);
+				scene.boreholes.labels.setMatrixAt(i, matrix2);
+				scene.boreholes.updateSprites();
 			}
-			scene.boreHoles.instanceMatrix.needsUpdate = true;
-			scene.boreHoles.labels.instanceMatrix.needsUpdate = true;
-			scene.boreHoles.computeBoundingBox();
-			scene.boreHoles.computeBoundingSphere();
-			scene.boreHoles.labels.computeBoundingBox();
-			scene.boreHoles.labels.computeBoundingSphere();
+			scene.boreholes.instanceMatrix.needsUpdate = true;
+			scene.boreholes.labels.instanceMatrix.needsUpdate = true;
+			scene.boreholes.computeBoundingBox();
+			scene.boreholes.computeBoundingSphere();
+			scene.boreholes.labels.computeBoundingBox();
+			scene.boreholes.labels.computeBoundingSphere();
 		}
 	}
 
 	drawArea(scene)
 	{
-		let intersection = this.first_intersected_object;
+		let intersection = this.firstIntersectedObject;
 		if (intersection === undefined)
 			return;
 		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
@@ -167,7 +189,7 @@ class Mouse
 
 	digTerrain()
 	{
-		let intersection = this.first_intersected_object;
+		let intersection = this.firstIntersectedObject;
 		if (intersection === undefined)
 			return;
 
@@ -205,7 +227,7 @@ class Mouse
 
 	spawnCones(scene)
 	{
-		let intersection = this.first_intersected_object;
+		let intersection = this.firstIntersectedObject;
 		if (intersection === undefined)
 			return;
 		
@@ -254,7 +276,7 @@ class Mouse
 		return raycaster.intersectObjects(this.scene.children, true);
 	}
 
-	get first_intersected_object()
+	get firstIntersectedObject()
 	{
 		let intersects = this.intersected_objects;
 		if (intersects.length === 0)

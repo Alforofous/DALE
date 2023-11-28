@@ -2,7 +2,7 @@
 uniform vec3 diffuse;
 uniform vec3 emissive;
 uniform float opacity;
-uniform sampler2D uBoreholeIDTexture;
+uniform sampler2D uBoreholeIdTexture;
 uniform vec2 uResolution;
 
 in vec3 vInstanceColor;
@@ -93,7 +93,7 @@ void main()
 	#include <dithering_fragment>
 	vec2 uv = gl_FragCoord.xy / uResolution;
 	
-	vec3 color = sobelEdgeDetection(uBoreholeIDTexture, uv, uResolution, 100.0);
+	vec3 color = sobelEdgeDetection(uBoreholeIdTexture, uv, uResolution, 100.0);
 
 	if (dot(color, vec3(1.0)) < 0.9)
 	{

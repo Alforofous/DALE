@@ -32,9 +32,9 @@ class Keyboard
 	{
 		if (this.releasedKeyCodeSignal['ShiftLeft'])
 		{
-			this.scene.boreHoles.selector.addToSelection = false;
-			this.scene.boreHoles.selector.color = new THREE.Color(0x86DDFF);
-			this.scene.boreHoles.selector.updateSelectionRectangleColor();
+			this.scene.boreholes.selector.addToSelection = false;
+			this.scene.boreholes.selector.color = new THREE.Color(0x86DDFF);
+			this.scene.boreholes.selector.updateSelectionRectangleColor();
 		}
 	}
 
@@ -54,9 +54,9 @@ class Keyboard
 			document.body.requestFullscreen();
 		else if (this.pressedKeyCodeSignal['ShiftLeft'])
 		{
-			this.scene.boreHoles.selector.addToSelection = true;
-			this.scene.boreHoles.selector.color = new THREE.Color(0x86FFDD);
-			this.scene.boreHoles.selector.updateSelectionRectangleColor();
+			this.scene.boreholes.selector.addToSelection = true;
+			this.scene.boreholes.selector.color = new THREE.Color(0x86FFDD);
+			this.scene.boreholes.selector.updateSelectionRectangleColor();
 		}
 
 		if (userInterface.activeToolMenu() !== undefined)

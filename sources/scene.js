@@ -6,8 +6,8 @@ class Scene extends THREE.Scene
 	{
 		super();
 		this.referenceHeight = 0;
-		this.boreHoles = null;
-		this.boreHoleCylinders = [];
+		this.boreholes = null;
+		this.boreholeCylinders = [];
 
 		const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
 		directionalLight.position.set(0, 1, 2);

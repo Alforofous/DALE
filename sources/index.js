@@ -6,7 +6,7 @@ import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
-import { BoreHoles } from './boreHole/boreHoles.js';
+import { Boreholes } from './borehole/boreholes.js';
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -20,12 +20,12 @@ document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
 const camera = new Camera();
-const boreHoleCamera = new Camera();
-boreHoleCamera.layers.set(10);
-const renderer = new Renderer(scene, camera, boreHoleCamera);
+const boreholeCamera = new Camera();
+boreholeCamera.layers.set(10);
+const renderer = new Renderer(scene, camera, boreholeCamera);
 
 const userInterface = new UI(scene);
-const mouse = new Mouse(renderer, scene, userInterface, camera, boreHoleCamera);
+const mouse = new Mouse(renderer, scene, userInterface, camera, boreholeCamera);
 const keyboard = new Keyboard(scene);
 const model = new Model(scene);
 const clock = new THREE.Clock();
@@ -38,7 +38,7 @@ const views = [
 		width: 1.0,
 		height: 1.0,
 		camera: camera,
-		enableIDShader: false,
+		enableIdShader: false,
 		useComposer: true,
 	},
 	{
@@ -47,8 +47,8 @@ const views = [
 		bottom: 0,
 		width: 0.25,
 		height: 0.25,
-		camera: boreHoleCamera,
-		enableIDShader: true,
+		camera: boreholeCamera,
+		enableIdShader: true,
 		useComposer: false,
 	},
 	{
@@ -57,8 +57,8 @@ const views = [
 		bottom: 0,
 		width: 0.25,
 		height: 0.25,
-		camera: boreHoleCamera,
-		enableIDShader: false,
+		camera: boreholeCamera,
+		enableIdShader: false,
 		useComposer: false,
 	}
 ];
@@ -79,11 +79,11 @@ function init()
 		}
 	});
 
-	scene.boreHoles = new BoreHoles(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
-	scene.boreHoles.init(scene).then(() =>
+	scene.boreholes = new Boreholes(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
+	scene.boreholes.init(scene).then(() =>
 	{
-		//scene.boreHoles.initSprites(scene);
-		scene.boreHoles.selector = mouse.boreHoleSelector;
+		//scene.boreholes.initSprites(scene);
+		scene.boreholes.selector = mouse.boreholeSelector;
 		onUpdate();
 	});
 }
@@ -104,18 +104,18 @@ function onUpdate()
 
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);
-	boreHoleCamera.update(keyboard.pressedKeyCode, deltaTime);
+	boreholeCamera.update(keyboard.pressedKeyCode, deltaTime);
 
-	if (scene.boreHoles.labels.material.uniforms)
+	if (scene.boreholes.labels.material.uniforms)
 	{
 		let uCameraForward = camera.getWorldDirection(new THREE.Vector3());
-		scene.boreHoles.labels.material.uniforms.uCameraForward.value = uCameraForward;
+		scene.boreholes.labels.material.uniforms.uCameraForward.value = uCameraForward;
 
 		let cameraUp = camera.up;
 		let uCameraRight = new THREE.Vector3().crossVectors(uCameraForward, cameraUp).normalize();
 		let uCameraUp = new THREE.Vector3().crossVectors(uCameraRight, uCameraForward).normalize();
-		scene.boreHoles.labels.material.uniforms.uCameraUp.value = uCameraUp;
-		scene.boreHoles.labels.material.uniforms.uCameraRight.value = uCameraRight;
+		scene.boreholes.labels.material.uniforms.uCameraUp.value = uCameraUp;
+		scene.boreholes.labels.material.uniforms.uCameraRight.value = uCameraRight;
 	}
 
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);

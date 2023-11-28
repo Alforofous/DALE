@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { loadShader } from '../shaders/shaderLoader.js';
 
-class BoreHoleLabels extends THREE.InstancedMesh
+class BoreholeLabels extends THREE.InstancedMesh
 {
 	constructor(fontTexturePath, fontAtlasPath, instanceCount)
 	{
@@ -113,4 +113,4 @@ class BoreHoleLabels extends THREE.InstancedMesh
 	}
 }
 
-export { BoreHoleLabels };
+export { BoreholeLabels };
