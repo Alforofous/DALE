@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
-import { BoreholeSelector } from './borehole/boreholeSelector.js';
-import { BoreholeMover } from './borehole/boreholeMover.js';
+import { BoreholeSelector } from './boreholes/boreholeSelector.js';
+import { BoreholeMover } from './boreholes/boreholeMover.js';
 
 class Mouse
 {
@@ -144,7 +144,6 @@ class Mouse
 			raycaster.camera = this.camera;
 
 			let matrix = new THREE.Matrix4();
-			let matrix2 = new THREE.Matrix4();
 			const distance = 1000;
 			for (let i = 0; i < scene.boreholes.count; i++)
 			{
@@ -157,17 +156,12 @@ class Mouse
 				if (intersects.length > 0)
 					moveVector.y = intersects[0].point.y;
 				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
-				matrix2.makeTranslation(moveVector.x, moveVector.y + scene.boreholes.boreholeGeometry.parameters.height / 2 + 5, moveVector.z);
 				scene.boreholes.setMatrixAt(i, matrix);
-				scene.boreholes.labels.setMatrixAt(i, matrix2);
-				scene.boreholes.updateSprites();
 			}
+			scene.boreholes.labels.syncWithBoreholes();
 			scene.boreholes.instanceMatrix.needsUpdate = true;
-			scene.boreholes.labels.instanceMatrix.needsUpdate = true;
 			scene.boreholes.computeBoundingBox();
 			scene.boreholes.computeBoundingSphere();
-			scene.boreholes.labels.computeBoundingBox();
-			scene.boreholes.labels.computeBoundingSphere();
 		}
 	}
 

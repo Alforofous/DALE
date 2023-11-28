@@ -6,7 +6,7 @@ import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
-import { Boreholes } from './borehole/boreholes.js';
+import { Boreholes } from './boreholes/boreholes.js';
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -79,7 +79,7 @@ function init()
 		}
 	});
 
-	scene.boreholes = new Boreholes(new THREE.Vector3(0, 50, 0), scene.referenceHeight, 1000);
+	scene.boreholes = new Boreholes(new THREE.Vector3(0, 50, 0), scene.freeSurface[0].position.y, 1000);
 	scene.boreholes.init(scene).then(() =>
 	{
 		//scene.boreholes.initSprites(scene);

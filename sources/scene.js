@@ -1,11 +1,11 @@
 import * as THREE from 'three';
+import { FreeSurface } from './freeSurface/freeSurface.js';
 
 class Scene extends THREE.Scene
 {
 	constructor()
 	{
 		super();
-		this.referenceHeight = 0;
 		this.boreholes = null;
 		this.boreholeCylinders = [];
 
@@ -33,12 +33,9 @@ class Scene extends THREE.Scene
 		this.opacitySlider = document.getElementById('opacitySlider');
 		this.opacitySlider.addEventListener('input', this.changeTerrainMeshOpacity.bind(this));
 
-		const planeGeometry = new THREE.PlaneGeometry(10000, 10000, 20, 20);
-		const planeMaterial = new THREE.MeshPhongMaterial({ color: 0xF4CD15, wireframe: true });
-		const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-		plane.lookAt(new THREE.Vector3(0, 1, 0));
-		plane.position.y = this.referenceHeight;
-		this.add(plane);
+		this.freeSurface = [];
+		this.freeSurface.push(new FreeSurface({x: 10000, y: 10000}, new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0)));
+		this.add(this.freeSurface[0]);
 	}
 
 	changeTerrainMeshOpacity()
