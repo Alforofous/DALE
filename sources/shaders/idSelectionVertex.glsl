@@ -1,11 +1,11 @@
-attribute vec3 instanceColor;
+attribute vec3 instanceUUID;
 attribute float instanceHeight;
 
-out vec3 vInstanceColor;
+out vec3 vinstanceUUID;
 
 void main()
 {
-	vInstanceColor = instanceColor;
+	vinstanceUUID = instanceUUID;
 	vec3 newPosition = position;
 	newPosition.y *= instanceHeight;
 	gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(newPosition, 1.0);

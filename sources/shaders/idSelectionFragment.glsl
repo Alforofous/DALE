@@ -1,6 +1,6 @@
-in vec3 vInstanceColor;
+in vec3 vinstanceUUID;
 
 void main()
 {
-	gl_FragColor = vec4(vInstanceColor.rgb, 1.0);
+	gl_FragColor = vec4(vinstanceUUID.rgb, 1.0);
 }

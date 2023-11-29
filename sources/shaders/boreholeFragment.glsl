@@ -5,7 +5,7 @@ uniform float opacity;
 uniform sampler2D uBoreholeIdTexture;
 uniform vec2 uResolution;
 
-in vec3 vInstanceColor;
+in vec3 vinstanceUUID;
 in float vHighlight;
 in vec2 vUv;
 
