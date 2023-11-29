@@ -29,7 +29,7 @@ class Camera extends PerspectiveCamera
 
 	updateRotation(movementX, movementY)
 	{
-		const sensitivity = 1;
+		const sensitivity = 0.3;
 		let rotationSpeed = sensitivity * 0.01;
 		const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 		euler.setFromQuaternion(this.quaternion);
