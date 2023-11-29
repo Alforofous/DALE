@@ -9,16 +9,14 @@ class Camera extends PerspectiveCamera
 		this.position.z = 50;
 		this.position.y = 700;
 		this.layers.enableAll();
-		this.deltaTime = 0;
 	}
 
 	update(keysPressed, deltaTime)
 	{
-		this.deltaTime = deltaTime;
-		let speed = 10.0 * this.deltaTime;
+		let speed = 10.0 * deltaTime;
 		if (keysPressed['ShiftLeft'])
 		{
-			this.#lastShiftPress += this.deltaTime;
+			this.#lastShiftPress += deltaTime;
 			speed *= Math.min(Math.max(5.0, this.#lastShiftPress * 10), 50.0);
 		}
 		else
@@ -32,7 +30,7 @@ class Camera extends PerspectiveCamera
 	updateRotation(movementX, movementY)
 	{
 		const sensitivity = 1;
-		const rotationSpeed = sensitivity * this.deltaTime;
+		let rotationSpeed = sensitivity * 0.01;
 		const euler = new THREE.Euler(0, 0, 0, 'YXZ');
 		euler.setFromQuaternion(this.quaternion);
 

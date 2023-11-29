@@ -79,7 +79,7 @@ function init()
 		}
 	});
 
-	scene.boreholes = new Boreholes(1000, scene);
+	scene.boreholes = new Boreholes(100, scene);
 	scene.boreholes.selector = mouse.boreholeSelector;
 	onUpdate();
 }
@@ -89,7 +89,11 @@ function onUpdate()
 	userInterface.stats.begin();
 	const deltaTime = clock.getDelta();
 
+	keyboard.onUpdate(userInterface);
+	camera.update(keyboard.pressedKeyCode, deltaTime);
+	boreholeCamera.update(keyboard.pressedKeyCode, deltaTime);
 	mouse.onUpdate();
+
 	renderer.updateOutlineBoreholesTexture();
 	renderer.renderViewport(views[0]);
 	if (userInterface.showViewport2)
@@ -97,10 +101,6 @@ function onUpdate()
 		renderer.renderViewport(views[2]);
 		renderer.renderViewport(views[1]);
 	}
-
-	keyboard.onUpdate(userInterface);
-	camera.update(keyboard.pressedKeyCode, deltaTime);
-	boreholeCamera.update(keyboard.pressedKeyCode, deltaTime);
 
 	if (scene.boreholes.labels.material.uniforms)
 	{
