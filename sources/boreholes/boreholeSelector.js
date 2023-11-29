@@ -16,6 +16,10 @@ class BoreholeSelector
 		this.addToSelection = false;
 		this.color = new THREE.Color(0x86DDFF);
 		this.selectedBoreholeIds = [];
+
+		this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
+		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
+		this.texture = new THREE.DataTexture(this.pixelBuffer, this.renderTarget.width, this.renderTarget.height, THREE.RGBAFormat);
 	}
 
 	updateSelectionRectangleColor()
@@ -88,16 +92,12 @@ class BoreholeSelector
 	updateData()
 	{
 		let oldRenderTarget = this.renderer.getRenderTarget();
-		this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
 		this.renderer.setRenderTarget(this.renderTarget);
 		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreholeCamera, enableIdShader: true, useComposer: false });
-
-		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
 		this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.pixelBuffer);
 		this.renderer.setRenderTarget(oldRenderTarget);
-
-		this.texture = new THREE.DataTexture(this.pixelBuffer, this.renderTarget.width, this.renderTarget.height, THREE.RGBAFormat);
 		this.texture.needsUpdate = true;
+
 		this.scene.boreholes.material.uniforms.uBoreholeIdTexture.value = this.texture;
 		this.scene.boreholes.material.uniforms.uResolution.value = new THREE.Vector2(this.renderTarget.width, this.renderTarget.height);
 	}
