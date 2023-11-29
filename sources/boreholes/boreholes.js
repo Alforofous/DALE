@@ -10,84 +10,29 @@ class Boreholes extends THREE.InstancedMesh
 		const tempMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
 		super(geometry, tempMaterial, instanceCount);
 
+		this.frustumCulled = false;
 		this.geometry = geometry;
 		this.instanceCount = instanceCount;
-		this.info = {
-			id: Array(instanceCount),
-			parentFreeSurface: Array(instanceCount),
-			height: Array(instanceCount),
-		};
-		for (let i = 0; i < instanceCount; i++)
-		{
-			this.info.id[i] = 'ID ' + i.toString();
-			this.info.parentFreeSurface[i] = scene.freeSurface[0];
-			this.info.height[i] = i + 1;
-		}
-		this.init(scene);
-		this.labels.values = this.info.id;
-		this.labels.initValues();
-	}
 
-	setId(id, index)
-	{
-		this.info[index].id = id;
-	}
+		this.#initInfo(scene);
+		this.#loadShaders();
+		this.#initMaterial();
+		this.#initHighlightAttribute();
+		this.#initInstanceUUIDsAttribute();
+		this.#initInstanceHeightAttribute();
+		this.#initLabels();
 
-	init(scene)
-	{
-		let lambertShader = THREE.ShaderLib['lambert'];
-		let boreholeShader = {
-			uniforms: THREE.UniformsUtils.clone(lambertShader.uniforms),
-		};
-
-		this.vertexShaderCode = loadShaderSynchronous('sources/shaders/boreholeVertex.glsl');
-		this.fragmentShaderCode = loadShaderSynchronous('sources/shaders/boreholeFragment.glsl');
-
-		this.idSelectionVertexCode = loadShaderSynchronous('sources/shaders/idSelectionVertex.glsl');
-		this.idSelectionFragmentCode = loadShaderSynchronous('sources/shaders/idSelectionFragment.glsl');
-
-		const cylinderMaterial = new THREE.ShaderMaterial({
-			uniforms: {
-				...boreholeShader.uniforms,
-				uBoreholeIdTexture: { value: null },
-				uResolution: { value: new THREE.Vector2() },
-			},
-			vertexShader: this.idSelectionVertexCode,
-			fragmentShader: this.idSelectionFragmentCode,
-			lights: true
-		});
-
-		cylinderMaterial.uniforms.diffuse.value.set(0x004C5A);
-
-		this.material = cylinderMaterial;
-		this.geometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
-
-		let instanceColors = new Float32Array(this.instanceCount * 3);
-		for (let i = 0; i < this.instanceCount; i++)
-		{
-			let instanceId = i + 1;
-			let r = (instanceId & 0xFF0000) >> 16;
-			let g = (instanceId & 0x00FF00) >> 8;
-			let b = instanceId & 0x0000FF;
-		
-			instanceColors[i * 3] = r / 255;
-			instanceColors[i * 3 + 1] = g / 255;
-			instanceColors[i * 3 + 2] = b / 255;
-		}
-		this.geometry.setAttribute('instanceColor', new THREE.InstancedBufferAttribute(instanceColors, 3));
-
-		let instanceHeight = new Float32Array(this.info.height);
-		this.geometry.setAttribute('instanceHeight', new THREE.InstancedBufferAttribute(instanceHeight, 1));
-
-		this.name = 'boreholes';
 		this.layers.set(10);
 		this.geometry.computeBoundsTree();
-
-		const fontName = 'andale_mono';
-		this.labels = new BoreholeLabels('assets/textures/fontAtlas/' + fontName + '.png', 'assets/fontAtlasData/' + fontName + '.json', this.instanceCount, this);
-		this.labels.geometry.computeBoundsTree();
 		scene.add(this);
 		scene.add(this.labels);
+	}
+
+	switchToDefaultShader()
+	{
+		this.material.vertexShader = this.vertexShaderCode;
+		this.material.fragmentShader = this.fragmentShaderCode;
+		this.material.needsUpdate = true;
 	}
 
 	switchToIdShader()
@@ -97,11 +42,87 @@ class Boreholes extends THREE.InstancedMesh
 		this.material.needsUpdate = true;
 	}
 
-	switchToDefaultShader()
+	setId(id, index)
 	{
-		this.material.vertexShader = this.vertexShaderCode;
-		this.material.fragmentShader = this.fragmentShaderCode;
-		this.material.needsUpdate = true;
+		this.info[index].id = id;
+	}
+
+	#initInfo(scene)
+	{
+		this.info = {
+			id: Array(this.instanceCount),
+			parentFreeSurface: Array(this.instanceCount),
+			height: Array(this.instanceCount),
+		};
+		for (let i = 0; i < this.instanceCount; i++)
+		{
+			this.info.id[i] = 'ID ' + i.toString();
+			this.info.parentFreeSurface[i] = scene.freeSurface[0];
+			this.info.height[i] = i + 1;
+		}
+	}
+
+	#initHighlightAttribute()
+	{
+		this.geometry.setAttribute('highlight', new THREE.InstancedBufferAttribute(new Float32Array(this.instanceCount), 1));
+	}
+
+	#initLabels()
+	{
+		const fontName = 'andale_mono';
+		this.labels = new BoreholeLabels('assets/textures/fontAtlas/' + fontName + '.png', 'assets/fontAtlasData/' + fontName + '.json', this.instanceCount, this);
+		this.labels.geometry.computeBoundsTree();
+		this.labels.values = this.info.id;
+		this.labels.initValues();
+	}
+
+	#initMaterial()
+	{
+		this.material = new THREE.ShaderMaterial({
+			uniforms: {
+				...this.lambertShader.uniforms,
+				uBoreholeIdTexture: { value: null },
+				uResolution: { value: new THREE.Vector2() },
+			},
+			vertexShader: this.idSelectionVertexCode,
+			fragmentShader: this.idSelectionFragmentCode,
+			lights: true
+		});
+		this.material.uniforms.diffuse.value.set(0x004C5A);
+	}
+
+	#initInstanceUUIDsAttribute()
+	{
+		let instanceUUIDs = new Float32Array(this.instanceCount * 3);
+		for (let i = 0; i < this.instanceCount; i++)
+		{
+			let instanceId = i + 1;
+			let r = (instanceId & 0xFF0000) >> 16;
+			let g = (instanceId & 0x00FF00) >> 8;
+			let b = instanceId & 0x0000FF;
+		
+			instanceUUIDs[i * 3] = r / 255;
+			instanceUUIDs[i * 3 + 1] = g / 255;
+			instanceUUIDs[i * 3 + 2] = b / 255;
+		}
+		this.geometry.setAttribute('instanceUUID', new THREE.InstancedBufferAttribute(instanceUUIDs, 3));
+	}
+
+	#initInstanceHeightAttribute()
+	{
+		let instanceHeight = new Float32Array(this.info.height);
+		this.geometry.setAttribute('instanceHeight', new THREE.InstancedBufferAttribute(instanceHeight, 1));
+	}
+
+	#loadShaders()
+	{
+		this.lambertShader = THREE.ShaderLib['lambert'];
+
+		this.vertexShaderCode = loadShaderSynchronous('sources/shaders/boreholeVertex.glsl');
+		this.fragmentShaderCode = loadShaderSynchronous('sources/shaders/boreholeFragment.glsl');
+
+		this.idSelectionVertexCode = loadShaderSynchronous('sources/shaders/idSelectionVertex.glsl');
+		this.idSelectionFragmentCode = loadShaderSynchronous('sources/shaders/idSelectionFragment.glsl');
 	}
 }
 
