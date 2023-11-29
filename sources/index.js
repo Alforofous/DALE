@@ -127,6 +127,7 @@ window.addEventListener('resize', () =>
 	renderer.domElement.style.height = '100vh';
 	renderer.domElement.style.left = `25%`;
 	renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
-	renderer.mainSceneRenderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+	renderer.outlineBoreholeRenderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+	mouse.boreholeSelector.renderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 	renderer.composer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 });
