@@ -16,8 +16,15 @@ class BoreholeSelector
 		this.addToSelection = false;
 		this.color = new THREE.Color(0x86DDFF);
 		this.selectedBoreholeIds = [];
+		this.initPixelBufferAndRenderTarget();
+	}
 
-		this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
+	initPixelBufferAndRenderTarget()
+	{
+		if (this.renderTarget !== undefined)
+			this.renderTarget.setSize(this.renderer.domElement.width, this.renderer.domElement.height);
+		else
+			this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
 		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
 	}
 
