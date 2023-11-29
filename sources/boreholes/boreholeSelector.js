@@ -19,7 +19,6 @@ class BoreholeSelector
 
 		this.renderTarget = new THREE.WebGLRenderTarget(this.renderer.domElement.width, this.renderer.domElement.height);
 		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
-		this.texture = new THREE.DataTexture(this.pixelBuffer, this.renderTarget.width, this.renderTarget.height, THREE.RGBAFormat);
 	}
 
 	updateSelectionRectangleColor()
@@ -96,9 +95,8 @@ class BoreholeSelector
 		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreholeCamera, enableIdShader: true, useComposer: false });
 		this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.pixelBuffer);
 		this.renderer.setRenderTarget(oldRenderTarget);
-		this.texture.needsUpdate = true;
 
-		this.scene.boreholes.material.uniforms.uBoreholeIdTexture.value = this.texture;
+		this.scene.boreholes.material.uniforms.uBoreholeIdTexture.value = this.renderTarget.texture;
 		this.scene.boreholes.material.uniforms.uResolution.value = new THREE.Vector2(this.renderTarget.width, this.renderTarget.height);
 	}
 
