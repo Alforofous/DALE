@@ -42,7 +42,7 @@ class Boreholes extends THREE.InstancedMesh
 		if (intersects.length > 0)
 			this.info.top[index].copy(intersects[0].point);
 		else
-			this.info.top[index].copy(this.projectPointOntoPlane(origin, this.info.bottomParent[index].plane));
+			this.info.top[index].copy(this.projectPointOntoPlane(origin, this.info.bottomParent[index].plane).add(direction.clone().multiplyScalar(0.1)));
 	}
 
 	snapBottomTowardsParent(index)
