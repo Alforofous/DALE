@@ -2,9 +2,9 @@ import * as THREE from 'three';
 
 class BoreholeMover
 {
-	constructor(scene)
+	constructor(boreholes)
 	{
-		this.scene = scene;
+		this.boreholes = boreholes;
 		this.oldPoint = undefined;
 	}
 
@@ -13,9 +13,9 @@ class BoreholeMover
 		this.oldPoint = undefined;
 	}
 
-	moveSelectedBoreholes(currentPoint, selectedBoreholeIds)
+	moveSelectedBoreholes(currentPoint, selectedBoreholeIds, top = true, bottom = true)
 	{
-		if (currentPoint === undefined || selectedBoreholeIds.length === 0 || this.scene.boreholes === undefined)
+		if (currentPoint === undefined || selectedBoreholeIds.length === 0 || this.boreholes === undefined)
 		{
 			return;
 		}
@@ -24,24 +24,20 @@ class BoreholeMover
 		if (this.oldPoint !== undefined)
 		{
 			moveVector = currentPoint.clone().sub(this.oldPoint);
-			let instanceMatrix = new THREE.Matrix4();
-			let position = new THREE.Vector3();
 			for (let i = 0; i < selectedBoreholeIds.length; i++)
 			{
 				const boreholeId = selectedBoreholeIds[i];
-				this.scene.boreholes.getMatrixAt(boreholeId, instanceMatrix);
-				position.setFromMatrixPosition(instanceMatrix);
-				position.add(moveVector);
-				instanceMatrix.setPosition(position);
-				this.scene.boreholes.setMatrixAt(boreholeId, instanceMatrix);
+
+				if (top)
+					this.boreholes.info.top[boreholeId].add(moveVector);
+				this.boreholes.info.bottom[boreholeId].add(moveVector);
+				this.boreholes.snapTopTowardsParent(boreholeId);
+				this.boreholes.snapBottomTowardsParent(boreholeId);
 			}
 		}
 		this.oldPoint = currentPoint;
-		this.scene.boreholes.instanceMatrix.needsUpdate = true;
-		this.scene.boreholes.computeBoundingBox();
-		this.scene.boreholes.computeBoundingSphere();
-		
-		this.scene.boreholes.labels.syncWithBoreholes();
+		this.boreholes.updateGeometryProperties();
+		this.boreholes.labels.syncWithBoreholes();
 	}
 }
 

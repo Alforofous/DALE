@@ -19,7 +19,7 @@ class Mouse
 		this.pressedButtonsSignal = {};
 		this.releasedButtonsSignal = {};
 		this.boreholeSelector = new BoreholeSelector(this.camera, this.boreholeCamera, this.scene, this.renderer);
-		this.boreholeMover = new BoreholeMover(this.scene);
+		this.boreholeMover = new BoreholeMover(this.scene.boreholes);
 
 		this.#addEvents();
 	}
@@ -143,7 +143,6 @@ class Mouse
 			raycaster.layers.set(0);
 			raycaster.camera = this.camera;
 
-			let matrix = new THREE.Matrix4();
 			const distance = 1000;
 			for (let i = 0; i < scene.boreholes.count; i++)
 			{
@@ -155,13 +154,11 @@ class Mouse
 
 				if (intersects.length > 0)
 					moveVector.y = intersects[0].point.y;
-				matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
-				scene.boreholes.setMatrixAt(i, matrix);
+				scene.boreholes.info.top[i].copy(moveVector);
+				scene.boreholes.snapBottomTowardsParent(i);
 			}
+			scene.boreholes.updateGeometryProperties();
 			scene.boreholes.labels.syncWithBoreholes();
-			scene.boreholes.instanceMatrix.needsUpdate = true;
-			scene.boreholes.computeBoundingBox();
-			scene.boreholes.computeBoundingSphere();
 		}
 	}
 

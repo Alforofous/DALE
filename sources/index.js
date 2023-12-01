@@ -2,11 +2,9 @@ import * as THREE from 'three';
 import { Scene } from './scene.js';
 import { Camera } from './camera.js';
 import { Renderer } from './renderer.js';
-import { Model } from './model.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
-import { Boreholes } from './boreholes/boreholes.js';
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -27,7 +25,6 @@ const renderer = new Renderer(scene, camera, boreholeCamera);
 const userInterface = new UI(scene);
 const mouse = new Mouse(renderer, scene, userInterface, camera, boreholeCamera);
 const keyboard = new Keyboard(scene);
-const model = new Model(scene);
 const clock = new THREE.Clock();
 
 const views = [
@@ -69,8 +66,6 @@ function init()
 {
 	clock.start();
 
-	model.loadGLTF('Icelandic_mountain.gltf');
-
 	scene.traverse((child) =>
 	{
 		if (child.isMesh)
@@ -78,8 +73,6 @@ function init()
 			child.geometry.computeBoundsTree();
 		}
 	});
-
-	scene.boreholes = new Boreholes(100, scene);
 	scene.boreholes.selector = mouse.boreholeSelector;
 	onUpdate();
 }

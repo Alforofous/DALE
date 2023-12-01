@@ -13,6 +13,8 @@ class Model
 		this.objLoader.setPath('../assets/models/');
 
 		this.scene = scene_ref;
+		this.loadGLTF('Icelandic_mountain.gltf');
+		this.loaded = false;
 	}
 
 	loadOBJ(modelName)
@@ -80,12 +82,14 @@ class Model
 							wireframe: false,
 							transparent: false,
 							opacity: 1.0,
+							side: THREE.DoubleSide,
 						});
 						child.geometry.computeVertexNormals();
 						child.geometry.computeBoundsTree();
 					}
 				});
 				this.scene.add(gltf.scene);
+				this.loaded = true;
 			},
 			(xhr) =>
 			{
@@ -97,10 +101,6 @@ class Model
 			}
 		);
 	}
-
-	gltfLoader;
-	objLoader;
-	scene;
 }
 
 export { Model };
