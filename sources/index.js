@@ -18,12 +18,10 @@ document.documentElement.style.height = '100vh';
 
 const scene = new Scene();
 const camera = new Camera();
-const boreholeCamera = new Camera();
-boreholeCamera.layers.set(10);
-const renderer = new Renderer(scene, camera, boreholeCamera);
+const renderer = new Renderer(scene, camera);
 
 const userInterface = new UI(scene);
-const mouse = new Mouse(renderer, scene, userInterface, camera, boreholeCamera);
+const mouse = new Mouse(renderer, scene, userInterface, camera);
 const keyboard = new Keyboard(scene);
 const clock = new THREE.Clock();
 
@@ -37,6 +35,7 @@ const views = [
 		camera: camera,
 		enableIdShader: false,
 		useComposer: true,
+		scene: scene,
 	},
 	{
 		name: 'debug1',
@@ -44,9 +43,11 @@ const views = [
 		bottom: 0,
 		width: 0.25,
 		height: 0.25,
-		camera: boreholeCamera,
+		camera: camera,
 		enableIdShader: true,
 		useComposer: false,
+		scene: scene,
+		layers: 1 << 10,
 	},
 	{
 		name: 'debug2',
@@ -54,9 +55,23 @@ const views = [
 		bottom: 0,
 		width: 0.25,
 		height: 0.25,
-		camera: boreholeCamera,
+		camera: camera,
 		enableIdShader: false,
 		useComposer: false,
+		scene: scene,
+		layers: 1 << 10,
+	},
+	{
+		name: 'boreholeOutlines',
+		left: 0,
+		bottom: 0,
+		width: 1.0,
+		height: 1.0,
+		camera: camera,
+		enableIdShader: false,
+		useComposer: false,
+		scene: scene,
+		layers: 1 << 10,
 	}
 ];
 
@@ -84,10 +99,9 @@ function onUpdate()
 
 	keyboard.onUpdate(userInterface);
 	camera.update(keyboard.pressedKeyCode, deltaTime);
-	boreholeCamera.update(keyboard.pressedKeyCode, deltaTime);
 	mouse.onUpdate();
 
-	renderer.updateOutlineBoreholesTexture();
+	renderer.updateOutlineBoreholesTexture(renderer.outlineBoreholeRenderTarget, views[3]);
 	renderer.renderViewport(views[0]);
 	if (userInterface.showViewport2)
 	{
@@ -121,6 +135,7 @@ window.addEventListener('resize', () =>
 	renderer.domElement.style.left = `25%`;
 	renderer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 	renderer.outlineBoreholeRenderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+	renderer.boreholeLabelRenderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 	scene.boreholes.selector.initPixelBufferAndRenderTarget();
 	renderer.composer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 });

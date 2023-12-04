@@ -4,12 +4,11 @@ import * as THREE from 'three';
 
 class BoreholeSelector
 {
-	constructor(camera, boreholeCamera, scene, renderer)
+	constructor(camera, scene, renderer)
 	{
 		this.camera = camera;
 		this.scene = scene;
 		this.renderer = renderer;
-		this.boreholeCamera = boreholeCamera;
 
 		this.selectionBox = new SelectionBox(this.camera, this.scene);
 		this.selectionHelper = new SelectionHelper(this.renderer, 'selectBox');
@@ -99,7 +98,7 @@ class BoreholeSelector
 	{
 		let oldRenderTarget = this.renderer.getRenderTarget();
 		this.renderer.setRenderTarget(this.renderTarget);
-		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, camera: this.boreholeCamera, enableIdShader: true, useComposer: false });
+		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, layers: 1 << 10, scene: this.scene, camera: this.camera, enableIdShader: true, useComposer: false });
 		this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.pixelBuffer);
 		this.renderer.setRenderTarget(oldRenderTarget);
 

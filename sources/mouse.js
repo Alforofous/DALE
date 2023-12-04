@@ -6,19 +6,18 @@ import { BoreholeMover } from './boreholes/boreholeMover.js';
 
 class Mouse
 {
-	constructor(renderer, scene, userInterface, camera, boreholeCamera)
+	constructor(renderer, scene, userInterface, camera)
 	{
 		this.movement = { x: 0, y: 0 };
 		this.position = { x: 0, y: 0 };
 		this.scene = scene;
 		this.renderer = renderer;
 		this.camera = camera;
-		this.boreholeCamera = boreholeCamera;
 		this.userInterface = userInterface;
 		this.pressedButtons = {};
 		this.pressedButtonsSignal = {};
 		this.releasedButtonsSignal = {};
-		this.boreholeSelector = new BoreholeSelector(this.camera, this.boreholeCamera, this.scene, this.renderer);
+		this.boreholeSelector = new BoreholeSelector(this.camera, this.scene, this.renderer);
 		this.boreholeMover = new BoreholeMover(this.scene.boreholes);
 
 		this.#addEvents();
@@ -106,7 +105,6 @@ class Mouse
 		if (this.isCaptured)
 		{
 			this.camera.updateRotation(this.movement.x, this.movement.y);
-			this.boreholeCamera.updateRotation(this.movement.x, this.movement.y);
 		}
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{

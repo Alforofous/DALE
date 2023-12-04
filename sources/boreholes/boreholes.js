@@ -19,7 +19,7 @@ class Boreholes extends THREE.InstancedMesh
 		this.#initMaterial();
 		this.#initHighlightAttribute();
 		this.#initInstanceUUIDsAttribute();
-		this.#initInstanceHeightAttribute();
+		this.#initInstanceGeometryAttribute();
 		this.#initLabels();
 
 		this.layers.set(10);
@@ -198,7 +198,7 @@ class Boreholes extends THREE.InstancedMesh
 		this.geometry.setAttribute('instanceUUID', new THREE.InstancedBufferAttribute(instanceUUIDs, 3));
 	}
 
-	#initInstanceHeightAttribute()
+	#initInstanceGeometryAttribute()
 	{
 		let instanceHeight = new Float32Array(this.info.height);
 		this.geometry.setAttribute('instanceHeight', new THREE.InstancedBufferAttribute(instanceHeight, 1));

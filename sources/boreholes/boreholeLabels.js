@@ -48,18 +48,15 @@ class BoreholeLabels extends THREE.InstancedMesh
 	syncWithBoreholes()
 	{
 		let instanceCount = this.boreholes.instanceCount;
-		let matrix = new THREE.Matrix4();
-		let halfHeight = this.boreholes.geometry.parameters.height / 2;
-		let translationMatrix = new THREE.Matrix4().makeTranslation(0, halfHeight, 0);
 		for (let i = 0; i < instanceCount; i++)
 		{
-			this.boreholes.getMatrixAt(i, matrix);
-			matrix.multiply(translationMatrix);
+			let vector = this.boreholes.info.top[i];
+			let matrix = new THREE.Matrix4().makeTranslation(vector.x, vector.y, vector.z);
 			this.setMatrixAt(i, matrix);
 		}
 		this.instanceMatrix.needsUpdate = true;
-		this.boreholes.labels.computeBoundingBox();
-		this.boreholes.labels.computeBoundingSphere();
+		this.computeBoundingBox();
+		this.computeBoundingSphere();
 	}
 
 	setValueAtIndex(index, value)
