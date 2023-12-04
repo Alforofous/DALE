@@ -85,7 +85,7 @@ function init()
 
 function onUpdate()
 {
-	userInterface.stats.begin();
+	userInterface.stats.forEach((stat) => stat.begin());
 	const deltaTime = clock.getDelta();
 
 	keyboard.onUpdate(userInterface);
@@ -115,7 +115,7 @@ function onUpdate()
 	}
 
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
-	userInterface.stats.end();
+	userInterface.stats.forEach((stat) => stat.end());
 	requestAnimationFrame(onUpdate);
 	renderer.info.reset();
 }
