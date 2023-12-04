@@ -14,17 +14,34 @@ class Camera extends PerspectiveCamera
 	update(keysPressed, deltaTime)
 	{
 		let speed = 10.0 * deltaTime;
+		let movementSpeed = speed;
 		if (keysPressed['ShiftLeft'])
 		{
 			this.#lastShiftPress += deltaTime;
-			speed *= Math.min(Math.max(5.0, this.#lastShiftPress * 10), 50.0);
+			movementSpeed *= Math.min(Math.max(5.0, this.#lastShiftPress * 10), 50.0);
 		}
 		else
 		{
 			this.#lastShiftPress = 0;
 		}
 
-		this.updatePosition(keysPressed, speed);
+		this.updatePosition(keysPressed, movementSpeed);
+		if (keysPressed['ArrowUp'])
+		{
+			this.updateRotation(0, -speed * 100);
+		}
+		if (keysPressed['ArrowLeft'])
+		{
+			this.updateRotation(-speed * 100, 0);
+		}
+		if (keysPressed['ArrowDown'])
+		{
+			this.updateRotation(0, speed * 100);
+		}
+		if (keysPressed['ArrowRight'])
+		{
+			this.updateRotation(speed * 100, 0);
+		}
 	}
 
 	updateRotation(movementX, movementY)
@@ -74,22 +91,6 @@ class Camera extends PerspectiveCamera
 		if (keysPressed['KeyE'])
 		{
 			this.position.add(up.clone().multiplyScalar(speed));
-		}
-		if (keysPressed['ArrowUp'])
-		{
-			this.updateRotation(0, -3);
-		}
-		if (keysPressed['ArrowLeft'])
-		{
-			this.updateRotation(-3, 0);
-		}
-		if (keysPressed['ArrowDown'])
-		{
-			this.updateRotation(0, 3);
-		}
-		if (keysPressed['ArrowRight'])
-		{
-			this.updateRotation(3, 0);
 		}
 	}
 

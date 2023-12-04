@@ -36,7 +36,7 @@ class Scene extends THREE.Scene
 		this.opacitySlider.addEventListener('input', this.changeTerrainMeshOpacity.bind(this));
 
 		this.freeSurface = [];
-		this.freeSurface.push(new FreeSurface({x: 10000, y: 10000}, new THREE.Vector3(0, 1, 0.3), new THREE.Vector3(0, 0, 0)));
+		this.freeSurface.push(new FreeSurface({x: 10000, y: 10000}, new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0)));
 		this.add(this.freeSurface[0]);
 
 		this.modelLoader = new Model(this);
