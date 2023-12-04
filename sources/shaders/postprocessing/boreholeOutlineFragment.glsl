@@ -15,4 +15,9 @@ void main()
 		transition = 0.0;
 
 	gl_FragColor = mix(diffuseColor, outlinedBoreholeColor, transition);
+
+	transition = 0.5;
+	if (boreholeLabelColor.rgb == vec3(0.0))
+		transition = 0.0;
+	gl_FragColor = mix(gl_FragColor, boreholeLabelColor, transition);
 }

@@ -98,7 +98,7 @@ class BoreholeSelector
 	{
 		let oldRenderTarget = this.renderer.getRenderTarget();
 		this.renderer.setRenderTarget(this.renderTarget);
-		this.renderer.renderViewport({ left: 0, bottom: 0, width: 1, height: 1, layers: 1 << 10, scene: this.scene, camera: this.camera, enableIdShader: true, useComposer: false });
+		this.renderer.renderViewport({ layers: 1 << 10, scene: this.scene, camera: this.camera, enableIdShader: true, useComposer: false }, { left: 0, bottom: 0, width: 1, height: 1 });
 		this.renderer.readRenderTargetPixels(this.renderTarget, 0, 0, this.renderTarget.width, this.renderTarget.height, this.pixelBuffer);
 		this.renderer.setRenderTarget(oldRenderTarget);
 

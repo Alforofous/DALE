@@ -58,15 +58,15 @@ class Renderer extends WebGLRenderer
 		this.shaderMaterial.uniforms.uBoreholeLabelsTexture.value = this.boreholeLabelRenderTarget.texture;
 	}
 
-	updateOutlineBoreholesTexture(renderTarget, view = { left: 0, bottom: 0, width: 1, height: 1, camera: undefined, scene: undefined, enableIdShader: false, useComposer: false })
+	updateOutlineBoreholesTexture(renderTarget, view = { camera: undefined, scene: undefined, enableIdShader: false, useComposer: false }, dimensions = { left: 0, bottom: 0, width: 1, height: 1 })
 	{
 		let oldRenderTarget = this.getRenderTarget();
 		this.setRenderTarget(renderTarget);
-		this.renderViewport(view);
+		this.renderViewport(view, dimensions);
 		this.setRenderTarget(oldRenderTarget);
 	}
 
-	renderViewport({left = 0, bottom = 0, width = 1, height = 1, camera = this.camera, layers = 0xFFFFFFFF, scene = undefined, enableIdShader = false, useComposer = false} = {})
+	renderViewport({ camera = this.camera, layers = 0xFFFFFFFF, scene = undefined, enableIdShader = false, useComposer = false } = {}, { left = 0, bottom = 0, width = 1, height = 1 } = {})
 	{
 		if (enableIdShader === false)
 		{

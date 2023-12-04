@@ -25,24 +25,23 @@ const mouse = new Mouse(renderer, scene, userInterface, camera);
 const keyboard = new Keyboard(scene);
 const clock = new THREE.Clock();
 
+const fullDimensions = { left: 0, bottom: 0, width: 1, height: 1 };
+const topLeftDimensions = { left: 0, bottom: 0.75, width: 0.25, height: 0.25 };
+const topRightDimensions = { left: 0.75, bottom: 0.75, width: 0.25, height: 0.25 };
+const bottomRightDimensions = { left: 0.75, bottom: 0, width: 0.25, height: 0.25 };
+const bottomLeftDimensions = { left: 0, bottom: 0, width: 0.25, height: 0.25 };
+
 const views = [
 	{
 		name: 'main',
-		left: 0,
-		bottom: 0,
-		width: 1.0,
-		height: 1.0,
 		camera: camera,
 		enableIdShader: false,
 		useComposer: true,
 		scene: scene,
+		layers: 0xFFFFFFFF,
 	},
 	{
-		name: 'debug1',
-		left: 0.75,
-		bottom: 0,
-		width: 0.25,
-		height: 0.25,
+		name: 'boreholeIDs',
 		camera: camera,
 		enableIdShader: true,
 		useComposer: false,
@@ -50,11 +49,7 @@ const views = [
 		layers: 1 << 10,
 	},
 	{
-		name: 'debug2',
-		left: 0,
-		bottom: 0,
-		width: 0.25,
-		height: 0.25,
+		name: 'boreholeOutlines',
 		camera: camera,
 		enableIdShader: false,
 		useComposer: false,
@@ -62,16 +57,12 @@ const views = [
 		layers: 1 << 10,
 	},
 	{
-		name: 'boreholeOutlines',
-		left: 0,
-		bottom: 0,
-		width: 1.0,
-		height: 1.0,
+		name: 'boreholeLabels',
 		camera: camera,
 		enableIdShader: false,
 		useComposer: false,
 		scene: scene,
-		layers: 1 << 10,
+		layers: 1 << 2,
 	}
 ];
 
@@ -101,12 +92,14 @@ function onUpdate()
 	camera.update(keyboard.pressedKeyCode, deltaTime);
 	mouse.onUpdate();
 
-	renderer.updateOutlineBoreholesTexture(renderer.outlineBoreholeRenderTarget, views[3]);
-	renderer.renderViewport(views[0]);
+	renderer.updateOutlineBoreholesTexture(renderer.outlineBoreholeRenderTarget, views[2], fullDimensions);
+	renderer.updateOutlineBoreholesTexture(renderer.boreholeLabelRenderTarget, views[3], fullDimensions);
+	renderer.renderViewport(views[0], fullDimensions);
 	if (userInterface.showViewport2)
 	{
-		renderer.renderViewport(views[2]);
-		renderer.renderViewport(views[1]);
+		renderer.renderViewport(views[1], bottomRightDimensions);
+		renderer.renderViewport(views[2], bottomLeftDimensions);
+		renderer.renderViewport(views[3], topLeftDimensions);
 	}
 
 	if (scene.boreholes.labels.material.uniforms)
