@@ -79,7 +79,6 @@ function init()
 			child.geometry.computeBoundsTree();
 		}
 	});
-	scene.boreholes.selector = mouse.boreholeSelector;
 	onUpdate();
 }
 
@@ -92,27 +91,7 @@ function onUpdate()
 	camera.update(keyboard.pressedKeyCode, deltaTime);
 	mouse.onUpdate();
 
-	renderer.updateOutlineBoreholesTexture(renderer.outlineBoreholeRenderTarget, views[2], fullDimensions);
-	renderer.updateOutlineBoreholesTexture(renderer.boreholeLabelRenderTarget, views[3], fullDimensions);
 	renderer.renderViewport(views[0], fullDimensions);
-	if (userInterface.showViewport2)
-	{
-		renderer.renderViewport(views[1], bottomRightDimensions);
-		renderer.renderViewport(views[2], bottomLeftDimensions);
-		renderer.renderViewport(views[3], topLeftDimensions);
-	}
-
-	if (scene.boreholes.labels.material.uniforms)
-	{
-		let uCameraForward = camera.getWorldDirection(new THREE.Vector3());
-		scene.boreholes.labels.material.uniforms.uCameraForward.value = uCameraForward;
-
-		let cameraUp = camera.up;
-		let uCameraRight = new THREE.Vector3().crossVectors(uCameraForward, cameraUp).normalize();
-		let uCameraUp = new THREE.Vector3().crossVectors(uCameraRight, uCameraForward).normalize();
-		scene.boreholes.labels.material.uniforms.uCameraUp.value = uCameraUp;
-		scene.boreholes.labels.material.uniforms.uCameraRight.value = uCameraRight;
-	}
 
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	userInterface.stats.end();

@@ -68,14 +68,6 @@ class Renderer extends WebGLRenderer
 
 	renderViewport({ camera = this.camera, layers = 0xFFFFFFFF, scene = undefined, enableIdShader = false, useComposer = false } = {}, { left = 0, bottom = 0, width = 1, height = 1 } = {})
 	{
-		if (enableIdShader === false)
-		{
-			this.scene.boreholes.material.uniforms.uResolution.value = new THREE.Vector2(this.domElement.clientWidth, this.domElement.clientHeight).multiply(new THREE.Vector2(width, height));
-			this.scene.boreholes.switchToDefaultShader();
-		}
-		else
-			this.scene.boreholes.switchToIdShader();
-
 		const rendererBounds = this.domElement.getBoundingClientRect();
 		const leftPixelCoords = Math.floor(rendererBounds.width * left);
 		const bottomPixelCoords = Math.floor(rendererBounds.height * bottom);

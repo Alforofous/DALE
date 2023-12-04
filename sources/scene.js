@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { FreeSurface } from './freeSurface/freeSurface.js';
-import { Boreholes } from './boreholes/boreholes.js';
+import { Borehole } from './boreholes/boreholes.js';
 import { Model } from './model.js';
 
 class Scene extends THREE.Scene
@@ -40,7 +40,14 @@ class Scene extends THREE.Scene
 		this.add(this.freeSurface[0]);
 
 		this.modelLoader = new Model(this);
-		this.boreholes = new Boreholes(100, this);
+		
+		let instanceCount = 10000;
+		this.boreholes = [];
+		for (let index = 0; index < instanceCount; index++)
+		{
+			this.boreholes.push(new Borehole());
+			this.add(this.boreholes[index]);
+		}
 	}
 
 	changeTerrainMeshOpacity()

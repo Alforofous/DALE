@@ -37,17 +37,11 @@ class Mouse
 			this.onMove();
 		if (Object.values(this.pressedButtons).some(value => value === true))
 			this.onMouseDown();
-		this.boreholeSelector.updateData();
-		this.boreholeSelector.updateSelectionRectangle(this.position);
-		this.scene.boreholes.labels.count = 0;
 		if (this.userInterface?.toolMenus[3].isActive())
 		{
 			const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 			if (activeButtonIndex === 3)
 			{
-				this.scene.boreholes.labels.count = this.scene.boreholes.count;
-				this.scene.boreholes.labels.computeBoundingBox();
-				this.scene.boreholes.labels.computeBoundingSphere();
 			}
 		}
 	}
@@ -142,21 +136,22 @@ class Mouse
 			raycaster.camera = this.camera;
 
 			const distance = 1000;
-			for (let i = 0; i < scene.boreholes.count; i++)
+			for (let i = 0; i < scene.boreholes.length; i++)
 			{
 				let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
 				let origin = new THREE.Vector3(moveVector.x, 10000, moveVector.z);
+				
 				raycaster.set(origin, direction);
 				let intersects = raycaster.intersectObjects(scene.children, true);
 
 				if (intersects.length > 0)
 					moveVector.y = intersects[0].point.y;
-				scene.boreholes.info.top[i].copy(moveVector);
-				scene.boreholes.snapBottomTowardsParent(i);
+				scene.boreholes[i].top.copy(moveVector);
+				moveVector.y = 0;
+				scene.boreholes[i].bottom.copy(moveVector);
+				scene.boreholes[i].updateGeometryProperties();
 			}
-			scene.boreholes.updateGeometryProperties();
-			scene.boreholes.labels.syncWithBoreholes();
 		}
 	}
 
