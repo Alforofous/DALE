@@ -25,8 +25,15 @@ class UI
 		}
 		this.showViewport2 = false;
 
-		this.stats = new Stats();
-		document.body.appendChild(this.stats.dom);
+		this.stats = [];
+		for (let i = 0; i < 3; i++)
+		{
+			const stat = new Stats();
+			stat.showPanel(i);
+			stat.dom.style.top = `${i * 48}px`;
+			document.body.appendChild(stat.dom);
+			this.stats.push(stat);
+		}
 	}
 
 	activeToolMenu()
