@@ -90,7 +90,9 @@ function init()
 		for (let i = 0; i < scene.boreholes.count; i++)
 		{
 			const result = Module.ccall('add_numbers', 'number', ['number', 'number'], [i, i]);
+			const result2 = Module.ccall('angle_between_vectors', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [i, i, i, 1, 0, 0])
 			console.log(result);
+			console.log(result2);
 		}
 	});
 	onUpdate();
