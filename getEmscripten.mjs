@@ -1,5 +1,5 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
+import { execSync } from 'child_process';
+import { existsSync } from 'fs';
 
 try
 {
@@ -9,7 +9,7 @@ try
 {
 	console.log('Emscripten is not installed. Installing...');
 
-	if (!fs.existsSync('emsdk'))
+	if (!existsSync('emsdk'))
 	{
 		execSync('git clone https://github.com/emscripten-core/emsdk.git');
 	}
