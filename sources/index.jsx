@@ -5,6 +5,9 @@ import { Renderer } from './renderer.js';
 import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import ColorPicker from './UI/colorPicker';
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -66,6 +69,7 @@ const views = [
 	}
 ];
 
+const root = ReactDOM.createRoot(document.getElementById('root'));
 init();
 
 function init()
@@ -85,6 +89,11 @@ function init()
 
 function onUpdate()
 {
+	root.render(
+		<div className="color-picker-overlay">
+			<ColorPicker />
+		</div>
+	);
 	userInterface.stats.forEach((stat) => stat.begin());
 	const deltaTime = clock.getDelta();
 
