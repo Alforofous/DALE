@@ -8,6 +8,7 @@ import { UI } from './UI/UI.js';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ColorPicker from './UI/colorPicker';
+const createModule = window.createModule;
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
@@ -84,6 +85,14 @@ function init()
 		}
 	});
 	scene.boreholes.selector = mouse.boreholeSelector;
+	createModule().then(Module =>
+	{
+		for (let i = 0; i < scene.boreholes.count; i++)
+		{
+			const result = Module.ccall('add_numbers', 'number', ['number', 'number'], [i, i]);
+			console.log(result);
+		}
+	});
 	onUpdate();
 }
 
