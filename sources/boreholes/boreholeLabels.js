@@ -20,11 +20,14 @@ class BoreholeLabels extends THREE.InstancedMesh
 			fetch(fontAtlasPath).then(response => response.json())
 		]).then(([fontTexture, fontData]) =>
 		{
-			fontTexture.minFilter = THREE.NearestFilter;
+			fontTexture.minFilter = THREE.LinearFilter;
 			this.material.uniforms.fontTexture.value = fontTexture;
 			this.characterData = this.#initCharacterData(fontData);
 			this.material.uniforms.charPositions.value = this.characterData.positions;
 			this.material.uniforms.charSizes.value = this.characterData.sizes;
+			this.material.uniforms.charPixelSizes.value = this.characterData.pixelSizes;
+			this.material.uniforms.maxPixelWidth.value = fontData.maxPixelWidth;
+			this.material.uniforms.advances.value = this.characterData.advances;
 		});
 		this.values = undefined;
 		this.material = new THREE.ShaderMaterial({
@@ -32,6 +35,9 @@ class BoreholeLabels extends THREE.InstancedMesh
 				fontTexture: { value: null },
 				charPositions: { value: null },
 				charSizes: { value: null },
+				charPixelSizes: { value: null },
+				advances: { value: null },
+				maxPixelWidth: { value: null },
 				stringTexture: { value: null },
 				stringTextureSize: { value: null },
 				uCameraForward: { value: null },
@@ -114,7 +120,10 @@ class BoreholeLabels extends THREE.InstancedMesh
 	{
 		let positions = new Float32Array(256 * 2);
 		let sizes = new Float32Array(256 * 2);
+		let pixelSizes = new Uint32Array(256 * 2);
+		let advances = new Uint32Array(256);
 
+		fontData.maxPixelWidth = 0;
 		for (let char in fontData.characters)
 		{
 			let charData = fontData.characters[char];
@@ -123,11 +132,17 @@ class BoreholeLabels extends THREE.InstancedMesh
 			let charHeight = charData.height / fontData.height;
 			sizes[index] = charWidth;
 			sizes[index + 1] = charHeight;
+			pixelSizes[index] = charData.width;
+			pixelSizes[index + 1] = charData.height;
 			positions[index] = charData.x / fontData.width;
 			positions[index + 1] = 1 - charData.y / fontData.height - charHeight;
+			advances[index] = charData.advance;
+
+			if (pixelSizes[index] > fontData.maxPixelWidth)
+				fontData.maxPixelWidth = pixelSizes[index];
 		}
 
-		return { positions, sizes };
+		return { positions, sizes, pixelSizes, advances };
 	}
 }
 
