@@ -5,7 +5,7 @@ class BoreholeLabels extends THREE.InstancedMesh
 {
 	constructor(fontTexturePath, fontAtlasPath, instanceCount, boreholes)
 	{
-		const geometry = new THREE.PlaneGeometry(1.7, 2.5);
+		const geometry = new THREE.PlaneGeometry(2.0, 2.5);
 		const tmpMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
 		super(geometry, tmpMaterial, instanceCount);
 		this.instanceCount = instanceCount;

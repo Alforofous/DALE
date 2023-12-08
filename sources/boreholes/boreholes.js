@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { loadShaderSynchronous } from '../shaders/shaderLoader.js';
 import { BoreholeLabels } from './boreholeLabels.js';
 
+const MAX_SECTIONS_PER_BOREHOLE = 10;
+
 class Boreholes extends THREE.InstancedMesh
 {
 	constructor(instanceCount = 100000, scene)
@@ -19,7 +21,7 @@ class Boreholes extends THREE.InstancedMesh
 		this.#initMaterial();
 		this.#initHighlightAttribute();
 		this.#initInstanceUUIDsAttribute();
-		this.#initInstanceGeometryAttribute();
+		this.#initInstanceGeometryAttributes();
 		this.#initLabels();
 
 		this.layers.set(10);
@@ -129,6 +131,7 @@ class Boreholes extends THREE.InstancedMesh
 			height: Array(this.instanceCount),
 			top: Array(this.instanceCount),
 			bottom: Array(this.instanceCount),
+			sections: Array(this.instanceCount),
 		};
 		for (let i = 0; i < this.instanceCount; i++)
 		{
@@ -137,6 +140,12 @@ class Boreholes extends THREE.InstancedMesh
 			this.info.height[i] = i + 1;
 			this.info.top[i] = new THREE.Vector3(0, 100, 0);
 			this.info.bottom[i] = new THREE.Vector3(0, 0, 0);
+			this.info.sections[i] = Array(MAX_SECTIONS_PER_BOREHOLE);
+			const sectionLength = 1 / MAX_SECTIONS_PER_BOREHOLE;
+			for (let j = 0; j < MAX_SECTIONS_PER_BOREHOLE; j++)
+			{
+				this.info.sections[i][j] = { start: sectionLength * j, length: sectionLength, color: (0xFF0000 | (0xFF * (j / MAX_SECTIONS_PER_BOREHOLE))) };
+			}
 		}
 		this.#initTopParent(scene);
 	}
@@ -173,6 +182,8 @@ class Boreholes extends THREE.InstancedMesh
 				...this.lambertShader.uniforms,
 				uBoreholeIdTexture: { value: null },
 				uResolution: { value: new THREE.Vector2() },
+				uSectionsColorTexture: { value: this.#initSectionsColorData() },
+				instanceCount: { value: this.instanceCount },
 			},
 			vertexShader: this.idSelectionVertexCode,
 			fragmentShader: this.idSelectionFragmentCode,
@@ -198,10 +209,34 @@ class Boreholes extends THREE.InstancedMesh
 		this.geometry.setAttribute('instanceUUID', new THREE.InstancedBufferAttribute(instanceUUIDs, 3));
 	}
 
-	#initInstanceGeometryAttribute()
+	#initInstanceGeometryAttributes()
 	{
 		let instanceHeight = new Float32Array(this.info.height);
 		this.geometry.setAttribute('instanceHeight', new THREE.InstancedBufferAttribute(instanceHeight, 1));
+		let instanceID = new Float32Array(this.instanceCount);
+		for (let i = 0; i < this.instanceCount; i++)
+			instanceID[i] = i;
+		this.geometry.setAttribute('instanceID', new THREE.InstancedBufferAttribute(instanceID, 1));
+	}
+
+	#initSectionsColorData()
+	{
+		let data = new Float32Array(this.instanceCount * MAX_SECTIONS_PER_BOREHOLE * 4);
+		for (let i = 0; i < this.instanceCount; i++)
+		{
+			for (let j = 0; j < MAX_SECTIONS_PER_BOREHOLE; j++)
+			{
+				let index = (i * MAX_SECTIONS_PER_BOREHOLE + j) * 4;
+				let color = this.info.sections[i][j].color;
+				data[index] = (color & 0xFF0000) >> 16;
+				data[index + 1] = (color & 0x00FF00) >> 8;
+				data[index + 2] = (color & 0x0000FF);
+				console.log(data[index], data[index + 1], data[index + 2]);
+			}
+		}
+		let dataTexture = new THREE.DataTexture(data, this.instanceCount * MAX_SECTIONS_PER_BOREHOLE, 1, THREE.RGBAFormat, THREE.FloatType);
+		dataTexture.needsUpdate = true;
+		return (dataTexture);
 	}
 
 	#loadShaders()

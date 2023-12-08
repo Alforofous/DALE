@@ -1,13 +1,12 @@
 #define LAMBERT
 
 attribute float highlight;
-attribute vec3 instanceUUID;
 attribute float instanceHeight;
 
 out float vHighlight;
-out vec3 vinstanceUUID;
 out vec3 vViewPosition;
 out vec2 vUv;
+out vec3 vPosition;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -34,7 +33,7 @@ void main()
 	#include <defaultnormal_vertex>
 	#include <normal_vertex>
 	vHighlight = highlight;
-	vinstanceUUID = instanceUUID;
+	vPosition = position;
 	vUv = uv;
 	#include <begin_vertex>
 	#include <morphtarget_vertex>
