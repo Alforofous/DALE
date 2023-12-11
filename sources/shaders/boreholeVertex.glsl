@@ -2,11 +2,15 @@
 
 attribute float highlight;
 attribute float instanceHeight;
+attribute vec4 instanceSectionStart;
+attribute vec4 instanceSectionSize;
 
 out float vHighlight;
 out vec3 vViewPosition;
 out vec2 vUv;
 out vec3 vPosition;
+out vec4 vSectionStart;
+out vec4 vSectionSize;
 
 #include <common>
 #include <uv_pars_vertex>
@@ -35,6 +39,8 @@ void main()
 	vHighlight = highlight;
 	vPosition = position;
 	vUv = uv;
+	vSectionStart = instanceSectionStart;
+	vSectionSize = instanceSectionSize;
 	#include <begin_vertex>
 	#include <morphtarget_vertex>
 	#include <skinning_vertex>

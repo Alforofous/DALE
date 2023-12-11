@@ -1,5 +1,5 @@
 #define LAMBERT
-#define MAX_SECTIONS_PER_BOREHOLE 10.0
+#define MAX_SECTIONS_PER_BOREHOLE 4.0
 uniform vec3 diffuse;
 uniform vec3 emissive;
 uniform float opacity;
@@ -12,6 +12,8 @@ uniform uint instanceID;
 in float vHighlight;
 in vec2 vUv;
 in vec3 vPosition;
+in vec4 vSectionStart;
+in vec4 vSectionSize;
 
 #include <common>
 #include <packing>
@@ -44,7 +46,7 @@ vec4 getInstanceSectionColor(float instanceId, float sectionIndex)
 	float totalSections = instanceCount * MAX_SECTIONS_PER_BOREHOLE;
 	vec2 uv = vec2((instanceId * MAX_SECTIONS_PER_BOREHOLE + sectionIndex) / totalSections, 0.5);
 	vec4 color = texture2D(uSectionsColorTexture, uv);
-	return color;
+	return (color);
 }
 
 float grayscale(vec3 color)
@@ -74,15 +76,27 @@ vec3 sobelEdgeDetection(sampler2D image, vec2 uv, vec2 resolution, float scaleFa
 	return vec3(sobel * scaleFactor);
 }
 
+vec4 getSectionColor()
+{
+	vec4 diffuseColor = vec4(diffuse, opacity);
+	vec4 sectionEnd = vSectionStart + vSectionSize;
+	vec3 position = vPosition + vec3(0.0, 0.5, 0.0);
+	if (position.y >= vSectionStart.x && position.y <= sectionEnd.x)
+		diffuseColor = getInstanceSectionColor(float(instanceID), 0.0);
+	else if (position.y >= vSectionStart.y && position.y <= sectionEnd.y)
+		diffuseColor = getInstanceSectionColor(float(instanceID), 1.0);
+	else if (position.y >= vSectionStart.z && position.y <= sectionEnd.z)
+		diffuseColor = getInstanceSectionColor(float(instanceID), 2.0);
+	else if (position.y >= vSectionStart.w && position.y <= sectionEnd.w)
+		diffuseColor = getInstanceSectionColor(float(instanceID), 3.0);
+	diffuseColor /= 255.0;
+	return diffuseColor;
+}
+
 void main()
 {
 	#include <clipping_planes_fragment>
-	vec4 diffuseColor = vec4(diffuse, opacity);
-	if (vPosition.y > 0.0)
-	{
-		diffuseColor = getInstanceSectionColor(float(instanceID), 0.0);
-		diffuseColor /= 255.0;
-	}
+	vec4 diffuseColor = getSectionColor();
 	ReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );
 	vec3 totalEmissiveRadiance = emissive;
 	#include <logdepthbuf_fragment>

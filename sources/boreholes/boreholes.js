@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { loadShaderSynchronous } from '../shaders/shaderLoader.js';
 import { BoreholeLabels } from './boreholeLabels.js';
 
-const MAX_SECTIONS_PER_BOREHOLE = 10;
+const MAX_SECTIONS_PER_BOREHOLE = 4;
 
 class Boreholes extends THREE.InstancedMesh
 {
@@ -144,7 +144,18 @@ class Boreholes extends THREE.InstancedMesh
 			const sectionLength = 1 / MAX_SECTIONS_PER_BOREHOLE;
 			for (let j = 0; j < MAX_SECTIONS_PER_BOREHOLE; j++)
 			{
-				this.info.sections[i][j] = { start: sectionLength * j, length: sectionLength, color: (0xFF0000 | (0xFF * (j / MAX_SECTIONS_PER_BOREHOLE))) };
+				let sectionColor = 0x000000;
+				if (j % MAX_SECTIONS_PER_BOREHOLE === 0)
+					sectionColor = 0xFF0000;
+				else if (j % MAX_SECTIONS_PER_BOREHOLE === 1)
+					sectionColor = 0x00FF00;
+				else if (j % MAX_SECTIONS_PER_BOREHOLE === 2)
+					sectionColor = 0x0000FF;
+				else if (j % MAX_SECTIONS_PER_BOREHOLE === 3)
+					sectionColor = 0xFFFF00;
+				else
+					sectionColor = 0xFF00FF;
+				this.info.sections[i][j] = { start: sectionLength * j, size: sectionLength, color: sectionColor };
 			}
 		}
 		this.#initTopParent(scene);
@@ -217,6 +228,19 @@ class Boreholes extends THREE.InstancedMesh
 		for (let i = 0; i < this.instanceCount; i++)
 			instanceID[i] = i;
 		this.geometry.setAttribute('instanceID', new THREE.InstancedBufferAttribute(instanceID, 1));
+		const arrayLength = this.instanceCount * MAX_SECTIONS_PER_BOREHOLE;
+		let instanceSectionStart = new Float32Array(arrayLength);
+		let instanceSectionSize = new Float32Array(arrayLength);
+		for (let i = 0; i < this.instanceCount; i++)
+		{
+			for (let j = 0; j < MAX_SECTIONS_PER_BOREHOLE; j++)
+			{
+				instanceSectionStart[i * MAX_SECTIONS_PER_BOREHOLE + j] = this.info.sections[i][j].start;
+				instanceSectionSize[i * MAX_SECTIONS_PER_BOREHOLE + j] = this.info.sections[i][j].size;
+			}
+		}
+		this.geometry.setAttribute('instanceSectionStart', new THREE.InstancedBufferAttribute(instanceSectionStart, MAX_SECTIONS_PER_BOREHOLE));
+		this.geometry.setAttribute('instanceSectionSize', new THREE.InstancedBufferAttribute(instanceSectionSize, MAX_SECTIONS_PER_BOREHOLE));
 	}
 
 	#initSectionsColorData()
