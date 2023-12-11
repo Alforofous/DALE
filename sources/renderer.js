@@ -10,7 +10,7 @@ class Renderer extends WebGLRenderer
 {
 	constructor(scene, camera)
 	{
-		super();
+		super({ antialias: true });
 		this.scene = scene;
 		this.camera = camera;
 		this.domElement.style.position = 'relative';
