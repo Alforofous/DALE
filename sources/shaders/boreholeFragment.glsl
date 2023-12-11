@@ -43,10 +43,10 @@ in vec4 vSectionSize;
 
 vec4 getInstanceSectionColor(float instanceId, float sectionIndex)
 {
-	float totalSections = instanceCount * MAX_SECTIONS_PER_BOREHOLE;
-	vec2 uv = vec2((instanceId * MAX_SECTIONS_PER_BOREHOLE + sectionIndex) / totalSections, 0.5);
+	vec2 uv = vec2(instanceId / float(instanceCount), sectionIndex / float(MAX_SECTIONS_PER_BOREHOLE));
 	vec4 color = texture2D(uSectionsColorTexture, uv);
-	return (color);
+	//color = vec4((sectionIndex + 1.0) / MAX_SECTIONS_PER_BOREHOLE) * 255.0, 0.0, 0.0, 255.0;
+	return color;
 }
 
 float grayscale(vec3 color)

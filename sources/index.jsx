@@ -91,10 +91,11 @@ function init()
 		{
 			const result = Module.ccall('add_numbers', 'number', ['number', 'number'], [i, i]);
 			const result2 = Module.ccall('angle_between_vectors', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [i, i, i, 1, 0, 0])
-			console.log(result);
-			console.log(result2);
 		}
 	});
+	let context = renderer.getContext();
+let maxTextureSize = context.getParameter(context.MAX_TEXTURE_SIZE);
+console.log('MAX TEXTURE SIZE: ', maxTextureSize);
 	onUpdate();
 }
 

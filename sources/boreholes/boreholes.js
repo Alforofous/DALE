@@ -8,6 +8,12 @@ class Boreholes extends THREE.InstancedMesh
 {
 	constructor(instanceCount = 100000, scene)
 	{
+		if (instanceCount > 16384 || instanceCount < 1)
+		{
+			instanceCount = Math.max(1, Math.min(16384, instanceCount));
+			console.warn('Boreholes: instanceCount must be between 1 and 16384. Setting instanceCount to ' + instanceCount.toString() + '.');
+		}
+
 		const geometry = new THREE.CylinderGeometry(5, 5, 1, 8);
 		const tempMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
 		super(geometry, tempMaterial, instanceCount);
@@ -250,15 +256,14 @@ class Boreholes extends THREE.InstancedMesh
 		{
 			for (let j = 0; j < MAX_SECTIONS_PER_BOREHOLE; j++)
 			{
-				let index = (i * MAX_SECTIONS_PER_BOREHOLE + j) * 4;
+				let index = (j * this.instanceCount + i) * 4;
 				let color = this.info.sections[i][j].color;
-				data[index] = (color & 0xFF0000) >> 16;
-				data[index + 1] = (color & 0x00FF00) >> 8;
+				data[index] = ((color & 0xFF0000) >> 16);
+				data[index + 1] = ((color & 0x00FF00) >> 8);
 				data[index + 2] = (color & 0x0000FF);
-				console.log(data[index], data[index + 1], data[index + 2]);
 			}
 		}
-		let dataTexture = new THREE.DataTexture(data, this.instanceCount * MAX_SECTIONS_PER_BOREHOLE, 1, THREE.RGBAFormat, THREE.FloatType);
+		let dataTexture = new THREE.DataTexture(data, this.instanceCount, MAX_SECTIONS_PER_BOREHOLE, THREE.RGBAFormat, THREE.FloatType);
 		dataTexture.needsUpdate = true;
 		return (dataTexture);
 	}
