@@ -13,6 +13,7 @@ const createModule = window.createModule;
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 import Slider from './UI/slider.jsx';
+import Sidebar from './UI/sidebar.jsx';
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -25,7 +26,7 @@ const scene = new Scene();
 const camera = new Camera();
 const renderer = new Renderer(scene, camera);
 
-const userInterface = new UI(scene);
+const userInterface = new UI(renderer);
 const mouse = new Mouse(renderer, scene, userInterface, camera);
 const keyboard = new Keyboard(scene);
 const clock = new THREE.Clock();
@@ -102,6 +103,7 @@ function onUpdate()
 	root.render(
 		<div className="color-picker-overlay">
 			<ColorPicker />
+			<Sidebar />
 			<Slider />
 		</div>
 	);
@@ -115,11 +117,19 @@ function onUpdate()
 	renderer.updateOutlineBoreholesTexture(renderer.outlineBoreholeRenderTarget, views[2], fullDimensions);
 	renderer.updateOutlineBoreholesTexture(renderer.boreholeLabelRenderTarget, views[3], fullDimensions);
 	renderer.renderViewport(views[0], fullDimensions);
+	userInterface.stats.forEach((stat) =>
+	{
+		stat.dom.style.display = 'none';
+	});
 	if (userInterface.showViewport2)
 	{
+		userInterface.stats.forEach((stat) =>
+		{
+			stat.dom.style.display = 'block';
+		});
 		renderer.renderViewport(views[1], bottomRightDimensions);
 		renderer.renderViewport(views[2], bottomLeftDimensions);
-		renderer.renderViewport(views[3], topLeftDimensions);
+		renderer.renderViewport(views[3], topRightDimensions);
 	}
 
 	if (scene.boreholes.labels.material.uniforms)
