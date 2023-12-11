@@ -116,6 +116,21 @@ class BoreholeLabels extends THREE.InstancedMesh
 		return texture;
 	}
 
+	updateUniforms(camera)
+	{
+		if (this.material.uniforms)
+		{
+			let uCameraForward = camera.getWorldDirection(new THREE.Vector3());
+			this.material.uniforms.uCameraForward.value = uCameraForward;
+
+			let cameraUp = camera.up;
+			let uCameraRight = new THREE.Vector3().crossVectors(uCameraForward, cameraUp).normalize();
+			let uCameraUp = new THREE.Vector3().crossVectors(uCameraRight, uCameraForward).normalize();
+			this.material.uniforms.uCameraUp.value = uCameraUp;
+			this.material.uniforms.uCameraRight.value = uCameraRight;
+		}
+	}
+
 	#initCharacterData(fontData)
 	{
 		let positions = new Float32Array(256 * 2);

@@ -1,4 +1,3 @@
-import { render } from 'react-dom';
 import { createToolMenusArray } from './toolMenus';
 import Stats from 'stats.js';
 
@@ -21,6 +20,20 @@ class UI
 			renderer.domElement.parentElement.appendChild(stat.dom);
 			this.stats.push(stat);
 		}
+
+		this.activeToolMenuIndex = 0;
+	}
+
+	showStats(show)
+	{
+		let displayStyle = 'none';
+		if (show === true)
+			displayStyle = 'block';
+		this.stats.forEach(stat =>
+		{
+			stat.dom.style.display = displayStyle;
+		});
+	
 	}
 
 	activeToolMenu()

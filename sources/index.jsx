@@ -72,7 +72,6 @@ const views = [
 	}
 ];
 
-const root = createRoot(document.getElementById('root'));
 init();
 
 function init()
@@ -98,15 +97,25 @@ function init()
 	onUpdate();
 }
 
-function onUpdate()
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+
+function App()
 {
-	root.render(
+	userInterface.sidebar = React.createRef();
+
+	return (
 		<div className="color-picker-overlay">
 			<ColorPicker />
-			<Sidebar />
+			<Sidebar ref={userInterface.sidebar} />
 			<Slider />
 		</div>
 	);
+}
+
+function onUpdate()
+{
+	console.log(userInterface.sidebar?.current?.state.activeToolMenuIndex);
 	userInterface.stats.forEach((stat) => stat.begin());
 	const deltaTime = clock.getDelta();
 
@@ -117,32 +126,14 @@ function onUpdate()
 	renderer.updateOutlineBoreholesTexture(renderer.outlineBoreholeRenderTarget, views[2], fullDimensions);
 	renderer.updateOutlineBoreholesTexture(renderer.boreholeLabelRenderTarget, views[3], fullDimensions);
 	renderer.renderViewport(views[0], fullDimensions);
-	userInterface.stats.forEach((stat) =>
-	{
-		stat.dom.style.display = 'none';
-	});
+	userInterface.showStats(userInterface.showViewport2);
 	if (userInterface.showViewport2)
 	{
-		userInterface.stats.forEach((stat) =>
-		{
-			stat.dom.style.display = 'block';
-		});
 		renderer.renderViewport(views[1], bottomRightDimensions);
 		renderer.renderViewport(views[2], bottomLeftDimensions);
 		renderer.renderViewport(views[3], topRightDimensions);
 	}
-
-	if (scene.boreholes.labels.material.uniforms)
-	{
-		let uCameraForward = camera.getWorldDirection(new THREE.Vector3());
-		scene.boreholes.labels.material.uniforms.uCameraForward.value = uCameraForward;
-
-		let cameraUp = camera.up;
-		let uCameraRight = new THREE.Vector3().crossVectors(uCameraForward, cameraUp).normalize();
-		let uCameraUp = new THREE.Vector3().crossVectors(uCameraRight, uCameraForward).normalize();
-		scene.boreholes.labels.material.uniforms.uCameraUp.value = uCameraUp;
-		scene.boreholes.labels.material.uniforms.uCameraRight.value = uCameraRight;
-	}
+	scene.boreholes.labels.updateUniforms(camera);
 
 	userInterface.updateInfo(camera, deltaTime, scene, renderer);
 	userInterface.stats.forEach((stat) => stat.end());

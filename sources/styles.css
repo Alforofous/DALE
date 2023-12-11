@@ -11,6 +11,11 @@ body
 	z-index: 9999;
 }
 
+.stats
+{
+	z-index: 9999;
+}
+
 #sidebar
 {
 	position: fixed;
@@ -20,7 +25,7 @@ body
 	height: 100%;
 	color: #77818b;
 	background-color: #12293f;
-	z-index: 2;
+	z-index: -1;
 }
 
 .toolMenu
@@ -35,10 +40,10 @@ body
 
 .toolButton
 {
-	color: #6d88a4;
+	color: #000000;
 	padding: 10px;
 	margin-bottom: 10px;
-	background-color: #0c2032;
+	background-color: #13434f;
 }
 
 .toggle_visibility

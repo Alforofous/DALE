@@ -40,32 +40,36 @@ class Mouse
 		this.boreholeSelector.updateData();
 		this.boreholeSelector.updateSelectionRectangle(this.position);
 		this.scene.boreholes.labels.count = 0;
-		if (this.userInterface?.toolMenus[3].isActive())
-		{
-			const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
-			if (activeButtonIndex === 3)
-			{
-				this.scene.boreholes.labels.count = this.scene.boreholes.count;
-				this.scene.boreholes.labels.computeBoundingBox();
-				this.scene.boreholes.labels.computeBoundingSphere();
-			}
-		}
+		/*
+		this.scene.boreholes.labels.count = this.scene.boreholes.count;
+		this.scene.boreholes.labels.computeBoundingBox();
+		this.scene.boreholes.labels.computeBoundingSphere();
+		*/
 	}
 
 	onMouseDown()
 	{
-		if (this.pressedButtons[0])
+		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
-			if (this.userInterface?.toolMenus[3].isActive())
+			const activeMenuIndex = this.userInterface?.sidebar?.current?.state.activeToolMenuIndex;
+			const activeButton = this.userInterface?.sidebar?.current?.state.activeToolButton;
+			console.log(activeButton);
+
+			if (activeMenuIndex === 0)
+				this.spawnCones(this.scene);
+			else if (activeMenuIndex === 1)
+				this.drawArea(this.scene);
+			else if (activeMenuIndex === 2)
+				this.digTerrain();
+			else if (activeMenuIndex === 3)
 			{
-				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
-				if (activeButtonIndex === 2)
-				{
-					const firstIntersectedObject = this.firstIntersectedObject;
-					if (firstIntersectedObject !== undefined)
-						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
-				}
+				this.addBorehole(this.scene);
+				const firstIntersectedObject = this.firstIntersectedObject;
+				if (firstIntersectedObject !== undefined)
+					this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
 			}
+			else
+				document.body.requestPointerLock();
 		}
 	}
 
@@ -73,22 +77,16 @@ class Mouse
 	{
 		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
-			if (this.userInterface?.toolMenus[0].isActive())
+			const activeMenuIndex = this.userInterface?.sidebar?.current?.state.activeToolMenuIndex;
+
+			if (activeMenuIndex === 0)
 				this.spawnCones(this.scene);
-			else if (this.userInterface?.toolMenus[1].isActive())
+			else if (activeMenuIndex === 1)
 				this.drawArea(this.scene);
-			else if (this.userInterface?.toolMenus[2].isActive())
+			else if (activeMenuIndex === 2)
 				this.digTerrain();
-			else if (this.userInterface?.toolMenus[3].isActive())
-			{
-				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
-				if (activeButtonIndex === 0)
-					this.addBorehole(this.scene);
-				else if (activeButtonIndex === 1)
-				{
-					this.boreholeSelector.createSelectionRectangle(this.position);
-				}
-			}
+			else if (activeMenuIndex === 3)
+				this.addBorehole(this.scene);
 			else
 				document.body.requestPointerLock();
 		}
