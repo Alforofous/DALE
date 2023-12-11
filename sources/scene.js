@@ -32,38 +32,12 @@ class Scene extends THREE.Scene
 		ambientLight.layers.enable(2);
 		this.add(ambientLight);
 
-		this.opacitySlider = document.getElementById('opacitySlider');
-		this.opacitySlider.addEventListener('input', this.changeTerrainMeshOpacity.bind(this));
-
 		this.freeSurface = [];
 		this.freeSurface.push(new FreeSurface({x: 10000, y: 10000}, new THREE.Vector3(0, 1, 0.0), new THREE.Vector3(0, 0, 0)));
 		this.add(this.freeSurface[0]);
 
 		this.modelLoader = new Model(this);
 		this.boreholes = new Boreholes(100000, this);
-	}
-
-	changeTerrainMeshOpacity()
-	{
-		console.log(this.opacitySlider.value);
-		let value = parseFloat(this.opacitySlider.value) / 100;
-		this.setOpacity(this.terrainMesh, value);
-	}
-
-	setOpacity(object, value)
-	{
-		if (Array.isArray(object.material))
-		{
-			for (let i = 0; i < object.material.length; i++)
-			{
-				object.material[i].opacity = value;
-				object.material[i].transparent = value < 1;
-			}
-		} else
-		{
-			object.material.opacity = value;
-			object.material.transparent = value < 1;
-		}
 	}
 }
 

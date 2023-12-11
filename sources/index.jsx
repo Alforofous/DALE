@@ -6,12 +6,13 @@ import { Mouse } from './mouse.js';
 import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import ColorPicker from './UI/colorPicker';
 const createModule = window.createModule;
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+import Slider from './UI/slider.jsx';
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -70,7 +71,7 @@ const views = [
 	}
 ];
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = createRoot(document.getElementById('root'));
 init();
 
 function init()
@@ -93,9 +94,6 @@ function init()
 			const result2 = Module.ccall('angle_between_vectors', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [i, i, i, 1, 0, 0])
 		}
 	});
-	let context = renderer.getContext();
-let maxTextureSize = context.getParameter(context.MAX_TEXTURE_SIZE);
-console.log('MAX TEXTURE SIZE: ', maxTextureSize);
 	onUpdate();
 }
 
@@ -104,6 +102,7 @@ function onUpdate()
 	root.render(
 		<div className="color-picker-overlay">
 			<ColorPicker />
+			<Slider />
 		</div>
 	);
 	userInterface.stats.forEach((stat) => stat.begin());

@@ -12,7 +12,6 @@ function ColorPicker()
 	return (
 		<div>
 			<input type="color" value={color} onChange={handleChange} />
-			<p>The selected color is: {color}</p>
 		</div>
 	);
 }
