@@ -1,19 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-function ColorPicker()
+class ColorPicker extends React.Component
 {
-	const [color, setColor] = useState('#000000');
-
-	function handleChange(event)
+	constructor(props)
 	{
-		setColor(event.target.value);
+		super(props);
+		this.state = { color: '#000000' };
+		this.handleChange = this.handleChange.bind(this);
 	}
 
-	return (
-		<div>
-			<input type="color" value={color} onChange={handleChange} />
-		</div>
-	);
+	handleChange(event)
+	{
+		this.setState({ color: event.target.value });
+		this.props.onChange(event.target.value);
+	}
+
+	render()
+	{
+		return (
+			<div>
+				<p style={{ marginBottom: '0px' }}>{this.props.description}</p>
+				<input type="color" value={this.state.color} onChange={this.handleChange} />
+			</div>
+		);
+	}
 }
 
 export default ColorPicker;

@@ -1,5 +1,8 @@
 import React from 'react';
 import ToolMenu from './ToolMenu';
+import ColorPicker from './colorPicker';
+import Slider from './slider';
+import * as THREE from 'three';
 
 class Sidebar extends React.Component
 {
@@ -11,6 +14,7 @@ class Sidebar extends React.Component
 			activeToolMenuIndex: null,
 		};
 		this.toolMenus = [];
+		this.scene = props.scene;
 	}
 
 	activateToolMenu = (index) =>
@@ -29,6 +33,16 @@ class Sidebar extends React.Component
 		{
 			this.toolMenus[index].current.selectNextToolButton();
 		}
+	}
+
+	handleOpacitySliderChange = (value) =>
+	{
+		this.scene.changeTerrainMeshOpacity(value / 100);
+	};
+
+	handleTerrainColorChange = (color) =>
+	{
+		this.scene.modelLoader.changeModelColor(new THREE.Color(0x001212), color);
 	}
 
 	render()
@@ -54,6 +68,15 @@ class Sidebar extends React.Component
 						/>
 					);
 				})}
+				<ColorPicker
+					description="Terrain Color"
+					onChange={this.handleTerrainColorChange}
+				/>
+				<Slider 
+					scene={this.scene}
+					description="Terrain Opacity"
+					onChange={this.handleOpacitySliderChange}
+				/>
 			</div>
 		);
 	}

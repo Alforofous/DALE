@@ -1,19 +1,39 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-function Slider()
+class Slider extends React.Component
 {
-	const [value, setValue] = useState(50);
-
-	function handleChange(event)
+	constructor(props)
 	{
-		setValue(event.target.value);
+		super(props);
+		this.state = {
+			value: 60,
+		};
+
+		const intervalId = setInterval(() =>
+		{
+			if (this.props.scene.terrainMesh !== undefined)
+			{
+				clearInterval(intervalId);
+				this.props.scene.changeTerrainMeshOpacity(this.state.value / 100);
+			}
+		}, 100);
 	}
 
-	return (
-		<div>
-			<input type="range" min="0" max="100" value={value} onChange={handleChange} />
-		</div>
-	);
+	handleChange = (event) =>
+	{
+		this.setState({ value: event.target.value });
+		this.props.onChange(event.target.value);
+	};
+
+	render()
+	{
+		return (
+			<div>
+				<p style={{ marginBottom: '0px' }}>{this.props.description}</p>
+				<input type="range" min="0" max="100" value={this.state.value} onChange={this.handleChange} />
+			</div>
+		);
+	}
 }
 
 export default Slider;

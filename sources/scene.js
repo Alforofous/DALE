@@ -39,6 +39,16 @@ class Scene extends THREE.Scene
 		this.modelLoader = new Model(this);
 		this.boreholes = new Boreholes(100, this);
 	}
+
+	changeTerrainMeshOpacity(opacity)
+	{
+		this.terrainMesh.traverse((node) => {
+			if (node.isMesh) {
+				node.material.transparent = true;
+				node.material.opacity = opacity;
+			}
+		});
+	}
 }
 
 export { Scene };

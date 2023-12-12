@@ -45,38 +45,6 @@ class Model
 				{
 					if (child.isMesh)
 					{
-						this.scene.terrainMesh = child;
-						let geometry = child.geometry;
-						let positionAttribute = geometry.attributes.position;
-						let colors = new Float32Array(positionAttribute.count * 3);
-
-						let minY = Infinity;
-						let maxY = -Infinity;
-						for (let i = 0; i < positionAttribute.count; i++)
-						{
-							let y = positionAttribute.getY(i);
-							minY = Math.min(minY, y);
-							maxY = Math.max(maxY, y);
-						}
-
-						let bottomColor = new THREE.Color(0x126F1C);
-						let topColor = new THREE.Color(0xCDCDCD);
-
-						for (let i = 0; i < positionAttribute.count; i++)
-						{
-							let y = positionAttribute.getY(i);
-							let t = (y - minY) / (maxY - minY);
-							t = Math.pow(t, 3.2); 
-							let color = new THREE.Color();
-							color.lerpColors(bottomColor, topColor, t);
-
-							colors[i * 3] = color.r;
-							colors[i * 3 + 1] = color.g;
-							colors[i * 3 + 2] = color.b;
-						}
-
-						geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
 						child.material = new THREE.MeshPhongMaterial({
 							vertexColors: true,
 							wireframe: false,
@@ -84,6 +52,16 @@ class Model
 							opacity: 1.0,
 							side: THREE.DoubleSide,
 						});
+						this.scene.terrainMesh = child;
+
+						this.positionAttribute = child.geometry.attributes.position;
+						this.colors = new Float32Array(this.positionAttribute.count * 3);
+						child.geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
+
+						let bottomColor = new THREE.Color(0x126F1C);
+						let topColor = new THREE.Color(0xCDCDCD);
+						this.changeModelColor(bottomColor, topColor);
+
 						child.geometry.computeVertexNormals();
 						child.geometry.computeBoundsTree();
 					}
@@ -100,6 +78,33 @@ class Model
 				console.error('An error happened', error);
 			}
 		);
+	}
+
+	changeModelColor(bottomColor, topColor)
+	{
+		this.positionAttribute = this.scene.terrainMesh.geometry.attributes.position;
+		let minY = Infinity;
+		let maxY = -Infinity;
+		for (let i = 0; i < this.positionAttribute.count; i++)
+		{
+			let y = this.positionAttribute.getY(i);
+			minY = Math.min(minY, y);
+			maxY = Math.max(maxY, y);
+		}
+
+		for (let i = 0; i < this.positionAttribute.count; i++)
+		{
+			let y = this.positionAttribute.getY(i);
+			let t = (y - minY) / (maxY - minY);
+			t = Math.pow(t, 3.2);
+			let color = new THREE.Color();
+			color.lerpColors(bottomColor, topColor, t);
+
+			this.colors[i * 3] = color.r;
+			this.colors[i * 3 + 1] = color.g;
+			this.colors[i * 3 + 2] = color.b;
+		}
+		this.scene.terrainMesh.geometry.attributes.color.needsUpdate = true;
 	}
 }
 

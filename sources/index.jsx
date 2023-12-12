@@ -7,12 +7,10 @@ import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import ColorPicker from './UI/colorPicker';
 const createModule = window.createModule;
 
 //MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
-import Slider from './UI/slider.jsx';
 import Sidebar from './UI/sidebar.jsx';
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
@@ -133,9 +131,10 @@ function App()
 
 	return (
 		<div className="color-picker-overlay">
-			<ColorPicker />
-			<Sidebar ref={userInterface.sidebar} />
-			<Slider />
+			<Sidebar
+				ref={userInterface.sidebar}
+				scene={scene}
+			/>
 		</div>
 	);
 }
