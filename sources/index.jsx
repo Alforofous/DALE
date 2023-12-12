@@ -97,25 +97,8 @@ function init()
 	onUpdate();
 }
 
-const root = createRoot(document.getElementById('root'));
-root.render(<App />);
-
-function App()
-{
-	userInterface.sidebar = React.createRef();
-
-	return (
-		<div className="color-picker-overlay">
-			<ColorPicker />
-			<Sidebar ref={userInterface.sidebar} />
-			<Slider />
-		</div>
-	);
-}
-
 function onUpdate()
 {
-	console.log(userInterface.sidebar?.current?.state.activeToolMenuIndex);
 	userInterface.stats.forEach((stat) => stat.begin());
 	const deltaTime = clock.getDelta();
 
@@ -139,6 +122,22 @@ function onUpdate()
 	userInterface.stats.forEach((stat) => stat.end());
 	requestAnimationFrame(onUpdate);
 	renderer.info.reset();
+}
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App />);
+
+function App()
+{
+	userInterface.sidebar = React.createRef();
+
+	return (
+		<div className="color-picker-overlay">
+			<ColorPicker />
+			<Sidebar ref={userInterface.sidebar} />
+			<Slider />
+		</div>
+	);
 }
 
 window.addEventListener('resize', () =>

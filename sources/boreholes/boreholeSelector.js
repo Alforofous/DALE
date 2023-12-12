@@ -27,8 +27,9 @@ class BoreholeSelector
 		this.pixelBuffer = new Uint8Array(this.renderTarget.width * this.renderTarget.height * 4);
 	}
 
-	updateSelectionRectangleColor()
+	updateSelectionRectangleColor(color = this.color)
 	{
+		this.color = color;
 		if (this.selectionRectangle === undefined)
 			return;
 		let r = Math.round(this.color.r * 255);

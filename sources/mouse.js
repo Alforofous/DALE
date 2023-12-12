@@ -49,27 +49,24 @@ class Mouse
 
 	onMouseDown()
 	{
-		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
+		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
 			const activeMenuIndex = this.userInterface?.sidebar?.current?.state.activeToolMenuIndex;
-			const activeButton = this.userInterface?.sidebar?.current?.state.activeToolButton;
-			console.log(activeButton);
+			const activeButtonIndex = this.userInterface?.sidebar?.current?.toolMenus[activeMenuIndex]?.current?.state?.activeToolButtonIndex;
 
 			if (activeMenuIndex === 0)
-				this.spawnCones(this.scene);
-			else if (activeMenuIndex === 1)
-				this.drawArea(this.scene);
-			else if (activeMenuIndex === 2)
-				this.digTerrain();
-			else if (activeMenuIndex === 3)
 			{
-				this.addBorehole(this.scene);
-				const firstIntersectedObject = this.firstIntersectedObject;
-				if (firstIntersectedObject !== undefined)
-					this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
+				if (activeButtonIndex === 0)
+				{
+					this.addBorehole(this.scene);
+				}
+				else if (activeButtonIndex === 2)
+				{
+					const firstIntersectedObject = this.firstIntersectedObject;
+					if (firstIntersectedObject !== undefined)
+						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
+				}
 			}
-			else
-				document.body.requestPointerLock();
 		}
 	}
 
@@ -78,16 +75,20 @@ class Mouse
 		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
 		{
 			const activeMenuIndex = this.userInterface?.sidebar?.current?.state.activeToolMenuIndex;
+			const activeButtonIndex = this.userInterface?.sidebar?.current?.toolMenus[activeMenuIndex]?.current?.state?.activeToolButtonIndex;
 
 			if (activeMenuIndex === 0)
-				this.spawnCones(this.scene);
-			else if (activeMenuIndex === 1)
-				this.drawArea(this.scene);
-			else if (activeMenuIndex === 2)
-				this.digTerrain();
-			else if (activeMenuIndex === 3)
-				this.addBorehole(this.scene);
-			else
+			{
+				if (activeButtonIndex === 0)
+				{
+					this.addBorehole(this.scene);
+				}
+				else if (activeButtonIndex === 1)
+				{
+					this.boreholeSelector.createSelectionRectangle(this.position);
+				}
+			}
+			else if (activeMenuIndex === undefined || activeMenuIndex === null)
 				document.body.requestPointerLock();
 		}
 	}
@@ -106,15 +107,11 @@ class Mouse
 		}
 		if (this.pressedButtons[0] && this.isCaptured === false)
 		{
-			if (this.userInterface?.toolMenus[0].isActive())
-				this.spawnCones(this.scene);
-			else if (this.userInterface?.toolMenus[1].isActive())
-				this.drawArea(this.scene);
-			else if (this.userInterface.toolMenus[2].isActive())
-				this.digTerrain();
-			else if (this.userInterface?.toolMenus[3].isActive())
+			const activeMenuIndex = this.userInterface?.sidebar?.current?.state.activeToolMenuIndex;
+			const activeButtonIndex = this.userInterface?.sidebar?.current?.toolMenus[activeMenuIndex]?.current?.state?.activeToolButtonIndex;
+
+			if (activeMenuIndex === 0)
 			{
-				const activeButtonIndex = this.userInterface?.toolMenus[3].activeButtonIndex();
 				if (activeButtonIndex === 0)
 				{
 					this.addBorehole(this.scene);

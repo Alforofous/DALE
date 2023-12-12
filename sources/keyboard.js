@@ -33,21 +33,16 @@ class Keyboard
 		if (this.releasedKeyCodeSignal['ShiftLeft'])
 		{
 			this.scene.boreholes.selector.addToSelection = false;
-			this.scene.boreholes.selector.color = new THREE.Color(0x86DDFF);
-			this.scene.boreholes.selector.updateSelectionRectangleColor();
+			this.scene.boreholes.selector.updateSelectionRectangleColor(new THREE.Color(0x86DDFF));
 		}
 	}
 
 	onKeyDown(userInterface)
 	{
 		if (this.pressedKeyCodeSignal['Digit1'])
-			userInterface.toolMenus[0].selectNextButton();
+			userInterface.sidebar.current.selectNextToolButtonAndActivateMenu(0);
 		else if (this.pressedKeyCodeSignal['Digit2'])
-			userInterface.toolMenus[1].selectNextButton();
-		else if (this.pressedKeyCodeSignal['Digit3'])
-			userInterface.toolMenus[2].selectNextButton();
-		else if (this.pressedKeyCodeSignal['Digit4'])
-			userInterface.toolMenus[3].selectNextButton();
+			userInterface.sidebar.current.selectNextToolButtonAndActivateMenu(1);
 		else if (this.pressedKeyCodeSignal['ShiftRight'])
 			userInterface.showViewport2 = !userInterface.showViewport2;
 		else if (this.pressedKeyCodeSignal['KeyF'])
@@ -55,18 +50,7 @@ class Keyboard
 		else if (this.pressedKeyCodeSignal['ShiftLeft'])
 		{
 			this.scene.boreholes.selector.addToSelection = true;
-			this.scene.boreholes.selector.color = new THREE.Color(0x86FFDD);
-			this.scene.boreholes.selector.updateSelectionRectangleColor();
-		}
-
-		if (userInterface.activeToolMenu() !== undefined)
-		{
-			document.body.style.cursor = 'crosshair';
-			document.exitPointerLock();
-		}
-		else
-		{
-			document.body.style.cursor = 'default';
+			this.scene.boreholes.selector.updateSelectionRectangleColor(new THREE.Color(0x86FFDD));
 		}
 	}
 
@@ -76,6 +60,15 @@ class Keyboard
 			this.onKeyDown(userInterface);
 		if (Object.values(this.releasedKeyCodeSignal).some(value => value === true))
 			this.onKeyUp(userInterface);
+		if (userInterface?.sidebar?.current?.state?.activeToolMenuIndex === undefined || userInterface?.sidebar?.current?.state?.activeToolMenuIndex === null)
+		{
+			document.body.style.cursor = 'default';
+		}
+		else
+		{
+			document.body.style.cursor = 'crosshair';
+			document.exitPointerLock();
+		}
 	}
 }
 

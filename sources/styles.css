@@ -40,10 +40,10 @@ body
 
 .toolButton
 {
-	color: #000000;
+	color: #77818b;
 	padding: 10px;
 	margin-bottom: 10px;
-	background-color: #13434f;
+	background-color: #0e213a
 }
 
 .toggle_visibility
@@ -54,7 +54,7 @@ body
 .toolButton.active
 {
 	color: aquamarine;
-	background-color: #2f5272
+	background-color: #2a61a0
 }
 
 .toolMenu.active

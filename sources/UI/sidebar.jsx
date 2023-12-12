@@ -1,59 +1,59 @@
 import React from 'react';
+import ToolMenu from './ToolMenu';
 
 class Sidebar extends React.Component
 {
 	constructor(props)
 	{
 		super(props);
-		this.state = {
+		this.state =
+		{
 			activeToolMenuIndex: null,
-			activeToolButtonIndex: null,
 		};
+		this.toolMenus = [];
 	}
 
-	handleToolMenuClick = (index) =>
+	activateToolMenu = (index) =>
 	{
 		this.setState({ activeToolMenuIndex: index });
 	};
 
-	handleToolButtonClick = (index) =>
+	selectNextToolButtonAndActivateMenu(index)
 	{
-		console.log('Tool button ' + index.toString() + ' clicked');
-		this.setState({ activeToolButtonIndex: index });
-	};
+		if (this.state.activeToolMenuIndex !== index)
+		{
+			this.activateToolMenu(index);
+			this.toolMenus[index].current.selectCurrentToolButton(0);
+		}
+		else
+		{
+			this.toolMenus[index].current.selectNextToolButton();
+		}
+	}
 
 	render()
 	{
-		const buttonsData = [
-			{ text: 'Wireframe', toolButtons: ['Tool 1-0', 'Tool 1-1'] },
+		this.buttonsData = [
+			{ text: 'Boreholes', toolButtons: ['Add', 'Select', 'Move'] },
 			{ text: 'Spawn Cones', toolButtons: ['Tool 2-0', 'Tool 2-1'] },
 		];
 
-		this.toolMenus = buttonsData.map((button, index) => (
-			<div key={index}>
-				<button
-					className={`toolMenu ${this.state.activeToolMenuIndex === index ? 'active' : ''}`}
-					onClick={() => this.handleToolMenuClick(index)}
-				>
-					{button.text}
-				</button>
-				<div style={{ display: this.state.activeToolMenuIndex === index ? 'block' : 'none' }}>
-					{button.toolButtons.map((child, childIndex) => (
-						<button
-							key={childIndex}
-							className={`toolButton ${this.state.activeToolButtonIndex === childIndex ? 'active' : ''}`}
-							onClick={() => this.handleToolButtonClick(childIndex)}
-						>
-							{child}
-						</button>
-					))}
-				</div>
-			</div>
-		));
-
 		return (
 			<div id="sidebar">
-				{this.toolMenus}
+				{this.buttonsData.map((button, index) =>
+				{
+					this.toolMenus[index] = React.createRef();
+					return (
+						<ToolMenu
+							key={index}
+							ref={this.toolMenus[index]}
+							isActive={this.state.activeToolMenuIndex === index}
+							onClick={() => this.activateToolMenu(index)}
+							text={button.text}
+							toolButtons={button.toolButtons}
+						/>
+					);
+				})}
 			</div>
 		);
 	}
