@@ -11,6 +11,12 @@ class Camera extends PerspectiveCamera
 		this.layers.enableAll();
 	}
 
+	updateAspectRatio()
+	{
+		this.aspect = window.innerWidth * 0.75 / window.innerHeight;
+		this.updateProjectionMatrix();
+	}
+
 	update(keysPressed, deltaTime)
 	{
 		let speed = 10.0 * deltaTime;

@@ -150,4 +150,5 @@ window.addEventListener('resize', () =>
 	renderer.boreholeLabelRenderTarget.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
 	scene.boreholes.selector.initPixelBufferAndRenderTarget();
 	renderer.composer.setSize(renderer.domElement.clientWidth, renderer.domElement.clientHeight);
+	camera.updateAspectRatio();
 });
