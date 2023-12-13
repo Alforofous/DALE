@@ -40,9 +40,18 @@ class Sidebar extends React.Component
 		this.scene.changeTerrainMeshOpacity(value / 100);
 	};
 
-	handleTerrainColorChange = (color) =>
+	handleTerrainBottomColorChange = (color, changeModelColor) =>
 	{
-		this.scene.modelLoader.changeModelColor(new THREE.Color(0x001212), color);
+		this.terrainBottomColor = new THREE.Color(color);
+		if (changeModelColor)
+			this.scene.modelLoader.changeModelColor(this.terrainBottomColor, this.terrainTopColor);
+	}
+
+	handleTerrainTopColorChange = (color, changeModelColor) =>
+	{
+		this.terrainTopColor = new THREE.Color(color);
+		if (changeModelColor)
+			this.scene.modelLoader.changeModelColor(this.terrainBottomColor, this.terrainTopColor);
 	}
 
 	render()
@@ -69,8 +78,14 @@ class Sidebar extends React.Component
 					);
 				})}
 				<ColorPicker
-					description="Terrain Color"
-					onChange={this.handleTerrainColorChange}
+					description="Terrain Top Color"
+					ref={this.terrainTopColorPicker}
+					onChange={this.handleTerrainTopColorChange}
+				/>
+				<ColorPicker
+					description="Terrain Bottom Color"
+					ref={this.terrainBottomColorPicker}
+					onChange={this.handleTerrainBottomColorChange}
 				/>
 				<Slider 
 					scene={this.scene}
