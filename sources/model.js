@@ -58,10 +58,6 @@ class Model
 						this.colors = new Float32Array(this.positionAttribute.count * 3);
 						child.geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
 
-						let bottomColor = new THREE.Color(0x126F1C);
-						let topColor = new THREE.Color(0xCDCDCD);
-						this.changeModelColor(bottomColor, topColor);
-
 						child.geometry.computeVertexNormals();
 						child.geometry.computeBoundsTree();
 					}

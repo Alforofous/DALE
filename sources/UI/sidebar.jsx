@@ -40,17 +40,17 @@ class Sidebar extends React.Component
 		this.scene.changeTerrainMeshOpacity(value / 100);
 	};
 
-	handleTerrainBottomColorChange = (color, changeModelColor) =>
+	handleTerrainBottomColorChange = (color) =>
 	{
 		this.terrainBottomColor = new THREE.Color(color);
-		if (changeModelColor)
+		if (this.terrainTopColor !== undefined && this.terrainTopColor !== null)
 			this.scene.modelLoader.changeModelColor(this.terrainBottomColor, this.terrainTopColor);
 	}
 
-	handleTerrainTopColorChange = (color, changeModelColor) =>
+	handleTerrainTopColorChange = (color) =>
 	{
 		this.terrainTopColor = new THREE.Color(color);
-		if (changeModelColor)
+		if (this.terrainBottomColor !== undefined && this.terrainBottomColor !== null)
 			this.scene.modelLoader.changeModelColor(this.terrainBottomColor, this.terrainTopColor);
 	}
 
@@ -77,16 +77,20 @@ class Sidebar extends React.Component
 						/>
 					);
 				})}
-				<ColorPicker
-					description="Terrain Top Color"
-					ref={this.terrainTopColorPicker}
-					onChange={this.handleTerrainTopColorChange}
-				/>
-				<ColorPicker
-					description="Terrain Bottom Color"
-					ref={this.terrainBottomColorPicker}
-					onChange={this.handleTerrainBottomColorChange}
-				/>
+				<div style={{ display: 'flex', justifyContent: 'space-between' }}>
+					<ColorPicker
+						description="Terrain Bottom Color"
+						color="#129A2B"
+						onChange={this.handleTerrainBottomColorChange}
+						scene={this.scene}
+					/>
+					<ColorPicker
+						description="Terrain Top Color"
+						color="#A0A0A0"
+						onChange={this.handleTerrainTopColorChange}
+						scene={this.scene}
+					/>
+				</div>
 				<Slider 
 					scene={this.scene}
 					description="Terrain Opacity"
