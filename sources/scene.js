@@ -49,6 +49,26 @@ class Scene extends THREE.Scene
 			}
 		});
 	}
+
+	toggleTerrainWireframe()
+	{
+		this.terrainMesh.traverse((node) => {
+			if (node.isMesh) {
+				node.material.wireframe = !node.material.wireframe;
+			}
+		});
+	}
+
+	toggleBoreholeLabelVisibility()
+	{
+		if (this.boreholes.labels.count === 0)
+			this.boreholes.labels.count = this.boreholes.count;
+		else
+			this.boreholes.labels.count = 0;
+		this.boreholes.labels.computeBoundingBox();
+		this.boreholes.labels.computeBoundingSphere();
+		this.boreholes.labels.instanceMatrix.needsUpdate = true;
+	}
 }
 
 export { Scene };

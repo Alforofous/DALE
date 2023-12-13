@@ -58,6 +58,8 @@ class Model
 						this.colors = new Float32Array(this.positionAttribute.count * 3);
 						child.geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
 
+						child.geometry.computeBoundingBox();
+						child.geometry.computeBoundingSphere();
 						child.geometry.computeVertexNormals();
 						child.geometry.computeBoundsTree();
 					}

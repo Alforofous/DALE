@@ -1,5 +1,6 @@
 import React from 'react';
-import ToolMenu from './ToolMenu';
+import ToolMenu from './toolMenu';
+import ToggleButton from './toggleButton';
 import ColorPicker from './colorPicker';
 import Slider from './slider';
 import * as THREE from 'three';
@@ -54,6 +55,16 @@ class Sidebar extends React.Component
 			this.scene.modelLoader.changeModelColor(this.terrainBottomColor, this.terrainTopColor);
 	}
 
+	toggleTerrainWireframe = () =>
+	{
+		this.scene.toggleTerrainWireframe();
+	}
+
+	toggleBoreholeLabelVisibility = () =>
+	{
+		this.scene.toggleBoreholeLabelVisibility();
+	}
+
 	render()
 	{
 		this.buttonsData = [
@@ -77,25 +88,34 @@ class Sidebar extends React.Component
 						/>
 					);
 				})}
-				<div style={{ display: 'flex', justifyContent: 'space-between' }}>
-					<ColorPicker
-						description="Terrain Bottom Color"
-						color="#129A2B"
-						onChange={this.handleTerrainBottomColorChange}
-						scene={this.scene}
-					/>
-					<ColorPicker
-						description="Terrain Top Color"
-						color="#A0A0A0"
-						onChange={this.handleTerrainTopColorChange}
-						scene={this.scene}
-					/>
-				</div>
+				<ColorPicker
+					description="Terrain Bottom Color"
+					color="#129A2B"
+					onChange={this.handleTerrainBottomColorChange}
+					scene={this.scene}
+				/>
+				<ColorPicker
+					description="Terrain Top Color"
+					color="#A0A0A0"
+					onChange={this.handleTerrainTopColorChange}
+					scene={this.scene}
+				/>
 				<Slider 
 					scene={this.scene}
 					description="Terrain Opacity"
 					onChange={this.handleOpacitySliderChange}
 				/>
+				<ToggleButton
+					onClick={this.toggleTerrainWireframe}
+				>
+					Terrain Wireframe
+				</ToggleButton>
+				<ToggleButton
+					onClick={this.toggleBoreholeLabelVisibility}
+					isActive={true}
+				>
+					Borehole Label Visibility
+				</ToggleButton>
 			</div>
 		);
 	}

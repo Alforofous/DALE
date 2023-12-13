@@ -39,12 +39,6 @@ class Mouse
 			this.onMouseDown();
 		this.boreholeSelector.updateData();
 		this.boreholeSelector.updateSelectionRectangle(this.position);
-		this.scene.boreholes.labels.count = 0;
-		/*
-		this.scene.boreholes.labels.count = this.scene.boreholes.count;
-		this.scene.boreholes.labels.computeBoundingBox();
-		this.scene.boreholes.labels.computeBoundingSphere();
-		*/
 	}
 
 	onMouseDown()
