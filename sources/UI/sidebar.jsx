@@ -113,7 +113,13 @@ class Sidebar extends React.Component
 		];
 
 		return (
-			<div id="sidebar">
+			<div id="sidebar" style={{
+				WebkitUserSelect: 'none',
+				MozUserSelect: 'none',
+				msUserSelect: 'none',
+				userSelect: 'none',
+			}
+			}>
 				{this.buttonsData.map((button, index) =>
 				{
 					this.toolMenus[index] = React.createRef();
