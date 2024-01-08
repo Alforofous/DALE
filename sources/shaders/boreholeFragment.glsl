@@ -124,7 +124,7 @@ void main()
 	#include <dithering_fragment>
 	vec2 uv = gl_FragCoord.xy / uResolution;
 	
-	vec3 color = sobelEdgeDetection(uBoreholeIdTexture, uv, uResolution, 100.0);
+	vec3 color = sobelEdgeDetection(uBoreholeIdTexture, uv, uResolution, 1000.0);
 
 	if (dot(color, vec3(1.0)) < 0.9)
 	{
