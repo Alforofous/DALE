@@ -6,7 +6,7 @@ class Slider extends React.Component
 	{
 		super(props);
 		this.state = {
-			value: 60,
+			value: props.value || 0,
 		};
 
 		const intervalId = setInterval(() =>
@@ -30,7 +30,7 @@ class Slider extends React.Component
 		return (
 			<div>
 				<p style={{ marginBottom: '0px' }}>{this.props.description}</p>
-				<input type="range" min="0" max="100" value={this.state.value} onChange={this.handleChange} />
+				<input type="range" min={this.props.min || "0"} max={this.props.max || "100"} value={this.state.value} onChange={this.handleChange} />
 			</div>
 		);
 	}

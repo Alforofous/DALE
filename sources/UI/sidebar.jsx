@@ -2,6 +2,7 @@ import React from 'react';
 import ToolMenu from './toolMenu';
 import ToggleButton from './toggleButton';
 import ColorPicker from './colorPicker';
+import NumberInput from './numberInput';
 import Slider from './slider';
 import * as THREE from 'three';
 
@@ -55,6 +56,12 @@ class Sidebar extends React.Component
 			this.scene.modelLoader.changeModelColor(this.terrainBottomColor, this.terrainTopColor);
 	}
 
+	handleBoreholeSliderChange = (value) =>
+	{
+		this.scene.boreholes.count = value;
+		this.scene.boreholes.labels.count = value;
+	}
+
 	toggleTerrainWireframe = () =>
 	{
 		this.scene.toggleTerrainWireframe();
@@ -68,7 +75,7 @@ class Sidebar extends React.Component
 	render()
 	{
 		this.buttonsData = [
-			{ text: 'Boreholes', toolButtons: ['Add', 'Select', 'Move'] },
+			{ text: 'Boreholes', toolButtons: ['Add', 'Select', 'Move', 'Scatter'] },
 			{ text: 'Spawn Cones', toolButtons: ['Tool 2-0', 'Tool 2-1'] },
 		];
 
@@ -101,6 +108,7 @@ class Sidebar extends React.Component
 					scene={this.scene}
 				/>
 				<Slider 
+					value={70}
 					scene={this.scene}
 					description="Terrain Opacity"
 					onChange={this.handleOpacitySliderChange}
@@ -116,9 +124,14 @@ class Sidebar extends React.Component
 				>
 					Borehole Label Visibility
 				</ToggleButton>
-				<div>
-					Borehole count: {this.scene.boreholes.count}
-				</div>
+				<NumberInput
+					value={this.scene.boreholes.count}
+					scene={this.scene}
+					description={`Borehole count (0-${this.scene.boreholes.instanceCount})`}
+					onChange={this.handleBoreholeSliderChange}
+					min={0}
+					max={this.scene.boreholes.instanceCount}
+				/>
 			</div>
 		);
 	}

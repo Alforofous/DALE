@@ -9,10 +9,8 @@ class Boreholes extends THREE.InstancedMesh
 	constructor(instanceCount = 100000, scene)
 	{
 		if (instanceCount > 16384 || instanceCount < 1)
-		{
-			instanceCount = Math.max(1, Math.min(16384, instanceCount));
-			console.warn('Boreholes: instanceCount must be between 1 and 16384. Setting instanceCount to ' + instanceCount.toString() + '.');
-		}
+			console.warn('Boreholes: instanceCount must be between 1 and 16384.');
+		//instanceCount = Math.max(1, Math.min(16384, instanceCount));
 
 		const geometry = new THREE.CylinderGeometry(5, 5, 1, 8);
 		const tempMaterial = new THREE.MeshBasicMaterial({ color: 0x5D5D5D });
@@ -158,7 +156,7 @@ class Boreholes extends THREE.InstancedMesh
 				else if (j % MAX_SECTIONS_PER_BOREHOLE === 2)
 					sectionColor = 0x0000FF;
 				else if (j % MAX_SECTIONS_PER_BOREHOLE === 3)
-					sectionColor = 0xFFFF00;
+					sectionColor = 0xFFFFFF;
 				else
 					sectionColor = 0xFF00FF;
 				this.info.sections[i][j] = { start: sectionLength * j, size: sectionLength, color: sectionColor };
