@@ -78,16 +78,15 @@ function onTerrainMeshLoaded(scene)
 	{
 		const tmpCount = scene.boreholes.count;
 		scene.boreholes.count = scene.boreholes.instanceCount;
-		mouse.scatterBoreholes(scene);
+		scene.boreholes.scatter();
 		scene.boreholes.count = tmpCount;
-		console.log('Boreholes scattered');
 	}
 	else
 	{
 		setTimeout(() =>
 		{
 			onTerrainMeshLoaded(scene);
-		}, 4000);
+		}, 100);
 	}
 }
 

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { loadShaderSynchronous } from '../shaders/shaderLoader.js';
 import { BoreholeLabels } from './boreholeLabels.js';
+import { randFloat } from 'three/src/math/MathUtils.js';
 
 const MAX_SECTIONS_PER_BOREHOLE = 4;
 
@@ -76,6 +77,21 @@ class Boreholes extends THREE.InstancedMesh
 		let scaledNormal = plane.normal.clone().multiplyScalar(distanceToPlane);
 		let projection = new THREE.Vector3().subVectors(point, scaledNormal);
 		return projection;
+	}
+
+	scatter()
+	{
+		const distance = 1000;
+		for (let i = 0; i < this.count; i++)
+		{
+			let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
+
+			this.info.top[i].copy(moveVector);
+			this.snapBottomTowardsParent(i);
+			this.snapTopTowardsParent(i);
+		}
+		this.updateGeometryProperties();
+		this.labels.syncWithBoreholes();
 	}
 
 	updateGeometryProperties()

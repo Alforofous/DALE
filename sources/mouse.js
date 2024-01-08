@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { randFloat } from 'three/src/math/MathUtils.js';
 import { DynamicPolygon } from './dynamicPolygon.js';
 import { BoreholeSelector } from './boreholes/boreholeSelector.js';
 import { BoreholeMover } from './boreholes/boreholeMover.js';
@@ -116,38 +115,6 @@ class Mouse
 		}
 	}
 
-	scatterBoreholes(scene)
-	{
-		let intersection = this.firstIntersectedObject;
-		if (intersection === undefined)
-			return;
-		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
-		{
-			let raycaster = new THREE.Raycaster();
-			let direction = new THREE.Vector3(0, -1, 0);
-			raycaster.firstHitOnly = true;
-			raycaster.layers.set(0);
-			raycaster.camera = this.camera;
-
-			const distance = 1000;
-			for (let i = 0; i < scene.boreholes.count; i++)
-			{
-				let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
-
-				let origin = new THREE.Vector3(moveVector.x, 10000, moveVector.z);
-				raycaster.set(origin, direction);
-				let intersects = raycaster.intersectObjects(scene.children, true);
-
-				if (intersects.length > 0)
-					moveVector.y = intersects[0].point.y;
-				scene.boreholes.info.top[i].copy(moveVector);
-				scene.boreholes.snapBottomTowardsParent(i);
-			}
-			scene.boreholes.updateGeometryProperties();
-			scene.boreholes.labels.syncWithBoreholes();
-		}
-	}
-
 	drawArea(scene)
 	{
 		let intersection = this.firstIntersectedObject;
@@ -163,77 +130,6 @@ class Mouse
 			scene.currentDynamicMesh.addVertex(intersection.point);
 		}
 	}
-
-	digTerrain()
-	{
-		let intersection = this.firstIntersectedObject;
-		if (intersection === undefined)
-			return;
-
-		if (intersection.object.geometry && intersection.object.geometry.isBufferGeometry)
-		{
-			let positions = intersection.object.geometry.attributes.position;
-			intersection.object.geometry.attributes.position.array;
-
-			let range = 100;
-			let indicesInRange = [];
-			for (let i = 0; i < positions.count; i++)
-			{
-				let vertexLocal = new THREE.Vector3(positions.getX(i), positions.getY(i), positions.getZ(i));
-				let vertexWorld = vertexLocal.applyMatrix4(intersection.object.matrixWorld);
-				if (vertexWorld.distanceTo(intersection.point) < range)
-				{
-					indicesInRange.push(i);
-
-					let displacementWorld = new THREE.Vector3(0, -1, 0);
-					let matrixWorldInverse = new THREE.Matrix4().copy(intersection.object.matrixWorld).invert();
-					let displacementObject = displacementWorld.applyMatrix4(matrixWorldInverse);
-
-					const x = positions.getX(i);
-					const y = positions.getY(i);
-					const z = positions.getZ(i);
-
-					positions.setX(i, x + displacementObject.x);
-					positions.setY(i, y + displacementObject.y);
-					positions.setZ(i, z + displacementObject.z);
-				}
-			}
-			positions.needsUpdate = true;
-		}
-	}
-
-	spawnCones(scene)
-	{
-		let intersection = this.firstIntersectedObject;
-		if (intersection === undefined)
-			return;
-		
-		let coneGeometry = new THREE.ConeGeometry(1, 10, 3, 1);
-		let coneMaterial = new THREE.MeshPhongMaterial({ color: 0x152FC9 });
-		let cone = new THREE.InstancedMesh(coneGeometry, coneMaterial, 10000);
-
-		let matrix = new THREE.Matrix4();
-		const distance = 100;
-		for (let i = 0; i < cone.count; i++)
-		{
-			let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
-
-			matrix.makeTranslation(moveVector.x, moveVector.y, moveVector.z);
-			cone.setMatrixAt(i, matrix);
-		}
-
-		cone.instanceMatrix.needsUpdate = true;
-
-		cone.layers.set(1);
-		cone.position.copy(intersection.point);
-
-		const normal = new THREE.Vector3().copy(intersection.face.normal);
-		const lookAtTarget = new THREE.Vector3().copy(intersection.point).add(normal);
-
-		cone.lookAt(lookAtTarget);
-		cone.geometry.rotateX(Math.PI / 2);
-		scene.add(cone);
-	};
 
 	get ray()
 	{
