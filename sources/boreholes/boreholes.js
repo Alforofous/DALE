@@ -99,13 +99,14 @@ class Boreholes extends THREE.InstancedMesh
 	scatter()
 	{
 		const distance = 1000;
-		for (let i = 0; i < this.count; i++)
+		
+		for (let id of this.selector.selectedBoreholeIds) 
 		{
 			let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
-			this.info.top[i].copy(moveVector);
-			this.snapBottomTowardsParent(i);
-			this.snapTopTowardsParent(i);
+			this.info.top[id].copy(moveVector);
+			this.snapBottomTowardsParent(id);
+			this.snapTopTowardsParent(id);
 		}
 		this.updateGeometryProperties();
 		this.labels.syncWithBoreholes();

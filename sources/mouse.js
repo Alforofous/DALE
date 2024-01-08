@@ -38,6 +38,7 @@ class Mouse
 			this.onMouseDown();
 		this.boreholeSelector.updateData();
 		this.boreholeSelector.updateSelectionRectangle(this.position);
+		this.userInterface.sidebar?.current?.setState({ selectedBoreholeIds: this.boreholeSelector.selectedBoreholeIds });
 	}
 
 	onMouseDown()

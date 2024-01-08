@@ -15,6 +15,7 @@ class Sidebar extends React.Component
 		{
 			activeToolMenuIndex: null,
 			boreholeCount: props.scene.boreholes.count,
+			selectedBoreholeIds: props.scene.boreholes.selector.selectedBoreholeIds,
 		};
 		this.toolMenus = [];
 		this.scene = props.scene;
@@ -108,8 +109,13 @@ class Sidebar extends React.Component
 	render()
 	{
 		this.buttonsData = [
-			{ text: 'Boreholes', toolButtons: ['Add', 'Select', 'Move', 'Scatter'] },
+			{ text: 'Boreholes', toolButtons: ['Add', 'Select'] },
 		];
+
+		if (this.scene.boreholes.selector.selectedBoreholeIds.length > 0)
+		{
+			this.buttonsData[0].toolButtons.push('Move', 'Scatter');
+		}
 
 		return (
 			<div id="sidebar" style={{
