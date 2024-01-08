@@ -72,6 +72,25 @@ const views = [
 
 init();
 
+function onTerrainMeshLoaded(scene)
+{
+	if (scene.terrainMesh !== undefined)
+	{
+		const tmpCount = scene.boreholes.count;
+		scene.boreholes.count = scene.boreholes.instanceCount;
+		mouse.scatterBoreholes(scene);
+		scene.boreholes.count = tmpCount;
+		console.log('Boreholes scattered');
+	}
+	else
+	{
+		setTimeout(() =>
+		{
+			onTerrainMeshLoaded(scene);
+		}, 4000);
+	}
+}
+
 function init()
 {
 	clock.start();
@@ -92,6 +111,7 @@ function init()
 			const result2 = Module.ccall('angle_between_vectors', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [i, i, i, 1, 0, 0])
 		}
 	});
+	onTerrainMeshLoaded(scene);
 	onUpdate();
 }
 

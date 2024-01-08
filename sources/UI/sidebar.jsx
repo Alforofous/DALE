@@ -14,9 +14,12 @@ class Sidebar extends React.Component
 		this.state =
 		{
 			activeToolMenuIndex: null,
+			boreholeCount: props.scene.boreholes.count,
 		};
 		this.toolMenus = [];
 		this.scene = props.scene;
+		this.setMin = this.setMin.bind(this);
+		this.setMax = this.setMax.bind(this);
 	}
 
 	activateToolMenu = (index) =>
@@ -58,8 +61,11 @@ class Sidebar extends React.Component
 
 	handleBoreholeSliderChange = (value) =>
 	{
-		this.scene.boreholes.count = value;
-		this.scene.boreholes.labels.count = value;
+		this.setState({ boreholeCount: value }, () =>
+		{
+			this.scene.boreholes.count = this.state.boreholeCount;
+			this.scene.boreholes.labels.count = this.state.boreholeCount;
+		});
 	}
 
 	toggleTerrainWireframe = () =>
@@ -70,6 +76,33 @@ class Sidebar extends React.Component
 	toggleBoreholeLabelVisibility = () =>
 	{
 		this.scene.toggleBoreholeLabelVisibility();
+	}
+
+	setMin()
+	{
+		this.setState({ boreholeCount: 0 }, () =>
+		{
+			this.scene.boreholes.count = this.state.boreholeCount;
+			this.scene.boreholes.labels.count = this.state.boreholeCount;
+		});
+	}
+
+	setTo = (value) =>
+	{
+		this.setState({ boreholeCount: value }, () =>
+		{
+			this.scene.boreholes.count = this.state.boreholeCount;
+			this.scene.boreholes.labels.count = this.state.boreholeCount;
+		});
+	}
+
+	setMax()
+	{
+		this.setState({ boreholeCount: this.scene.boreholes.instanceCount }, () =>
+		{
+			this.scene.boreholes.count = this.state.boreholeCount;
+			this.scene.boreholes.labels.count = this.state.boreholeCount;
+		});
 	}
 
 	render()
@@ -120,18 +153,22 @@ class Sidebar extends React.Component
 				</ToggleButton>
 				<ToggleButton
 					onClick={this.toggleBoreholeLabelVisibility}
-					isActive={true}
+					isActive={false}
 				>
 					Borehole Label Visibility
 				</ToggleButton>
 				<NumberInput
-					value={this.scene.boreholes.count}
+					value={this.state.boreholeCount}
 					scene={this.scene}
 					description={`Borehole count (0-${this.scene.boreholes.instanceCount})`}
 					onChange={this.handleBoreholeSliderChange}
 					min={0}
 					max={this.scene.boreholes.instanceCount}
 				/>
+				<button onClick={this.setMin}>Set to Min</button>
+				<button onClick={() => this.setTo(100)}>Set to 100</button>
+				<button onClick={() => this.setTo(1000)}>Set to 1000</button>
+				<button onClick={this.setMax}>Set to Max</button>
 			</div>
 		);
 	}

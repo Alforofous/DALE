@@ -52,7 +52,6 @@ class Mouse
 			{
 				if (activeButtonIndex === 0)
 				{
-					this.addBorehole(this.scene);
 				}
 				else if (activeButtonIndex === 2)
 				{
@@ -60,6 +59,8 @@ class Mouse
 					if (firstIntersectedObject !== undefined)
 						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
 				}
+				else if (activeButtonIndex === 3)
+					this.scatterBoreholes(this.scene);
 			}
 		}
 	}
@@ -75,7 +76,6 @@ class Mouse
 			{
 				if (activeButtonIndex === 0)
 				{
-					this.addBorehole(this.scene);
 				}
 				else if (activeButtonIndex === 1)
 				{
@@ -108,7 +108,6 @@ class Mouse
 			{
 				if (activeButtonIndex === 0)
 				{
-					this.addBorehole(this.scene);
 				}
 				else if (activeButtonIndex === 1)
 				{
@@ -117,7 +116,7 @@ class Mouse
 		}
 	}
 
-	addBorehole(scene)
+	scatterBoreholes(scene)
 	{
 		let intersection = this.firstIntersectedObject;
 		if (intersection === undefined)

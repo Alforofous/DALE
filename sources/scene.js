@@ -37,7 +37,9 @@ class Scene extends THREE.Scene
 		this.add(this.freeSurface[0]);
 
 		this.modelLoader = new Model(this);
-		this.boreholes = new Boreholes(16384, this);
+		this.boreholes = new Boreholes(16348, this);
+		this.boreholes.count = 0;
+		this.boreholes.labels.count = 0;
 	}
 
 	changeTerrainMeshOpacity(opacity)
