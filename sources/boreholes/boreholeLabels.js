@@ -11,6 +11,7 @@ class BoreholeLabels extends THREE.InstancedMesh
 		this.instanceCount = instanceCount;
 		this.geometry = geometry;
 		this.boreholes = boreholes;
+		this.visible = false;
 
 		const loader = new THREE.TextureLoader();
 		this.vertexShaderCode = loadShaderSynchronous('sources/shaders/labelVertex.glsl');

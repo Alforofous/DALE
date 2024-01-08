@@ -18,6 +18,7 @@ class Scene extends THREE.Scene
 		directionalLight.layers.enable(2);
 		this.add(directionalLight);
 
+		/*
 		const pointLight = new THREE.PointLight(0xffffff, 5000.0);
 		pointLight.position.set(100, 600, 0);
 		pointLight.castShadow = true;
@@ -26,6 +27,7 @@ class Scene extends THREE.Scene
 		const pointLightHelper = new THREE.PointLightHelper(pointLight, 5, pointLight.color);
 		pointLight.add(pointLightHelper);
 		this.add(pointLightHelper);
+		*/
 
 		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 		ambientLight.layers.enable(1);
@@ -63,7 +65,8 @@ class Scene extends THREE.Scene
 
 	toggleBoreholeLabelVisibility()
 	{
-		if (this.boreholes.labels.count === 0)
+		this.boreholes.labels.visible = !this.boreholes.labels.visible;
+		if (this.boreholes.labels.visible === true)
 			this.boreholes.labels.count = this.boreholes.count;
 		else
 			this.boreholes.labels.count = 0;
