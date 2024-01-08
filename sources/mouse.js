@@ -59,7 +59,7 @@ class Mouse
 						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
 				}
 				else if (activeButtonIndex === 3)
-					this.scatterBoreholes(this.scene);
+					this.scene.boreholes.scatter();
 			}
 		}
 	}
