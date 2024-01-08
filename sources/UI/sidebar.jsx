@@ -116,6 +116,9 @@ class Sidebar extends React.Component
 				>
 					Borehole Label Visibility
 				</ToggleButton>
+				<div>
+					Borehole count: {this.scene.boreholes.count}
+				</div>
 			</div>
 		);
 	}
