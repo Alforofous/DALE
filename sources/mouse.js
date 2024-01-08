@@ -51,6 +51,9 @@ class Mouse
 			{
 				if (activeButtonIndex === 0)
 				{
+					const firstIntersectedObject = this.firstIntersectedObject;
+					if (firstIntersectedObject !== undefined)
+						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
 				}
 				else if (activeButtonIndex === 2)
 				{
@@ -64,6 +67,18 @@ class Mouse
 		}
 	}
 
+	addBorehole()
+	{
+		const firstIntersectedObject = this.firstIntersectedObject;
+		if (firstIntersectedObject !== undefined)
+			this.scene.boreholes.setTop(this.scene.boreholes.count, this.firstIntersectedObject.point)
+		this.scene.boreholes.count += 1;
+		this.scene.boreholes.labels.count += 1;
+		this.userInterface.sidebar.current.setState({ boreholeCount: this.scene.boreholes.count });
+
+		this.scene.boreholes.setAsHighlighted(this.scene.boreholes.count - 1);
+	}
+
 	onMouseDownSignal()
 	{
 		if (this.pressedButtonsSignal[0] && this.isCaptured === false)
@@ -75,6 +90,7 @@ class Mouse
 			{
 				if (activeButtonIndex === 0)
 				{
+					this.addBorehole(this.scene);
 				}
 				else if (activeButtonIndex === 1)
 				{

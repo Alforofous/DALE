@@ -109,7 +109,6 @@ class Sidebar extends React.Component
 	{
 		this.buttonsData = [
 			{ text: 'Boreholes', toolButtons: ['Add', 'Select', 'Move', 'Scatter'] },
-			{ text: 'Spawn Cones', toolButtons: ['Tool 2-0', 'Tool 2-1'] },
 		];
 
 		return (

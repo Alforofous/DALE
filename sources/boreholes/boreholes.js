@@ -37,6 +37,14 @@ class Boreholes extends THREE.InstancedMesh
 		this.updateGeometryProperties();
 	}
 
+	setTop(index, top)
+	{
+		this.info.top[index].copy(top);
+		this.snapBottomTowardsParent(index);
+		this.updateGeometryProperties();
+		this.labels.syncWithBoreholes();
+	}
+
 	snapTopTowardsParent(index)
 	{
 		let raycaster = new THREE.Raycaster();
@@ -77,6 +85,15 @@ class Boreholes extends THREE.InstancedMesh
 		let scaledNormal = plane.normal.clone().multiplyScalar(distanceToPlane);
 		let projection = new THREE.Vector3().subVectors(point, scaledNormal);
 		return projection;
+	}
+
+	setAsHighlighted(index)
+	{
+		let highlightAttribute = this.scene.boreholes.geometry.getAttribute('highlight');
+		highlightAttribute.array.fill(0);
+		highlightAttribute.setX(index, 1);
+		highlightAttribute.needsUpdate = true;
+		this.selector.selectedBoreholeIds = [index];
 	}
 
 	scatter()
