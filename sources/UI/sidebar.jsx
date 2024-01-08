@@ -128,6 +128,7 @@ class Sidebar extends React.Component
 						/>
 					);
 				})}
+				<hr />
 				<ColorPicker
 					description="Terrain Bottom Color"
 					color="#129A2B"
@@ -151,12 +152,7 @@ class Sidebar extends React.Component
 				>
 					Terrain Wireframe
 				</ToggleButton>
-				<ToggleButton
-					onClick={this.toggleBoreholeLabelVisibility}
-					isActive={false}
-				>
-					Borehole Label Visibility
-				</ToggleButton>
+				<hr />
 				<NumberInput
 					value={this.state.boreholeCount}
 					scene={this.scene}
@@ -165,10 +161,16 @@ class Sidebar extends React.Component
 					min={0}
 					max={this.scene.boreholes.instanceCount}
 				/>
-				<button onClick={this.setMin}>Set to Min</button>
-				<button onClick={() => this.setTo(100)}>Set to 100</button>
-				<button onClick={() => this.setTo(1000)}>Set to 1000</button>
-				<button onClick={this.setMax}>Set to Max</button>
+				<button onClick={this.setMin}>Min</button>
+				<button onClick={() => this.setTo(100)}>100</button>
+				<button onClick={() => this.setTo(1000)}>1000</button>
+				<button onClick={this.setMax}>Max</button>
+				<ToggleButton
+					onClick={this.toggleBoreholeLabelVisibility}
+					isActive={false}
+				>
+					Borehole Label Visibility
+				</ToggleButton>
 			</div>
 		);
 	}
