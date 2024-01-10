@@ -66,7 +66,6 @@ class Camera extends PerspectiveCamera
 		const halfPi = Math.PI / 2 -0.00001;
 		euler.x = Math.max(-halfPi, Math.min(halfPi, euler.x));
 
-		console.log(euler);
 		this.quaternion.setFromEuler(euler);
 	}
 
