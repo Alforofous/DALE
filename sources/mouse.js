@@ -86,12 +86,15 @@ class Mouse
 				if (activeButtonIndex === 0)
 				{
 					const boreholeId = this.scene.boreholes.add();
-					const firstIntersectedObject = this.firstIntersectedObject;
-					if (firstIntersectedObject !== undefined)
-						this.scene.boreholes.setTopWithId(boreholeId, this.firstIntersectedObject.point);
-					this.userInterface.sidebar.current.setState({ boreholeCount: this.scene.boreholes.count });
-					this.scene.boreholes.selectWithIds([boreholeId]);
-					this.userInterface.app.current.updateBoreholeInfo();
+					if (boreholeId !== undefined)
+					{
+						const firstIntersectedObject = this.firstIntersectedObject;
+						if (firstIntersectedObject !== undefined)
+							this.scene.boreholes.setTopWithId(boreholeId, this.firstIntersectedObject.point);
+						this.userInterface.sidebar.current.setState({ boreholeCount: this.scene.boreholes.count });
+						this.scene.boreholes.selectWithIds([boreholeId]);
+						this.userInterface.app.current.updateBoreholeInfo();
+					}
 				}
 				else if (activeButtonIndex === 1)
 				{

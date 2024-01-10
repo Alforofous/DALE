@@ -135,7 +135,7 @@ class Boreholes extends THREE.InstancedMesh
 		if (boreholeId >= this.instanceCount)
 		{
 			console.warn('Boreholes: maximum borehole count reached (' + boreholeId + '/' + this.instanceCount + ')');
-			return (-1);
+			return (undefined);
 		}
 		this.setVisibleWithId(boreholeId, true);
 		return (boreholeId);
