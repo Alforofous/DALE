@@ -49,6 +49,15 @@ class ToolMenu extends React.Component
 						{child}
 					</ToolButton>
 				))}
+				{isActive && this.props.extraButtons.map((child, childIndex) => (
+					<button
+						key={childIndex}
+						className="toolMenuExtraButton"
+						onClick={child.onClick}
+					>
+						{child.text}
+					</button>
+				))}
 			</div>
 		);
 	}

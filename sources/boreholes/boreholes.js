@@ -37,12 +37,19 @@ class Boreholes extends THREE.InstancedMesh
 		this.updateGeometryProperties();
 	}
 
-	setTop(index, top)
+	setTopWithId(id, top)
 	{
-		this.info.top[index].copy(top);
-		this.snapBottomTowardsParent(index);
-		this.updateGeometryProperties();
-		this.labels.syncWithBoreholes();
+		for (let i = 0; i < this.instanceCount; i++)
+		{
+			if (this.info.id[i] === id)
+			{
+				this.info.top[i].copy(top);
+				this.snapBottomTowardsParent(i);
+				this.updateGeometryPropertyAtIndex(i);
+				this.labels.syncWithPairedBorehole();
+				break;
+			}
+		}
 	}
 
 	snapTopTowardsParent(index)
@@ -87,29 +94,187 @@ class Boreholes extends THREE.InstancedMesh
 		return projection;
 	}
 
-	setAsHighlighted(index)
+	selectAll()
 	{
 		let highlightAttribute = this.scene.boreholes.geometry.getAttribute('highlight');
 		highlightAttribute.array.fill(0);
-		highlightAttribute.setX(index, 1);
+		this.selector.selectedBoreholeIds = [];
+		for (let i = 0; i < this.count; i++)
+		{
+			const id = this.info.id[i];
+			this.selector.selectedBoreholeIds.push(id);
+			highlightAttribute.setX(i, 1);
+		}
 		highlightAttribute.needsUpdate = true;
-		this.selector.selectedBoreholeIds = [index];
 	}
 
-	scatter()
+	selectWithIds(ids)
 	{
-		const distance = 1000;
-		
-		for (let id of this.selector.selectedBoreholeIds) 
+		let highlightAttribute = this.scene.boreholes.geometry.getAttribute('highlight');
+		highlightAttribute.array.fill(0);
+		for (let id of ids)
 		{
+			const index = this.info.id.indexOf(id);
+			highlightAttribute.setX(index, 1);
+		}
+		this.selector.selectedBoreholeIds = ids;
+		highlightAttribute.needsUpdate = true;
+	}
+
+	add()
+	{
+		let boreholeId = 0;
+		for (let i = 0; i < this.count; i++)
+		{
+			if (this.info.id[i] === boreholeId)
+			{
+				boreholeId++;
+				i = -1;
+			}
+		}
+		if (boreholeId >= this.instanceCount)
+		{
+			console.warn('Boreholes: maximum borehole count reached (' + boreholeId + '/' + this.instanceCount + ')');
+			return (-1);
+		}
+		this.setVisibleWithId(boreholeId, true);
+		return (boreholeId);
+	}
+
+	deleteSelected()
+	{
+		if (this.selector.selectedBoreholeIds.length === 0)
+			return;
+		for (let id of this.selector.selectedBoreholeIds)
+		{
+			this.setVisibleWithId(id, false);
+			this.selectWithIds([])
+		}
+		this.userInterface.sidebar.current.setState({ boreholeCount: this.scene.boreholes.count });
+	}
+
+	swapInstances(index1, index2)
+	{
+		const cachedMatrix = new THREE.Matrix4();
+		this.getMatrixAt(index1, cachedMatrix);
+		const cachedInstanceId = this.info.id[index1];
+		const cachedBottomParent = this.info.bottomParent[index1];
+		const cachedTopParent = this.info.topParent[index1];
+		const cachedHeight = this.info.height[index1];
+		const cachedTop = this.info.top[index1];
+		const cachedBottom = this.info.bottom[index1];
+		const cachedSections = this.info.sections[index1];
+
+		const matrix = new THREE.Matrix4();
+		this.getMatrixAt(index2, matrix);
+		this.setMatrixAt(index1, matrix);
+		this.info.id[index1] = this.info.id[index2];
+		this.info.bottomParent[index1] = this.info.bottomParent[index2];
+		this.info.topParent[index1] = this.info.topParent[index2];
+		this.info.height[index1] = this.info.height[index2];
+		this.info.top[index1] = this.info.top[index2];
+		this.info.bottom[index1] = this.info.bottom[index2];
+		this.info.sections[index1] = this.info.sections[index2];
+
+		this.setMatrixAt(index2, cachedMatrix);
+		this.info.id[index2] = cachedInstanceId;
+		this.info.bottomParent[index2] = cachedBottomParent;
+		this.info.topParent[index2] = cachedTopParent;
+		this.info.height[index2] = cachedHeight;
+		this.info.top[index2] = cachedTop;
+		this.info.bottom[index2] = cachedBottom;
+		this.info.sections[index2] = cachedSections;
+		this.instanceMatrix.needsUpdate = true;
+
+		const heightAttribute = this.geometry.getAttribute('instanceHeight');
+		heightAttribute.setX(index1, this.info.height[index1]);
+		heightAttribute.setX(index2, this.info.height[index2]);
+		heightAttribute.needsUpdate = true;
+	}
+
+	setVisibleWithId(id, visible)
+	{
+		const i = this.info.id.indexOf(id);
+		if (i === -1)
+			return;
+		if (visible === true && i >= this.count)
+		{
+			this.swapInstances(i, this.count);
+			this.labels.swapInstances(i, this.count);
+			this.count++;
+			this.labels.count++;
+		}
+		else if (visible === false && i < this.count)
+		{
+			this.swapInstances(i, this.count - 1);
+			this.labels.swapInstances(i, this.count - 1);
+			this.count--;
+			this.labels.count--;
+		}
+		this.labels.syncWithPairedBorehole();
+	}
+
+	scatterWithIds(ids)
+	{
+		if (ids.length === 0)
+			return;
+		const distance = 1000;
+		for (let id of ids) 
+		{
+			const index = this.info.id.indexOf(id);
 			let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
 
-			this.info.top[id].copy(moveVector);
-			this.snapBottomTowardsParent(id);
-			this.snapTopTowardsParent(id);
+			this.info.top[index].copy(moveVector);
+			this.snapBottomTowardsParent(index);
+			this.snapTopTowardsParent(index);
 		}
 		this.updateGeometryProperties();
-		this.labels.syncWithBoreholes();
+		this.labels.syncWithPairedBorehole();
+	}
+
+	scatterSelected()
+	{
+		if (this.selector.selectedBoreholeIds.length === 0)
+			return;
+		const distance = 1000;
+		for (let id of this.selector.selectedBoreholeIds) 
+		{
+			const index = this.info.id.indexOf(id);
+			let moveVector = new THREE.Vector3(randFloat(-distance, distance), randFloat(-distance, distance), randFloat(-distance, distance));
+
+			this.info.top[index].copy(moveVector);
+			this.snapBottomTowardsParent(index);
+			this.snapTopTowardsParent(index);
+		}
+		this.updateGeometryProperties();
+		this.labels.syncWithPairedBorehole();
+	}
+
+	updateGeometryPropertyAtIndex(index)
+	{
+		let matrix = new THREE.Matrix4();
+		let up = new THREE.Vector3(0, 1, 0);
+		let quaternion = new THREE.Quaternion();
+		let instanceHeight = this.geometry.getAttribute('instanceHeight');
+		let scale = new THREE.Vector3();
+
+		this.getMatrixAt(index, matrix);
+		matrix.decompose(new THREE.Vector3(), new THREE.Quaternion(), scale);
+		let top = this.info.top[index];
+		let bottom = this.info.bottom[index];
+		let position = new THREE.Vector3().addVectors(top, bottom).multiplyScalar(0.5);
+		let height = top.distanceTo(bottom);
+		let direction = new THREE.Vector3().subVectors(top, bottom).normalize();
+		this.info.height[index] = height;
+
+		quaternion.setFromUnitVectors(up, direction);
+		instanceHeight.setX(index, height);
+		matrix.compose(position, quaternion, scale);
+		this.setMatrixAt(index, matrix);
+		this.instanceMatrix.needsUpdate = true;
+		this.geometry.attributes.instanceHeight.needsUpdate = true;
+		this.computeBoundingBox();
+		this.computeBoundingSphere();
 	}
 
 	updateGeometryProperties()
@@ -118,15 +283,18 @@ class Boreholes extends THREE.InstancedMesh
 		let up = new THREE.Vector3(0, 1, 0);
 		let quaternion = new THREE.Quaternion();
 		let instanceHeight = this.geometry.getAttribute('instanceHeight');
-		const scale = new THREE.Vector3(1, 1, 1);
+		let scale = new THREE.Vector3();
 
 		for (let i = 0; i < this.instanceCount; i++)
 		{
+			this.getMatrixAt(i, matrix);
+			matrix.decompose(new THREE.Vector3(), new THREE.Quaternion(), scale);
 			let top = this.info.top[i];
 			let bottom = this.info.bottom[i];
 			let position = new THREE.Vector3().addVectors(top, bottom).multiplyScalar(0.5);
 			let height = top.distanceTo(bottom);
 			let direction = new THREE.Vector3().subVectors(top, bottom).normalize();
+			this.info.height[i] = height;
 
 			quaternion.setFromUnitVectors(up, direction);
 			instanceHeight.setX(i, height);
@@ -173,10 +341,11 @@ class Boreholes extends THREE.InstancedMesh
 		};
 		for (let i = 0; i < this.instanceCount; i++)
 		{
-			this.info.id[i] = 'ID ' + i.toString();
+			this.info.id[i] = i;
+			let tmp = this.info.id.indexOf(i);
 			this.info.bottomParent[i] = scene.freeSurface[0];
-			this.info.height[i] = i + 1;
-			this.info.top[i] = new THREE.Vector3(0, 100, 0);
+			this.info.height[i] = 0;
+			this.info.top[i] = new THREE.Vector3(0, 0, 0);
 			this.info.bottom[i] = new THREE.Vector3(0, 0, 0);
 			this.info.sections[i] = Array(MAX_SECTIONS_PER_BOREHOLE);
 			const sectionLength = 1 / MAX_SECTIONS_PER_BOREHOLE;
@@ -220,7 +389,8 @@ class Boreholes extends THREE.InstancedMesh
 		const fontName = 'andale_mono';
 		this.labels = new BoreholeLabels('assets/textures/fontAtlas/' + fontName + '.png', 'assets/fontAtlasData/' + fontName + '.json', this.instanceCount, this);
 		this.labels.geometry.computeBoundsTree();
-		this.labels.values = this.info.id;
+		const idStrings = this.info.id.map(id => id.toString());
+		this.labels.values = idStrings;
 		this.labels.initValues();
 	}
 

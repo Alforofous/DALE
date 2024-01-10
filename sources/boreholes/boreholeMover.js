@@ -27,17 +27,18 @@ class BoreholeMover
 			for (let i = 0; i < selectedBoreholeIds.length; i++)
 			{
 				const boreholeId = selectedBoreholeIds[i];
+				const boreholeIndex = this.boreholes.info.id.indexOf(boreholeId);
 
 				if (top)
-					this.boreholes.info.top[boreholeId].add(moveVector);
-				this.boreholes.info.bottom[boreholeId].add(moveVector);
-				this.boreholes.snapTopTowardsParent(boreholeId);
-				this.boreholes.snapBottomTowardsParent(boreholeId);
+					this.boreholes.info.top[boreholeIndex].add(moveVector);
+				this.boreholes.info.bottom[boreholeIndex].add(moveVector);
+				this.boreholes.snapTopTowardsParent(boreholeIndex);
+				this.boreholes.snapBottomTowardsParent(boreholeIndex);
 			}
 		}
 		this.oldPoint = currentPoint;
 		this.boreholes.updateGeometryProperties();
-		this.boreholes.labels.syncWithBoreholes();
+		this.boreholes.labels.syncWithPairedBorehole();
 	}
 }
 

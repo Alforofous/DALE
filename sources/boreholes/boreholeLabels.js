@@ -52,11 +52,14 @@ class BoreholeLabels extends THREE.InstancedMesh
 		this.layers.set(2);
 	}
 
-	syncWithBoreholes()
+	syncWithPairedBorehole()
 	{
-		let instanceCount = this.boreholes.instanceCount;
-		for (let i = 0; i < instanceCount; i++)
+		for (let id in this.boreholes.info.id)
 		{
+			id = parseInt(id);
+			let i = this.boreholes.info.id.indexOf(id);
+			if (i === -1)
+				continue;
 			let vector = this.boreholes.info.top[i];
 			let matrix = new THREE.Matrix4().makeTranslation(vector.x, vector.y, vector.z);
 			this.setMatrixAt(i, matrix);
@@ -69,7 +72,15 @@ class BoreholeLabels extends THREE.InstancedMesh
 	setValueAtIndex(index, value)
 	{
 		this.values[index] = value;
-		initValues();
+		this.initValues();
+	}
+
+	swapInstances(index1, index2)
+	{
+		let tmp = this.values[index1];
+		this.values[index1] = this.values[index2];
+		this.values[index2] = tmp;
+		this.initValues();
 	}
 
 	initValues()

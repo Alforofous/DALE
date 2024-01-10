@@ -7,11 +7,9 @@ import { Keyboard } from './keyboard.js';
 import { UI } from './UI/UI.js';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-const createModule = window.createModule;
+import { App } from './UI/app.jsx';
 
-//MIGHT REMOVE
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
-import Sidebar from './UI/sidebar.jsx';
 THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -78,7 +76,7 @@ function onTerrainMeshLoaded(scene)
 	{
 		const tmpCount = scene.boreholes.count;
 		scene.boreholes.count = scene.boreholes.instanceCount;
-		scene.boreholes.scatter();
+		scene.boreholes.scatterSelected();
 		scene.boreholes.count = tmpCount;
 	}
 	else
@@ -92,6 +90,7 @@ function onTerrainMeshLoaded(scene)
 
 function init()
 {
+	userInterface.app = React.createRef();
 	clock.start();
 
 	scene.traverse((child) =>
@@ -102,17 +101,17 @@ function init()
 		}
 	});
 	scene.boreholes.selector = mouse.boreholeSelector;
-	createModule().then(Module =>
-	{
-		for (let i = 0; i < scene.boreholes.count; i++)
-		{
-			const result = Module.ccall('add_numbers', 'number', ['number', 'number'], [i, i]);
-			const result2 = Module.ccall('angle_between_vectors', 'number', ['number', 'number', 'number', 'number', 'number', 'number'], [i, i, i, 1, 0, 0])
-		}
-	});
+	scene.boreholes.userInterface = userInterface;
 	onTerrainMeshLoaded(scene);
 	onUpdate();
 }
+
+const root = createRoot(document.getElementById('root'));
+root.render(<App
+	scene={scene}
+	userInterface={userInterface}
+	ref={userInterface.app}
+/>);
 
 function onUpdate()
 {
@@ -139,23 +138,6 @@ function onUpdate()
 	userInterface.stats.forEach((stat) => stat.end());
 	requestAnimationFrame(onUpdate);
 	renderer.info.reset();
-}
-
-const root = createRoot(document.getElementById('root'));
-root.render(<App />);
-
-function App()
-{
-	userInterface.sidebar = React.createRef();
-
-	return (
-		<div className="color-picker-overlay">
-			<Sidebar
-				ref={userInterface.sidebar}
-				scene={scene}
-			/>
-		</div>
-	);
 }
 
 window.addEventListener('resize', () =>

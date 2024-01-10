@@ -9,11 +9,21 @@ body
 	top: 50%;
 	left: 0;
 	z-index: 9999;
+	outline: none;
 }
 
 .stats
 {
 	z-index: 9999;
+}
+
+.draggable
+{
+	position: absolute;
+	z-index: 9999;
+	outline: none;
+	color: #e2e6e1;
+	background-color: #12293f;
 }
 
 #sidebar
@@ -23,42 +33,52 @@ body
 	top: 0;
 	width: 25%;
 	height: 100%;
-	color: #77818b;
+	color: #e2e6e1;
 	background-color: #12293f;
-	z-index: -1;
+	z-index: 10000;
+	outline: none;
 }
 
 .toolMenu
 {
-	color: #77818b;
+	color: #e2e6e1;
 	display: block;
 	width: 100%;
 	padding: 10px;
 	margin-bottom: 10px;
 	background-color: #18334d;
+	outline: none;
+}
+
+.toolMenuExtraButton
+{
+	color: #e2e6e1;
+	display: block;
+	padding: 5px;
+	margin-bottom: 10px;
+	background-color: #071a32;
+	border-radius: 10px;
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+	outline: none;
 }
 
 .toolButton
 {
-	color: #77818b;
+	color: #e2e6e1;
 	padding: 10px;
 	margin-bottom: 10px;
-	background-color: #0e213a
-}
-
-.toggle_visibility
-{
-	display: none;
+	background-color: #0e213a;
+	outline: none;
 }
 
 .toolButton.active
 {
 	color: aquamarine;
-	background-color: #2a61a0
+	background-color: #2a61a0;
 }
 
 .toolMenu.active
 {
 	color: aquamarine;
-	background-color: #2f5272
+	background-color: #2f5272;
 }

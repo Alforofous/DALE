@@ -6,8 +6,12 @@ class Camera extends PerspectiveCamera
 	constructor()
 	{
 		super(75, window.innerWidth * 0.75 / window.innerHeight, 0.1, 10000);
-		this.position.z = 50;
-		this.position.y = 700;
+		this.position.x = 1500;
+		this.position.y = 1700;
+		this.position.z = 1850;
+		
+		const euler = new THREE.Euler(-0.7, 0.6, 0.0, 'YXZ');
+		this.quaternion.setFromEuler(euler);
 		this.layers.enableAll();
 	}
 
@@ -62,6 +66,7 @@ class Camera extends PerspectiveCamera
 		const halfPi = Math.PI / 2 -0.00001;
 		euler.x = Math.max(-halfPi, Math.min(halfPi, euler.x));
 
+		console.log(euler);
 		this.quaternion.setFromEuler(euler);
 	}
 

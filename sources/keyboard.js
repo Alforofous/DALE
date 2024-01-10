@@ -30,7 +30,7 @@ class Keyboard
 
 	onKeyUp(userInterface)
 	{
-		if (this.releasedKeyCodeSignal['ShiftLeft'])
+		if (this.releasedKeyCodeSignal['MetaLeft'])
 		{
 			this.scene.boreholes.selector.addToSelection = false;
 			this.scene.boreholes.selector.updateSelectionRectangleColor(new THREE.Color(0x86DDFF));
@@ -47,10 +47,14 @@ class Keyboard
 			userInterface.showViewport2 = !userInterface.showViewport2;
 		else if (this.pressedKeyCodeSignal['KeyF'])
 			document.body.requestFullscreen();
-		else if (this.pressedKeyCodeSignal['ShiftLeft'])
+		else if (this.pressedKeyCodeSignal['MetaLeft'])
 		{
 			this.scene.boreholes.selector.addToSelection = true;
 			this.scene.boreholes.selector.updateSelectionRectangleColor(new THREE.Color(0x86FFDD));
+		}
+		else if (this.pressedKeyCodeSignal['Escape'])
+		{
+			userInterface.sidebar.current.activateToolMenu(null);
 		}
 	}
 

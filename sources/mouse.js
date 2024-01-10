@@ -54,30 +54,24 @@ class Mouse
 				{
 					const firstIntersectedObject = this.firstIntersectedObject;
 					if (firstIntersectedObject !== undefined)
+					{
 						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
+						this.userInterface.app.current.updateBoreholeInfo();
+					}
 				}
 				else if (activeButtonIndex === 2)
 				{
 					const firstIntersectedObject = this.firstIntersectedObject;
 					if (firstIntersectedObject !== undefined)
+					{
 						this.boreholeMover.moveSelectedBoreholes(firstIntersectedObject.point, this.boreholeSelector.selectedBoreholeIds);
+						this.userInterface.app.current.updateBoreholeInfo();
+					}
 				}
 				else if (activeButtonIndex === 3)
-					this.scene.boreholes.scatter();
+					this.scene.boreholes.scatterSelected();
 			}
 		}
-	}
-
-	addBorehole()
-	{
-		const firstIntersectedObject = this.firstIntersectedObject;
-		if (firstIntersectedObject !== undefined)
-			this.scene.boreholes.setTop(this.scene.boreholes.count, this.firstIntersectedObject.point)
-		this.scene.boreholes.count += 1;
-		this.scene.boreholes.labels.count += 1;
-		this.userInterface.sidebar.current.setState({ boreholeCount: this.scene.boreholes.count });
-
-		this.scene.boreholes.setAsHighlighted(this.scene.boreholes.count - 1);
 	}
 
 	onMouseDownSignal()
@@ -91,7 +85,13 @@ class Mouse
 			{
 				if (activeButtonIndex === 0)
 				{
-					this.addBorehole(this.scene);
+					const boreholeId = this.scene.boreholes.add();
+					const firstIntersectedObject = this.firstIntersectedObject;
+					if (firstIntersectedObject !== undefined)
+						this.scene.boreholes.setTopWithId(boreholeId, this.firstIntersectedObject.point);
+					this.userInterface.sidebar.current.setState({ boreholeCount: this.scene.boreholes.count });
+					this.scene.boreholes.selectWithIds([boreholeId]);
+					this.userInterface.app.current.updateBoreholeInfo();
 				}
 				else if (activeButtonIndex === 1)
 				{
@@ -179,6 +179,8 @@ class Mouse
 		document.addEventListener('mousedown', function (event)
 		{
 			let rect = this.renderer.domElement.getBoundingClientRect();
+			if (event.target !== this.renderer.domElement)
+				return;
 			if (event.clientX >= rect.left && event.clientX <= rect.right &&
 				event.clientY >= rect.top && event.clientY <= rect.bottom) 
 			{
