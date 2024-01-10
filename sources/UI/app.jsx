@@ -34,9 +34,13 @@ class App extends React.Component
 		if (this.scene !== undefined && this.scene.boreholes.selector.selectedBoreholeIds.length > 0)
 		{
 			const id = this.scene.boreholes.selector.selectedBoreholeIds[0];
-			boreholeInfo.push({ text: 'Id: ' + id });
-			boreholeInfo.push({ text: 'Top: ' + this.scene.boreholes.info.top[id].x.toFixed(3) + ', ' + this.scene.boreholes.info.top[id].y.toFixed(3) + ', ' + this.scene.boreholes.info.top[id].z.toFixed(3) });
-			boreholeInfo.push({ text: 'Bottom: ' + this.scene.boreholes.info.bottom[id].x.toFixed(3) + ', ' + this.scene.boreholes.info.bottom[id].y.toFixed(3) + ', ' + this.scene.boreholes.info.bottom[id].z.toFixed(3) });
+			if (id >= 0 && id < this.scene.boreholes.instanceCount)
+			{
+				boreholeInfo.push({ text: 'Id: ' + id });
+				const decimalPlaces = 1;
+				boreholeInfo.push({ text: 'Top: x:' + this.scene.boreholes.info.top[id].x.toFixed(decimalPlaces) + ', y:' + this.scene.boreholes.info.top[id].y.toFixed(decimalPlaces) + ', z:' + this.scene.boreholes.info.top[id].z.toFixed(decimalPlaces) });
+				boreholeInfo.push({ text: 'Bottom: x:' + this.scene.boreholes.info.bottom[id].x.toFixed(decimalPlaces) + ', y:' + this.scene.boreholes.info.bottom[id].y.toFixed(decimalPlaces) + ', z:' + this.scene.boreholes.info.bottom[id].z.toFixed(decimalPlaces) });
+			}
 		}
 
 		this.setState({ boreholeInfo: boreholeInfo });
@@ -66,7 +70,7 @@ class App extends React.Component
 						position: 'fixed',
 						top: '5px',
 						right: '5px',
-						width: '200px',
+						width: '300px',
 						border: '1px solid black',
 						borderRadius: '5px',
 						backgroundColor: '#030323',
@@ -77,7 +81,7 @@ class App extends React.Component
 						className='draggable'
 					>
 						<div style={{
-							borderBottom: '1px solid black',
+							borderBottom: '1px solid white',
 							paddingBottom: '10px',
 							fontWeight: 'bold',
 							display: 'flex',
@@ -89,7 +93,7 @@ class App extends React.Component
 							</button>
 						</div>
 						{this.state.isDraggableVisible && this.state.boreholeInfo.map((info, index) => (
-							<p key={index} style={{ borderBottom: '1px solid white', userSelect: 'none' }}>{info.text}</p>
+							<p key={index} style={{ userSelect: 'none' }}>{info.text}</p>
 						))}
 					</div>
 				</Draggable>
